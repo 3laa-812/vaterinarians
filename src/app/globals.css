@@ -1,0 +1,97 @@
+/* Global styles — Tailwind v4 CSS-first config */
+@import "tailwindcss";
+
+/* ── Design System Tokens (from DESIGN.md) ─────────────────────────────────── */
+@theme {
+  /* Surface colors */
+  --color-surface: #0C0E14;
+  --color-surface-dim: #111319;
+  --color-surface-bright: #373940;
+  --color-surface-container-lowest: #0c0e14;
+  --color-surface-container-low: #13161F;
+  --color-surface-container: #191b22;
+  --color-surface-container-high: #24272e;
+  --color-surface-container-highest: #2e3139;
+
+  /* On-surface */
+  --color-on-surface: #F9FAFB;
+  --color-on-surface-variant: #9CA3AF;
+
+  /* Outlines */
+  --color-outline: #373940;
+  --color-outline-variant: #1f2128;
+
+  /* Primary — Medical Teal */
+  --color-primary: #14B8A6;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: #0D5E55;
+  --color-on-primary-container: #CCFBF1;
+
+  /* Secondary — Animal Amber */
+  --color-secondary: #F59E0B;
+  --color-on-secondary: #FFFFFF;
+  --color-secondary-container: #78350F;
+  --color-on-secondary-container: #FEF3C7;
+
+  /* Tertiary — Owner Indigo */
+  --color-tertiary: #818CF8;
+  --color-on-tertiary: #FFFFFF;
+  --color-tertiary-container: #312E81;
+  --color-on-tertiary-container: #E0E7FF;
+
+  /* Error */
+  --color-error: #EF4444;
+  --color-on-error: #FFFFFF;
+  --color-error-container: #7F1D1D;
+  --color-on-error-container: #FEE2E2;
+
+  /* Typography */
+  --font-family-arabic: 'Cairo', sans-serif;
+  --font-family-sans: 'Inter', sans-serif;
+}
+
+/* ── Base styles ──────────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+/* RTL: use Cairo, LTR: use Inter */
+[dir="rtl"] {
+  font-family: var(--font-cairo, 'Cairo'), sans-serif;
+}
+
+[dir="ltr"] {
+  font-family: var(--font-inter, 'Inter'), sans-serif;
+}
+
+/* ── Glass morphism utility ───────────────────────────────────────────────────── */
+.glass {
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* ── Medical shadow utility ───────────────────────────────────────────────────── */
+.shadow-medical {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+/* ── Scrollbar styling ────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+/* ── Safe area insets for mobile PWA ──────────────────────────────────────────── */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}

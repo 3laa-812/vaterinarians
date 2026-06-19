@@ -4,7 +4,7 @@
 
 ## Development Phases
 
-### Phase 1 — Foundation (Week 1-2)
+### Phase 1 — Foundation
 **Goal:** Project runs locally, auth works, DB connected.
 
 - [ ] `npx create-next-app@latest` with TypeScript + Tailwind + App Router
@@ -24,7 +24,7 @@
 
 ---
 
-### Phase 2 — Core Features (Week 3-4)
+### Phase 2 — Core Features
 **Goal:** Full CRUD for animals, owners, appointments. Doctor can do their daily job.
 
 - [ ] Animals API routes (`/api/animals`, `/api/animals/[id]`)
@@ -42,7 +42,7 @@
 
 ---
 
-### Phase 3 — Sessions & Payments (Week 5)
+### Phase 3 — Sessions & Payments
 **Goal:** The core clinical workflow — record exam, track weight, record payment.
 
 - [ ] Session API (`POST /api/appointments/[id]/session`)
@@ -61,7 +61,7 @@
 
 ---
 
-### Phase 4 — Notifications (Week 6)
+### Phase 4 — Notifications
 **Goal:** Doctors receive reminders before appointments automatically.
 
 - [ ] Novu account setup + create `appointment-reminder` workflow
@@ -77,7 +77,7 @@
 
 ---
 
-### Phase 5 — Polish & Deploy (Week 7)
+### Phase 5 — Polish & Deploy
 **Goal:** Production-ready, stable, good-looking.
 
 - [ ] OfflineBanner component

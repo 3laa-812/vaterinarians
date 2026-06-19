@@ -2,7 +2,7 @@
 
 ---
 
-## Authentication — NextAuth.js v5
+## Authentication — NextAuth.js 
 
 ### Strategy
 JWT-based sessions. No database sessions — stateless, fast, works well with edge middleware.

@@ -4,12 +4,12 @@
 
 | Layer | Choice | Why |
 |---|---|---|
-| Framework | Next.js 14 (App Router) | Full-stack, SSR, API routes, one repo |
+| Framework | Next.js 16 (App Router) | Full-stack, SSR, API routes, one repo |
 | Language | TypeScript | Type safety across frontend + backend |
 | Styling | Tailwind CSS + shadcn/ui | Utility-first, RTL-compatible |
 | ORM | Prisma | Type-safe DB access, migrations |
 | Database | PostgreSQL (Railway) | Relational, solid for this data model |
-| Auth | NextAuth.js v5 | JWT, role-based, easy session management |
+| Auth | NextAuth.js  | JWT, role-based, easy session management |
 | Notifications | Novu | Multi-channel, dashboard, free tier |
 | i18n | next-intl | Best RTL/LTR support for Next.js App Router |
 | PWA | next-pwa + Workbox | Offline cache, installable, push-ready |

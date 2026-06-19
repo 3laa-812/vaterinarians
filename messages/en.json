@@ -1,0 +1,171 @@
+{
+  "nav": {
+    "home": "Today",
+    "animals": "Animals",
+    "appointments": "Appointments",
+    "owners": "Owners",
+    "admin": "Admin",
+    "profile": "Profile"
+  },
+  "home": {
+    "greeting": "Hello, {name}",
+    "nextAppointment": "Next — in {minutes} minutes",
+    "noAppointments": "No appointments today — enjoy your day ☀️",
+    "allDone": "All done for today ✓",
+    "todaySchedule": "Today's Schedule",
+    "startSession": "Start Session",
+    "editAppointment": "Edit Appointment",
+    "remaining": "Later today"
+  },
+  "animal": {
+    "currentWeight": "Current Weight",
+    "startingWeight": "Starting Weight",
+    "weightLost": "Lost",
+    "sessions": "Sessions",
+    "newSession": "New Session",
+    "medicalHistory": "Medical History",
+    "pastSessions": "Past Sessions",
+    "weightHistory": "Weight History",
+    "addNew": "Add New Patient",
+    "search": "Search by name or owner",
+    "noAnimals": "No animals registered",
+    "owner": "Owner",
+    "call": "Call",
+    "male": "Male",
+    "female": "Female",
+    "viewDetails": "View Details",
+    "kg": "kg",
+    "years": "yr",
+    "months": "mo"
+  },
+  "session": {
+    "weight": "Weight",
+    "lastWeight": "Last weight",
+    "clinicalNotes": "Clinical Notes",
+    "treatmentPlan": "Treatment Plan",
+    "nextVisit": "Next Visit",
+    "save": "Save & Finish Session",
+    "cancel": "Cancel",
+    "autoSaving": "Saving...",
+    "savedLocally": "Saved locally ✓",
+    "synced": "Synced ✓",
+    "successToast": "Session saved ✓",
+    "alreadyExists": "This appointment already has a session",
+    "weightDelta": "Change from last session",
+    "chooseDate": "Choose date",
+    "chooseTime": "Choose time",
+    "companion": "Companion"
+  },
+  "payment": {
+    "fee": "Session Fee",
+    "paid": "Amount Paid",
+    "remaining": "Remaining",
+    "notes": "Payment Notes",
+    "recordPayment": "Record Payment",
+    "status": {
+      "PAID": "Paid ✓",
+      "PARTIAL": "Partial",
+      "UNPAID": "Unpaid"
+    }
+  },
+  "appointment": {
+    "new": "New Appointment",
+    "date": "Date",
+    "time": "Time",
+    "fee": "Session Fee",
+    "doctor": "Doctor",
+    "notes": "Notes",
+    "book": "Book Appointment",
+    "cancel": "Cancel Appointment",
+    "status": {
+      "SCHEDULED": "Scheduled",
+      "COMPLETED": "Completed",
+      "ABSENT": "Absent",
+      "POSTPONED": "Postponed"
+    }
+  },
+  "owner": {
+    "name": "Owner Name",
+    "phone": "Phone Number",
+    "email": "Email",
+    "address": "Address",
+    "notes": "Notes",
+    "animals": "Registered Animals",
+    "search": "Search by owner name or phone",
+    "noOwners": "No owners registered",
+    "addNew": "Add New Owner",
+    "existingOwner": "Existing Owner",
+    "newOwner": "New Owner",
+    "searchByPhone": "Search by phone to find an existing owner"
+  },
+  "form": {
+    "animalName": "Animal Name",
+    "species": "Species",
+    "breed": "Breed",
+    "gender": "Gender",
+    "birthDate": "Birth Date",
+    "color": "Color",
+    "medicalHistory": "Medical History & Allergies",
+    "notes": "General Notes",
+    "step1": "Animal Info",
+    "step2": "Owner Info",
+    "step3": "First Appointment (optional)",
+    "skip": "Skip",
+    "next": "Next",
+    "save": "Save",
+    "back": "Back",
+    "required": "This field is required",
+    "invalidPhone": "Invalid phone number",
+    "invalidEmail": "Invalid email address"
+  },
+  "auth": {
+    "login": "Sign In",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Sign In",
+    "invalidCredentials": "Incorrect email or password",
+    "logout": "Sign Out",
+    "welcome": "Welcome to the Vet Clinic System"
+  },
+  "admin": {
+    "clinics": "Clinics",
+    "doctors": "Doctors",
+    "addClinic": "Add Clinic",
+    "addDoctor": "Add Doctor",
+    "doctorName": "Full Name",
+    "email": "Email Address",
+    "password": "Password",
+    "phone": "Phone Number",
+    "createDoctor": "Create Account",
+    "clinicName": "Clinic Name",
+    "clinicNameAr": "Clinic Name (Arabic)",
+    "noClinicAssigned": "No clinic assigned"
+  },
+  "errors": {
+    "saveFailed": "Failed to save, please try again",
+    "loadFailed": "Failed to load data",
+    "unauthorized": "You are not authorized for this action",
+    "notFound": "The requested item was not found",
+    "offline": "You are offline",
+    "connectionFailed": "Connection failed, please try again",
+    "invalidInput": "Invalid input data"
+  },
+  "offline": {
+    "banner": "You're offline — data saved locally",
+    "sessionSaved": "Saved locally ✓ — will sync when back online",
+    "syncing": "Syncing...",
+    "synced": "Synced ✓"
+  },
+  "update": {
+    "available": "A new version is available",
+    "action": "Update Now"
+  },
+  "species": {
+    "dog": "Dog",
+    "cat": "Cat",
+    "bird": "Bird",
+    "rabbit": "Rabbit",
+    "hamster": "Hamster",
+    "other": "Other"
+  }
+}

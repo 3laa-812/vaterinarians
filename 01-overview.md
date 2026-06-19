@@ -8,7 +8,7 @@ A **multi-clinic veterinary management PWA** used by veterinarians (and clinic a
 
 | Role | What They Do |
 |---|---|
-| **Super Admin** | Manages all clinics, creates clinic admins |
+| **Super Admin** | Manages all clinics (with diffrent names), creates clinic admins |
 | **Clinic Admin** | Manages one clinic — adds doctors, manages animals |
 | **Doctor (Vet)** | Daily use — records sessions, views schedule, tracks animals |
 

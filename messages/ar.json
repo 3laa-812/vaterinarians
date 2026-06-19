@@ -1,0 +1,171 @@
+{
+  "nav": {
+    "home": "اليوم",
+    "animals": "المرضى",
+    "appointments": "المواعيد",
+    "owners": "المرافقون",
+    "admin": "الإدارة",
+    "profile": "حسابي"
+  },
+  "home": {
+    "greeting": "مرحباً {name}",
+    "nextAppointment": "التالي — بعد {minutes} دقيقة",
+    "noAppointments": "لا مواعيد اليوم — استمتع بيومك ☀️",
+    "allDone": "أنهيت كل مواعيد اليوم ✓",
+    "todaySchedule": "جدول اليوم",
+    "startSession": "ابدأ الكشف",
+    "editAppointment": "تعديل الموعد",
+    "remaining": "الباقي من اليوم"
+  },
+  "animal": {
+    "currentWeight": "الوزن الحالي",
+    "startingWeight": "وزن البداية",
+    "weightLost": "خسر",
+    "sessions": "جلسة",
+    "newSession": "كشف جديد",
+    "medicalHistory": "التاريخ الطبي",
+    "pastSessions": "الجلسات السابقة",
+    "weightHistory": "سجل الوزن",
+    "addNew": "إضافة مريض جديد",
+    "search": "ابحث بالاسم أو اسم المرافق",
+    "noAnimals": "لا يوجد مرضى مسجلون",
+    "owner": "المرافق",
+    "call": "اتصال",
+    "male": "ذكر",
+    "female": "أنثى",
+    "viewDetails": "عرض التفاصيل",
+    "kg": "كجم",
+    "years": "سنة",
+    "months": "شهر"
+  },
+  "session": {
+    "weight": "الوزن",
+    "lastWeight": "آخر وزن",
+    "clinicalNotes": "ملاحظات الكشف",
+    "treatmentPlan": "الخطة العلاجية",
+    "nextVisit": "الموعد القادم",
+    "save": "حفظ وإنهاء الكشف",
+    "cancel": "إلغاء",
+    "autoSaving": "جاري الحفظ...",
+    "savedLocally": "محفوظ محلياً ✓",
+    "synced": "تمت المزامنة ✓",
+    "successToast": "تم حفظ الكشف ✓",
+    "alreadyExists": "هذا الموعد لديه كشف مسجل بالفعل",
+    "weightDelta": "الفرق عن الجلسة السابقة",
+    "chooseDate": "اختر تاريخ",
+    "chooseTime": "اختر وقت",
+    "companion": "المرافق"
+  },
+  "payment": {
+    "fee": "رسوم الكشف",
+    "paid": "المدفوع",
+    "remaining": "المتبقي",
+    "notes": "ملاحظات الدفع",
+    "recordPayment": "تسجيل دفعة",
+    "status": {
+      "PAID": "مدفوع ✓",
+      "PARTIAL": "دفع جزء",
+      "UNPAID": "لم يُدفع"
+    }
+  },
+  "appointment": {
+    "new": "موعد جديد",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "fee": "رسوم الكشف",
+    "doctor": "الطبيب",
+    "notes": "ملاحظات",
+    "book": "حجز الموعد",
+    "cancel": "إلغاء الموعد",
+    "status": {
+      "SCHEDULED": "مجدول",
+      "COMPLETED": "اكتمل",
+      "ABSENT": "غاب",
+      "POSTPONED": "مؤجل"
+    }
+  },
+  "owner": {
+    "name": "اسم المرافق",
+    "phone": "رقم الهاتف",
+    "email": "البريد الإلكتروني",
+    "address": "العنوان",
+    "notes": "ملاحظات",
+    "animals": "الحيوانات المسجلة",
+    "search": "ابحث باسم المرافق أو الهاتف",
+    "noOwners": "لا يوجد مرافقون مسجلون",
+    "addNew": "إضافة مرافق جديد",
+    "existingOwner": "مرافق موجود",
+    "newOwner": "مرافق جديد",
+    "searchByPhone": "ابحث بالهاتف للعثور على مرافق موجود"
+  },
+  "form": {
+    "animalName": "اسم الحيوان",
+    "species": "النوع",
+    "breed": "السلالة",
+    "gender": "الجنس",
+    "birthDate": "تاريخ الميلاد",
+    "color": "اللون",
+    "medicalHistory": "التاريخ الطبي والحساسية",
+    "notes": "ملاحظات عامة",
+    "step1": "معلومات الحيوان",
+    "step2": "معلومات المرافق",
+    "step3": "موعد أول (اختياري)",
+    "skip": "تخطي",
+    "next": "التالي",
+    "save": "حفظ",
+    "back": "رجوع",
+    "required": "هذا الحقل مطلوب",
+    "invalidPhone": "رقم الهاتف غير صحيح",
+    "invalidEmail": "البريد الإلكتروني غير صحيح"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "loginButton": "دخول",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "logout": "تسجيل الخروج",
+    "welcome": "أهلاً بك في نظام العيادة البيطرية"
+  },
+  "admin": {
+    "clinics": "العيادات",
+    "doctors": "الأطباء",
+    "addClinic": "إضافة عيادة",
+    "addDoctor": "إضافة طبيب",
+    "doctorName": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "phone": "رقم الهاتف",
+    "createDoctor": "إنشاء الحساب",
+    "clinicName": "اسم العيادة",
+    "clinicNameAr": "اسم العيادة بالعربية",
+    "noClinicAssigned": "بدون عيادة"
+  },
+  "errors": {
+    "saveFailed": "تعذر الحفظ، حاول مرة أخرى",
+    "loadFailed": "تعذر تحميل البيانات",
+    "unauthorized": "غير مصرح لك بهذا الإجراء",
+    "notFound": "العنصر المطلوب غير موجود",
+    "offline": "أنت غير متصل بالإنترنت",
+    "connectionFailed": "تعذر الاتصال، حاول مرة أخرى",
+    "invalidInput": "البيانات المدخلة غير صحيحة"
+  },
+  "offline": {
+    "banner": "أنت غير متصل — البيانات محفوظة محلياً",
+    "sessionSaved": "محفوظ محلياً ✓ — سيُرسل عند عودة الاتصال",
+    "syncing": "جاري المزامنة...",
+    "synced": "تمت المزامنة ✓"
+  },
+  "update": {
+    "available": "يوجد إصدار جديد من التطبيق",
+    "action": "تحديث الآن"
+  },
+  "species": {
+    "dog": "كلب",
+    "cat": "قطة",
+    "bird": "طائر",
+    "rabbit": "أرنب",
+    "hamster": "هامستر",
+    "other": "أخرى"
+  }
+}
