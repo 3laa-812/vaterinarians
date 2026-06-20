@@ -2,9 +2,15 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { useLocale } from 'next-intl'
 import { sessionSchema, type SessionInput } from '@/lib/validations/session.schema'
+import { calculatePaymentStatus, calculateRemaining } from '@/lib/payment'
 import { ZodError } from 'zod'
+import { Card } from '@/components/shared/Card'
+import { Button } from '@/components/shared/Button'
+import { Input } from '@/components/shared/Input'
+import { Textarea } from '@/components/shared/Textarea'
+import { FormField } from '@/components/shared/FormField'
+import { PaymentStatusBadge } from '@/components/shared/PaymentStatusBadge'
 
 interface SessionFormProps {
   initialData?: Partial<SessionInput>
@@ -13,28 +19,44 @@ interface SessionFormProps {
   isLoading?: boolean
 }
 
+function splitDateTime(isoOrDate: string | null | undefined): { date: string; time: string } {
+  if (!isoOrDate) return { date: '', time: '10:00' }
+  const d = new Date(isoOrDate)
+  if (Number.isNaN(d.getTime())) {
+    return { date: isoOrDate.slice(0, 10), time: '10:00' }
+  }
+  const date = d.toISOString().slice(0, 10)
+  const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+  return { date, time }
+}
+
 export function SessionForm({ initialData, onSubmit, onCancel, isLoading = false }: SessionFormProps) {
   const t = useTranslations('session')
   const tPayment = useTranslations('payment')
-  const locale = useLocale()
+  const tAnimal = useTranslations('animal')
 
-  const [formData, setFormData] = useState<SessionInput>({
-    weight: initialData?.weight || undefined,
+  const initialVisit = splitDateTime(initialData?.nextVisitDate)
+
+  const [formData, setFormData] = useState({
+    weight: initialData?.weight ?? undefined as number | undefined,
     clinicalNotes: initialData?.clinicalNotes || '',
     treatmentPlan: initialData?.treatmentPlan || '',
-    nextVisitDate: initialData?.nextVisitDate || '',
     totalAmount: initialData?.totalAmount || 0,
     paidAmount: initialData?.paidAmount || 0,
     notes: initialData?.notes || '',
   })
-
+  const [nextDate, setNextDate] = useState(initialVisit.date)
+  const [nextTime, setNextTime] = useState(initialVisit.time)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
+  const remaining = calculateRemaining(formData.totalAmount, formData.paidAmount)
+  const paymentStatus = calculatePaymentStatus(formData.totalAmount, formData.paidAmount)
+
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target
-    let processedValue: any = value
+    let processedValue: string | number | undefined = value
 
     if (name === 'weight') {
       processedValue = value === '' ? undefined : parseFloat(value)
@@ -44,7 +66,6 @@ export function SessionForm({ initialData, onSubmit, onCancel, isLoading = false
 
     setFormData((prev) => ({ ...prev, [name]: processedValue }))
 
-    // Clear error
     if (errors[name]) {
       setErrors((prev) => {
         const next = { ...prev }
@@ -58,11 +79,14 @@ export function SessionForm({ initialData, onSubmit, onCancel, isLoading = false
     e.preventDefault()
     setErrors({})
 
+    const combinedDateTime =
+      nextDate && nextTime ? new Date(`${nextDate}T${nextTime}`).toISOString() : null
+
     try {
       const validated = sessionSchema.parse({
         ...formData,
         weight: formData.weight === undefined ? null : formData.weight,
-        nextVisitDate: formData.nextVisitDate || null,
+        nextVisitDate: combinedDateTime,
       })
       await onSubmit(validated)
     } catch (err) {
@@ -79,154 +103,124 @@ export function SessionForm({ initialData, onSubmit, onCancel, isLoading = false
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Clinical Section */}
-      <div className="bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm space-y-4">
-        <h3 className="text-lg font-semibold text-teal-600 border-b border-outline/5 pb-2">
-          {locale === 'ar' ? 'البيانات السريرية' : 'Clinical Details'}
+      <Card className="space-y-4">
+        <h3 className="text-lg font-semibold text-on-surface border-b border-outline-variant pb-2">
+          {t('clinicalDetails')}
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="weight" className="block text-sm font-medium text-primary mb-1">
-              {t('weight')} ({locale === 'ar' ? 'كجم' : 'kg'})
-            </label>
-            <input
+          <FormField label={`${t('weight')} (${tAnimal('kg')})`}>
+            <Input
               type="number"
               step="0.01"
-              id="weight"
               name="weight"
               value={formData.weight === undefined || formData.weight === null ? '' : formData.weight}
               onChange={handleChange}
               placeholder="0.0"
-              className="w-full px-4 py-3 rounded-xl border border-outline/20 bg-surface text-primary focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+              error={errors.weight}
             />
-            {errors.weight && <p className="text-xs text-error mt-1">{errors.weight}</p>}
-          </div>
+          </FormField>
 
-          <div>
-            <label htmlFor="nextVisitDate" className="block text-sm font-medium text-primary mb-1">
-              {t('nextVisit')}
-            </label>
-            <input
+          <FormField label={t('nextVisitDate')}>
+            <Input
               type="date"
-              id="nextVisitDate"
               name="nextVisitDate"
-              value={formData.nextVisitDate || ''}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-outline/20 bg-surface text-primary focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+              value={nextDate}
+              onChange={(e) => setNextDate(e.target.value)}
             />
-          </div>
+          </FormField>
+
+          <FormField label={t('nextVisitTime')}>
+            <Input
+              type="time"
+              name="nextVisitTime"
+              value={nextTime}
+              onChange={(e) => setNextTime(e.target.value)}
+            />
+          </FormField>
         </div>
 
-        <div>
-          <label htmlFor="clinicalNotes" className="block text-sm font-medium text-primary mb-1">
-            {t('clinicalNotes')}
-          </label>
-          <textarea
-            id="clinicalNotes"
+        <FormField label={t('clinicalNotes')}>
+          <Textarea
             name="clinicalNotes"
             rows={3}
             value={formData.clinicalNotes}
             onChange={handleChange}
-            placeholder={locale === 'ar' ? 'اكتب ملاحظات الفحص والتشخيص...' : 'Write clinical observations...'}
-            className="w-full px-4 py-3 rounded-xl border border-outline/20 bg-surface text-primary focus:ring-2 focus:ring-teal-500 outline-none transition-all resize-none"
+            placeholder={t('clinicalNotesPlaceholder')}
           />
-        </div>
+        </FormField>
 
-        <div>
-          <label htmlFor="treatmentPlan" className="block text-sm font-medium text-primary mb-1">
-            {t('treatmentPlan')}
-          </label>
-          <textarea
-            id="treatmentPlan"
+        <FormField label={t('treatmentPlan')}>
+          <Textarea
             name="treatmentPlan"
             rows={3}
             value={formData.treatmentPlan}
             onChange={handleChange}
-            placeholder={locale === 'ar' ? 'اكتب العلاج والأدوية وخطة التمرين والجرعات...' : 'Specify medications, dosages, exercises...'}
-            className="w-full px-4 py-3 rounded-xl border border-outline/20 bg-surface text-primary focus:ring-2 focus:ring-teal-500 outline-none transition-all resize-none"
+            placeholder={t('treatmentPlanPlaceholder')}
           />
-        </div>
-      </div>
+        </FormField>
+      </Card>
 
-      {/* Payment Section */}
-      <div className="bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm space-y-4">
-        <h3 className="text-lg font-semibold text-teal-600 border-b border-outline/5 pb-2">
-          {locale === 'ar' ? 'الرسوم والدفع' : 'Billing & Payment'}
+      <Card className="space-y-4">
+        <h3 className="text-lg font-semibold text-on-surface border-b border-outline-variant pb-2">
+          {t('billingPayment')}
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="totalAmount" className="block text-sm font-medium text-primary mb-1">
-              {tPayment('fee')} (EGP) *
-            </label>
-            <input
+          <FormField label={`${tPayment('fee')} (${t('currency')})`} required>
+            <Input
               type="number"
-              id="totalAmount"
               name="totalAmount"
               value={formData.totalAmount || ''}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl border border-outline/20 bg-surface text-primary focus:ring-2 focus:ring-teal-500 outline-none transition-all font-mono"
+              className="font-mono"
+              error={errors.totalAmount}
             />
-            {errors.totalAmount && <p className="text-xs text-error mt-1">{errors.totalAmount}</p>}
-          </div>
+          </FormField>
 
-          <div>
-            <label htmlFor="paidAmount" className="block text-sm font-medium text-primary mb-1">
-              {tPayment('paid')} (EGP) *
-            </label>
-            <input
+          <FormField label={`${tPayment('paid')} (${t('currency')})`} required>
+            <Input
               type="number"
-              id="paidAmount"
               name="paidAmount"
               value={formData.paidAmount || ''}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl border border-outline/20 bg-surface text-primary focus:ring-2 focus:ring-teal-500 outline-none transition-all font-mono"
+              className="font-mono"
+              error={errors.paidAmount}
             />
-            {errors.paidAmount && <p className="text-xs text-error mt-1">{errors.paidAmount}</p>}
-          </div>
+          </FormField>
         </div>
 
-        <div>
-          <label htmlFor="notes" className="block text-sm font-medium text-primary mb-1">
-            {tPayment('notes')}
-          </label>
-          <input
+        <div className="flex items-center justify-between rounded-xl bg-surface-container px-4 py-3">
+          <span className="text-sm text-on-surface-variant">{tPayment('remaining')}</span>
+          <span className={`font-mono font-semibold ${remaining > 0 ? 'text-secondary' : 'text-primary'}`}>
+            {remaining.toFixed(2)} {t('currency')}
+          </span>
+        </div>
+
+        <PaymentStatusBadge status={paymentStatus} />
+
+        <FormField label={tPayment('notes')}>
+          <Input
             type="text"
-            id="notes"
             name="notes"
             value={formData.notes}
             onChange={handleChange}
-            placeholder={locale === 'ar' ? 'كاش، فودافون كاش، دفع لاحق...' : 'Cash, Vodafone Cash, unpaid...'}
-            className="w-full px-4 py-3 rounded-xl border border-outline/20 bg-surface text-primary focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+            placeholder={t('paymentNotesPlaceholder')}
           />
-        </div>
-      </div>
+        </FormField>
+      </Card>
 
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline/10">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant">
         {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={isLoading}
-            className="px-6 py-3 rounded-xl border border-outline/20 text-sm font-medium text-primary hover:bg-outline/5 transition-all"
-          >
+          <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading}>
             {t('cancel')}
-          </button>
+          </Button>
         )}
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-sm font-medium text-white shadow-sm transition-all flex items-center justify-center min-w-[150px]"
-        >
-          {isLoading ? (
-            <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-          ) : (
-            t('save')
-          )}
-        </button>
+        <Button type="submit" loading={isLoading} className="min-w-[150px]">
+          {t('save')}
+        </Button>
       </div>
     </form>
   )

@@ -1,22 +1,26 @@
-// LangToggle — AR / EN switcher. Saves preference to DB, switches locale immediately.
+// LangToggle — AR / EN switcher. Saves preference to DB when signed in.
 'use client'
 
 import { useLocale } from 'next-intl'
+import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from '@/lib/i18n-navigation'
 
 export function LangToggle() {
   const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
+  const { data: session } = useSession()
 
   async function toggle() {
     const newLocale = locale === 'ar' ? 'en' : 'ar'
 
-    fetch('/api/auth/language', {
-      method: 'PATCH',
-      body: JSON.stringify({ lang: newLocale }),
-      headers: { 'Content-Type': 'application/json' },
-    })
+    if (session?.user) {
+      fetch('/api/auth/language', {
+        method: 'PATCH',
+        body: JSON.stringify({ lang: newLocale }),
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
 
     router.replace(pathname, { locale: newLocale })
   }

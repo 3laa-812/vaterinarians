@@ -2,14 +2,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { AnimalListItem, AnimalProfile } from '@/types'
 import type { AnimalInput } from '@/lib/validations/animal.schema'
 
-export function useAnimals() {
-  return useQuery<AnimalListItem[]>({
-    queryKey: ['animals'],
+type AnimalsResponse = {
+  animals: AnimalListItem[]
+  total: number
+  page: number
+  limit: number
+}
+
+export function useAnimals(page = 1, limit = 20) {
+  return useQuery<AnimalsResponse>({
+    queryKey: ['animals', page, limit],
     queryFn: async () => {
-      const res = await fetch('/api/animals')
+      const res = await fetch(`/api/animals?page=${page}&limit=${limit}`)
       const json = await res.json()
       if (!res.ok) throw new Error(json.error?.en ?? 'Failed to fetch animals')
-      return json.data.animals as AnimalListItem[]
+      return json.data as AnimalsResponse
     },
     staleTime: 1000 * 60 * 5,
   })

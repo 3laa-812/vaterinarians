@@ -15,6 +15,7 @@ export function useAppointments(date?: string, doctorId?: string) {
       if (!res.ok) throw new Error(json.error?.en ?? 'Failed to fetch appointments')
       return json.data.appointments as AppointmentWithDetails[]
     },
+    staleTime: 1000 * 60 * 5,
   })
 }
 

@@ -1,18 +1,15 @@
-// Login page — email + password form, Arabic/English error messages
-// Used by: doctors, clinic admins, super admin
-
 'use client'
 
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useTranslations, useLocale } from 'next-intl'
-import { PawPrint } from 'lucide-react'
+import { useRouter } from '@/lib/i18n-navigation'
+import { useTranslations } from 'next-intl'
+import { Logo } from '@/components/brand/Logo'
 import { LangToggle } from '@/components/shared/LangToggle'
+import { Button } from '@/components/shared/Button'
 
 export default function LoginPage() {
   const t = useTranslations('auth')
-  const locale = useLocale()
   const router = useRouter()
 
   const [email, setEmail] = useState('')
@@ -38,28 +35,24 @@ export default function LoginPage() {
       return
     }
 
-    router.push(`/${locale}/home`)
+    router.push('/home')
     router.refresh()
   }
 
   return (
     <div className="w-full max-w-sm">
-      {/* Lang toggle */}
       <div className="flex justify-end mb-6">
         <LangToggle />
       </div>
 
-      {/* Card */}
       <div className="glass rounded-2xl p-8 shadow-medical">
-        {/* Logo / Title */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
-            <PawPrint size={32} className="text-primary" />
+          <div className="flex justify-center mb-4">
+            <Logo size={56} />
           </div>
           <h1 className="text-2xl font-bold text-on-surface">{t('welcome')}</h1>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
@@ -99,7 +92,6 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Error message */}
           {error && (
             <p
               role="alert"
@@ -109,21 +101,15 @@ export default function LoginPage() {
             </p>
           )}
 
-          <button
+          <Button
             id="login-button"
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-primary text-on-primary font-semibold py-3 mt-2 hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            loading={loading}
+            className="w-full mt-2 active:scale-[0.98]"
           >
-            {loading ? (
-              <span className="inline-flex items-center gap-2">
-                <span className="w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" />
-                {t('loginButton')}
-              </span>
-            ) : (
-              t('loginButton')
-            )}
-          </button>
+            {t('loginButton')}
+          </Button>
         </form>
       </div>
     </div>

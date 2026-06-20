@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { ownerSchema, type OwnerInput } from '@/lib/validations/owner.schema'
 import { ZodError } from 'zod'
+import { Button } from '@/components/shared/Button'
 
 interface OwnerFormProps {
   initialData?: Partial<OwnerInput>
@@ -140,28 +141,15 @@ export function OwnerForm({ initialData, onSubmit, onCancel, isLoading = false }
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-3 border-t border-outline/10 pt-6">
+      <div className="flex items-center justify-end gap-3 border-t border-outline-variant pt-6">
         {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={isLoading}
-            className="px-5 py-2.5 rounded-xl border border-outline/20 text-sm font-medium text-primary hover:bg-outline/5 transition-all duration-200"
-          >
+          <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading}>
             {tForm('back')}
-          </button>
+          </Button>
         )}
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-sm font-medium text-white shadow-sm transition-all duration-200 flex items-center justify-center min-w-[100px]"
-        >
-          {isLoading ? (
-            <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-          ) : (
-            tForm('save')
-          )}
-        </button>
+        <Button type="submit" loading={isLoading} className="min-w-[100px]">
+          {tForm('save')}
+        </Button>
       </div>
     </form>
   )

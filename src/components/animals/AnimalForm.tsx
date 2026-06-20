@@ -7,6 +7,7 @@ import { useOwners, useCreateOwner } from '@/hooks/useOwners'
 import { ZodError } from 'zod'
 import { useSession } from 'next-auth/react'
 import { useEffect } from 'react'
+import { Button } from '@/components/shared/Button'
 
 interface AnimalFormProps {
   initialData?: Partial<AnimalInput> & { owner?: { id: string; name: string } }
@@ -311,24 +312,19 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline/10">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant">
             {onCancel && (
-              <button
-                type="button"
-                onClick={onCancel}
-                className="px-5 py-2.5 rounded-xl border border-outline/20 text-sm font-medium text-primary hover:bg-outline/5 transition-all duration-200"
-              >
+              <Button type="button" variant="secondary" onClick={onCancel}>
                 {t('back')}
-              </button>
+              </Button>
             )}
-            <button
+            <Button
               type="button"
               onClick={handleNextStep}
-              disabled={createOwnerMutation.isPending}
-              className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-sm font-medium text-white shadow-sm transition-all duration-200"
+              loading={createOwnerMutation.isPending}
             >
               {createOwnerMutation.isPending ? 'Saving Owner...' : t('next')}
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -485,25 +481,13 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
             )}
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-outline/10">
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="px-5 py-2.5 rounded-xl border border-outline/20 text-sm font-medium text-primary hover:bg-outline/5 transition-all duration-200"
-            >
+          <div className="flex items-center justify-end gap-3 pt-6 border-t border-outline-variant">
+            <Button type="button" variant="secondary" onClick={() => setStep(1)}>
               {t('back')}
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-sm font-medium text-white shadow-sm transition-all duration-200 flex items-center justify-center min-w-[100px]"
-            >
-              {isLoading ? (
-                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-              ) : (
-                t('save')
-              )}
-            </button>
+            </Button>
+            <Button type="submit" loading={isLoading} className="min-w-[100px]">
+              {t('save')}
+            </Button>
           </div>
         </form>
       )}

@@ -123,15 +123,20 @@ export async function POST(req: Request) {
     const parsed = appointmentSchema.parse(body)
 
     // Verify animal belongs to clinic
+    let fee = parsed.fee ?? 0
     if (session.user.role !== 'SUPER_ADMIN') {
       const animal = await prisma.animal.findFirst({
         where: { id: parsed.animalId, clinicId: session.user.clinicId! },
+        include: { clinic: { select: { defaultSessionFee: true } } },
       })
       if (!animal) {
         return NextResponse.json(
           { error: { ar: 'الحيوان غير موجود في عيادتك', en: 'Animal not found in your clinic' } },
-          { status: 400 }
+          { status: 400 },
         )
+      }
+      if (fee === 0) {
+        fee = animal.clinic.defaultSessionFee
       }
     }
 
@@ -142,10 +147,11 @@ export async function POST(req: Request) {
         doctorId: parsed.doctorId,
         notes: parsed.notes || null,
         status: parsed.status,
+        fee,
       },
     })
 
-    return NextResponse.json(appointment)
+    return NextResponse.json({ data: { appointment } })
   } catch (error: any) {
     return NextResponse.json(
       { error: { ar: 'فشل في حجز الموعد', en: 'Failed to create appointment', detail: error.message } },

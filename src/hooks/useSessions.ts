@@ -1,5 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { SessionInput } from '@/lib/validations/session.schema'
+import type { Appointment } from '@prisma/client'
+
+type SaveSessionResult = {
+  session: unknown
+  payment: unknown
+  nextAppointment: Appointment | null
+}
 
 export function useSession(appointmentId: string) {
   return useQuery({
@@ -25,7 +32,7 @@ export function useSaveSession(appointmentId: string) {
       })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error?.en ?? 'Failed to save session')
-      return json.data?.session ?? json
+      return json.data as SaveSessionResult
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sessions', appointmentId] })

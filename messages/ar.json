@@ -1,4 +1,13 @@
 {
+  "brand": {
+    "prefix": "فيت",
+    "accent": "كير"
+  },
+  "sidebar": {
+    "home": "الرئيسية",
+    "collapse": "طي القائمة الجانبية",
+    "expand": "توسيع القائمة الجانبية"
+  },
   "nav": {
     "home": "اليوم",
     "animals": "المرضى",
@@ -29,6 +38,12 @@
     "addNew": "إضافة مريض جديد",
     "search": "ابحث بالاسم أو اسم المرافق",
     "noAnimals": "لا يوجد مرضى مسجلون",
+    "pageTitle": "المرضى (الحيوانات)",
+    "pageSubtitle": "إدارة وسجلات ملفات الحيوانات الأليفة",
+    "addNewSubtitle": "تسجيل حيوان أليف ومرافق جديد",
+    "loadFailed": "فشل تحميل البيانات",
+    "notFound": "المريض غير موجود",
+    "backToList": "الرجوع إلى المرضى",
     "owner": "المرافق",
     "call": "اتصال",
     "male": "ذكر",
@@ -36,7 +51,17 @@
     "viewDetails": "عرض التفاصيل",
     "kg": "كجم",
     "years": "سنة",
-    "months": "شهر"
+    "months": "شهر",
+    "totalOwed": "إجمالي المستحق",
+    "weightChange": "تغير الوزن",
+    "delete": "حذف",
+    "deleteConfirm": "هل أنت متأكد من حذف ملف هذا الحيوان؟",
+    "noMedicalHistory": "لا يوجد سجل طبي مسجل.",
+    "visitsHistory": "سجل الزيارات والمواعيد",
+    "noAppointmentsYet": "لا توجد زيارات سابقة",
+    "doctor": "الطبيب",
+    "viewSession": "عرض الجلسة",
+    "noWeightRecords": "لا يوجد سجلات وزن"
   },
   "session": {
     "weight": "الوزن",
@@ -54,7 +79,16 @@
     "weightDelta": "الفرق عن الجلسة السابقة",
     "chooseDate": "اختر تاريخ",
     "chooseTime": "اختر وقت",
-    "companion": "المرافق"
+    "companion": "المرافق",
+    "clinicalDetails": "البيانات السريرية",
+    "billingPayment": "الرسوم والدفع",
+    "clinicalNotesPlaceholder": "اكتب ملاحظات الفحص والتشخيص...",
+    "treatmentPlanPlaceholder": "اكتب العلاج والأدوية وخطة التمرين والجرعات...",
+    "paymentNotesPlaceholder": "كاش، فودافون كاش، دفع لاحق...",
+    "currency": "جنيه",
+    "nextVisitDate": "تاريخ الموعد القادم",
+    "nextVisitTime": "وقت الموعد القادم",
+    "nextVisitScheduled": "تم تحديد الموعد القادم: {date}"
   },
   "payment": {
     "fee": "رسوم الكشف",
@@ -69,6 +103,8 @@
     }
   },
   "appointment": {
+    "pageTitle": "المواعيد والجدول",
+    "pageSubtitle": "عرض وحجز مواعيد زيارات المرضى",
     "new": "موعد جديد",
     "date": "التاريخ",
     "time": "الوقت",
@@ -77,6 +113,8 @@
     "notes": "ملاحظات",
     "book": "حجز الموعد",
     "cancel": "إلغاء الموعد",
+    "selectAnimal": "اختر الحيوان",
+    "selectPatientPlaceholder": "-- اختر مريضاً --",
     "status": {
       "SCHEDULED": "مجدول",
       "COMPLETED": "اكتمل",
@@ -93,6 +131,9 @@
     "animals": "الحيوانات المسجلة",
     "search": "ابحث باسم المرافق أو الهاتف",
     "noOwners": "لا يوجد مرافقون مسجلون",
+    "noAnimals": "لا توجد حيوانات مسجلة لهذا المرافق",
+    "pageTitle": "المرافقون (العملاء)",
+    "pageSubtitle": "إدارة بيانات وأرقام هواتف مربي الحيوانات الأليفة",
     "addNew": "إضافة مرافق جديد",
     "existingOwner": "مرافق موجود",
     "newOwner": "مرافق جديد",
@@ -128,6 +169,12 @@
     "welcome": "أهلاً بك في نظام العيادة البيطرية"
   },
   "admin": {
+    "pageTitle": "لوحة تحكم المسؤول",
+    "pageSubtitle": "إدارة العيادات والأطباء وصلاحيات النظام",
+    "accessDenied": "غير مصرح بالدخول",
+    "accessDeniedDesc": "هذه الصفحة مخصصة لمدراء النظام فقط.",
+    "noClinics": "لا توجد عيادات مسجلة.",
+    "noDoctors": "لا يوجد أطباء مسجلين.",
     "clinics": "العيادات",
     "doctors": "الأطباء",
     "addClinic": "إضافة عيادة",

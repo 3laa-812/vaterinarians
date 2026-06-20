@@ -8,6 +8,7 @@ import { usePathname } from '@/lib/i18n-navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui.store'
 import { useSession } from 'next-auth/react'
+import { Logo } from '@/components/brand/Logo'
 import {
   Home,
   PawPrint,
@@ -20,6 +21,7 @@ import {
 
 export function Sidebar() {
   const t = useTranslations('nav')
+  const tSidebar = useTranslations('sidebar')
   const locale = useLocale()
   const pathname = usePathname()
   const { sidebarExpanded, toggleSidebar } = useUIStore()
@@ -58,14 +60,37 @@ export function Sidebar() {
         sidebarExpanded ? 'w-60' : 'w-[72px]'
       }`}
     >
-      <button
-        id="sidebar-toggle"
-        onClick={toggleSidebar}
-        aria-label="Toggle sidebar"
-        className="h-16 flex items-center justify-center hover:bg-surface-container transition-colors text-on-surface-variant"
+      <div
+        className={`h-16 flex items-center border-b border-outline-variant ${
+          sidebarExpanded ? 'px-4 justify-between' : 'justify-center'
+        }`}
       >
-        <ToggleIcon size={18} />
-      </button>
+        <Link href={`/${locale}/home`} aria-label={tSidebar('home')}>
+          <Logo size={32} showWordmark={sidebarExpanded} />
+        </Link>
+
+        {sidebarExpanded && (
+          <button
+            id="sidebar-toggle"
+            onClick={toggleSidebar}
+            aria-label={tSidebar('collapse')}
+            className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded-lg hover:bg-surface-container"
+          >
+            <ToggleIcon size={18} />
+          </button>
+        )}
+      </div>
+
+      {!sidebarExpanded && (
+        <button
+          id="sidebar-toggle-collapsed"
+          onClick={toggleSidebar}
+          aria-label={tSidebar('expand')}
+          className="h-10 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
+        >
+          <ToggleIcon size={16} />
+        </button>
+      )}
 
       <nav className="flex-1 py-2">
         {navItems.map(({ href, Icon, label, id }) => (
@@ -73,6 +98,7 @@ export function Sidebar() {
             key={id}
             id={id}
             href={href}
+            title={!sidebarExpanded ? label : undefined}
             className={`flex items-center gap-3 px-4 py-3 mx-2 rounded-xl transition-all ${
               isActive(href)
                 ? 'bg-primary/10 text-primary'
@@ -86,6 +112,14 @@ export function Sidebar() {
           </Link>
         ))}
       </nav>
+
+      {sidebarExpanded && session?.user && (
+        <div className="border-t border-outline-variant p-4">
+          <p className="text-xs text-on-surface-variant truncate">
+            {session.user.name}
+          </p>
+        </div>
+      )}
     </aside>
   )
 }

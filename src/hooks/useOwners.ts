@@ -21,6 +21,7 @@ export function useOwners(search: string = '') {
       if (!res.ok) throw new Error(json.error?.en ?? 'Failed to fetch owners')
       return json.data.owners as OwnerListItem[]
     },
+    staleTime: 1000 * 60 * 5,
   })
 }
 

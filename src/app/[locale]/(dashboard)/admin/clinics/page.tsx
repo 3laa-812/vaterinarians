@@ -6,6 +6,9 @@ import { useLocale, useTranslations } from 'next-intl'
 import { useAdmin } from '@/hooks/useAdmin'
 import { ZodError } from 'zod'
 import { clinicCreateSchema, doctorCreateSchema } from '@/lib/validations/admin.schema'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { Card } from '@/components/shared/Card'
+import { Button } from '@/components/shared/Button'
 
 export default function AdminPage() {
   const { data: session } = useSession()
@@ -41,12 +44,8 @@ export default function AdminPage() {
     return (
       <div className="p-6 text-center max-w-md mx-auto py-20">
         <span className="text-4xl block mb-4">🔒</span>
-        <h1 className="text-xl font-bold text-primary">
-          {locale === 'ar' ? 'غير مصرح بالدخول' : 'Access Denied'}
-        </h1>
-        <p className="text-secondary mt-2">
-          {locale === 'ar' ? 'هذه الصفحة مخصصة لمدراء النظام فقط.' : 'This page is only accessible to system administrators.'}
-        </p>
+        <h1 className="text-xl font-bold text-on-surface">{t('accessDenied')}</h1>
+        <p className="text-on-surface-variant mt-2">{t('accessDeniedDesc')}</p>
       </div>
     )
   }
@@ -98,54 +97,45 @@ export default function AdminPage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-primary">
-            {locale === 'ar' ? 'لوحة تحكم المسؤول' : 'Admin Command Center'}
-          </h1>
-          <p className="text-secondary text-sm mt-1">
-            {locale === 'ar' ? 'إدارة العيادات والأطباء وصلاحيات النظام' : 'Manage clinics, medical staff, and access rights'}
-          </p>
-        </div>
-
-        {/* Tab triggers */}
-        <div className="flex bg-outline/5 p-1 rounded-xl self-start sm:self-auto">
-          {isSuperAdmin && (
+      <PageHeader
+        title={t('pageTitle')}
+        subtitle={t('pageSubtitle')}
+        action={
+          <div className="flex bg-outline/5 p-1 rounded-xl self-start sm:self-auto">
+            {isSuperAdmin && (
+              <button
+                onClick={() => setActiveTab('clinics')}
+                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+                  activeTab === 'clinics'
+                    ? 'bg-surface-container text-primary shadow-sm'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                {t('clinics')}
+              </button>
+            )}
             <button
-              onClick={() => setActiveTab('clinics')}
+              onClick={() => setActiveTab('doctors')}
               className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
-                activeTab === 'clinics'
+                activeTab === 'doctors' || !isSuperAdmin
                   ? 'bg-surface-container text-primary shadow-sm'
                   : 'text-on-surface-variant hover:text-on-surface'
               }`}
             >
-              {t('clinics')}
+              {t('doctors')}
             </button>
-          )}
-          <button
-            onClick={() => setActiveTab('doctors')}
-            className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
-              activeTab === 'doctors' || !isSuperAdmin
-                ? 'bg-surface-container text-primary shadow-sm'
-                : 'text-on-surface-variant hover:text-on-surface'
-            }`}
-          >
-            {t('doctors')}
-          </button>
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {/* CLINICTAB */}
       {activeTab === 'clinics' && isSuperAdmin && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-primary">{t('clinics')}</h2>
-            <button
-              onClick={() => setShowClinicModal(true)}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold transition-colors"
-            >
+            <Button onClick={() => setShowClinicModal(true)} className="px-4 py-2 text-sm">
               + {t('addClinic')}
-            </button>
+            </Button>
           </div>
 
           {loadingClinics ? (
@@ -155,11 +145,11 @@ export default function AdminPage() {
               <div className="h-32 bg-outline/10 rounded-2xl" />
             </div>
           ) : clinics.length === 0 ? (
-            <div className="text-center py-12 text-secondary">{locale === 'ar' ? 'لا توجد عيادات مسجلة.' : 'No clinics registered.'}</div>
+            <div className="text-center py-12 text-on-surface-variant">{t('noClinics')}</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {clinics.map((clinic: any) => (
-                <div key={clinic.id} className="bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm">
+                <Card key={clinic.id}>
                   <h3 className="text-lg font-bold text-primary">
                     {locale === 'ar' && clinic.nameAr ? clinic.nameAr : clinic.name}
                   </h3>
@@ -170,7 +160,7 @@ export default function AdminPage() {
                     <p>📍 {clinic.address || '—'}</p>
                     <p>📞 {clinic.phone || '—'}</p>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           )}
@@ -182,12 +172,9 @@ export default function AdminPage() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-primary">{t('doctors')}</h2>
-            <button
-              onClick={() => setShowDoctorModal(true)}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold transition-colors"
-            >
+            <Button onClick={() => setShowDoctorModal(true)} className="px-4 py-2 text-sm">
               + {t('addDoctor')}
-            </button>
+            </Button>
           </div>
 
           {loadingDoctors ? (
@@ -197,11 +184,11 @@ export default function AdminPage() {
               <div className="h-32 bg-outline/10 rounded-2xl" />
             </div>
           ) : doctors.length === 0 ? (
-            <div className="text-center py-12 text-secondary">{locale === 'ar' ? 'لا يوجد أطباء مسجلين.' : 'No doctors/staff registered.'}</div>
+            <div className="text-center py-12 text-on-surface-variant">{t('noDoctors')}</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {doctors.map((doc: any) => (
-                <div key={doc.id} className="bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                <Card key={doc.id} className="flex flex-col justify-between">
                   <div>
                     <div className="flex items-start justify-between gap-2">
                       <h3 className="text-lg font-bold text-primary">{doc.name}</h3>
@@ -219,7 +206,7 @@ export default function AdminPage() {
                       )}
                     </div>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           )}
@@ -274,21 +261,13 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline/10">
-                <button
-                  type="button"
-                  onClick={() => setShowClinicModal(false)}
-                  className="px-4 py-2 border border-outline/20 rounded-xl text-sm font-medium hover:bg-outline/5"
-                >
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant">
+                <Button type="button" variant="secondary" onClick={() => setShowClinicModal(false)}>
                   {locale === 'ar' ? 'إلغاء' : 'Cancel'}
-                </button>
-                <button
-                  type="submit"
-                  disabled={createClinicMutation.isPending}
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold"
-                >
-                  {createClinicMutation.isPending ? '...' : tForm('save')}
-                </button>
+                </Button>
+                <Button type="submit" loading={createClinicMutation.isPending} className="px-4 py-2 text-sm">
+                  {tForm('save')}
+                </Button>
               </div>
             </form>
           </div>
@@ -386,21 +365,13 @@ export default function AdminPage() {
                 </select>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline/10">
-                <button
-                  type="button"
-                  onClick={() => setShowDoctorModal(false)}
-                  className="px-4 py-2 border border-outline/20 rounded-xl text-sm font-medium hover:bg-outline/5"
-                >
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant">
+                <Button type="button" variant="secondary" onClick={() => setShowDoctorModal(false)}>
                   {locale === 'ar' ? 'إلغاء' : 'Cancel'}
-                </button>
-                <button
-                  type="submit"
-                  disabled={createDoctorMutation.isPending}
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold"
-                >
-                  {createDoctorMutation.isPending ? '...' : tForm('save')}
-                </button>
+                </Button>
+                <Button type="submit" loading={createDoctorMutation.isPending} className="px-4 py-2 text-sm">
+                  {tForm('save')}
+                </Button>
               </div>
             </form>
           </div>

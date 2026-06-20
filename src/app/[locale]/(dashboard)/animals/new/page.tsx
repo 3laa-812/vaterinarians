@@ -1,15 +1,15 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/lib/i18n-navigation'
 import { useTranslations } from 'next-intl'
-import { useLocale } from 'next-intl'
 import { AnimalForm } from '@/components/animals/AnimalForm'
 import { useCreateAnimal } from '@/hooks/useAnimals'
 import type { AnimalInput } from '@/lib/validations/animal.schema'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { Card } from '@/components/shared/Card'
 
 export default function NewAnimalPage() {
   const router = useRouter()
-  const locale = useLocale()
   const t = useTranslations('animal')
 
   const createAnimalMutation = useCreateAnimal()
@@ -17,34 +17,27 @@ export default function NewAnimalPage() {
   const handleSubmit = async (data: AnimalInput) => {
     try {
       const res = await createAnimalMutation.mutateAsync(data)
-      router.push(`/${locale}/animals/${res.id}`)
+      router.push(`/animals/${res.id}`)
     } catch (err) {
       console.error('Failed to create animal', err)
     }
   }
 
   const handleCancel = () => {
-    router.push(`/${locale}/animals`)
+    router.push('/animals')
   }
 
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-primary">
-          {t('addNew')}
-        </h1>
-        <p className="text-sm text-secondary mt-1">
-          {locale === 'ar' ? 'تسجيل حيوان أليف ومرافق جديد' : 'Register a new patient and owner in the system'}
-        </p>
-      </div>
+      <PageHeader title={t('addNew')} subtitle={t('addNewSubtitle')} />
 
-      <div className="bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm">
+      <Card>
         <AnimalForm
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isLoading={createAnimalMutation.isPending}
         />
-      </div>
+      </Card>
     </div>
   )
 }

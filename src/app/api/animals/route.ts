@@ -3,7 +3,7 @@ import { prisma } from '@/lib/db'
 import { requireAuth, clinicScope } from '@/lib/auth'
 import { animalSchema } from '@/lib/validations/animal.schema'
 
-export async function GET() {
+export async function GET(req: Request) {
   const authCheck = await requireAuth()
   if (authCheck.error) {
     return NextResponse.json({ error: authCheck.error }, { status: authCheck.status })
@@ -12,6 +12,10 @@ export async function GET() {
 
   try {
     const scope = clinicScope(session)
+    const { searchParams } = new URL(req.url)
+    const page = Number(searchParams.get('page') ?? '1')
+    const limit = Number(searchParams.get('limit') ?? '20')
+
     const animals = await prisma.animal.findMany({
       where: {
         ...scope,
@@ -30,44 +34,64 @@ export async function GET() {
           },
           take: 1,
         },
-        appointments: {
-          orderBy: {
-            scheduledAt: 'desc',
-          },
-        },
       },
       orderBy: {
         name: 'asc',
       },
+      skip: (page - 1) * limit,
+      take: limit,
     })
 
-    // Map to AnimalListItem
-    const mapped = animals.map((a) => {
-      const lastVisit = a.appointments.find((ap) => ap.status === 'COMPLETED')?.scheduledAt ?? null
-      const nextAppointment = a.appointments.find((ap) => ap.status === 'SCHEDULED' && ap.scheduledAt > new Date())?.scheduledAt ?? null
+    const animalIds = animals.map((a) => a.id)
 
-      return {
-        id: a.id,
-        name: a.name,
-        species: a.species,
-        breed: a.breed,
-        gender: a.gender,
-        owner: {
-          id: a.owner.id,
-          name: a.owner.name,
-          phone: a.owner.phone,
-        },
-        latestWeight: a.weightRecords[0]?.weight ?? null,
-        lastVisit: lastVisit ? lastVisit.toISOString() : null,
-        nextAppointment: nextAppointment ? nextAppointment.toISOString() : null,
-      }
-    })
+    const [lastVisits, nextAppointments, total] = await Promise.all([
+      animalIds.length > 0
+        ? prisma.appointment.groupBy({
+            by: ['animalId'],
+            where: { animalId: { in: animalIds }, status: 'COMPLETED' },
+            _max: { scheduledAt: true },
+          })
+        : Promise.resolve([]),
+      animalIds.length > 0
+        ? prisma.appointment.findMany({
+            where: {
+              animalId: { in: animalIds },
+              status: 'SCHEDULED',
+              scheduledAt: { gt: new Date() },
+            },
+            orderBy: { scheduledAt: 'asc' },
+            distinct: ['animalId'],
+            select: { animalId: true, scheduledAt: true },
+          })
+        : Promise.resolve([]),
+      prisma.animal.count({ where: { ...scope } }),
+    ])
 
-    return NextResponse.json({ data: { animals: mapped } })
-  } catch (error: any) {
+    const lastVisitMap = new Map(lastVisits.map((v) => [v.animalId, v._max.scheduledAt]))
+    const nextApptMap = new Map(nextAppointments.map((a) => [a.animalId, a.scheduledAt]))
+
+    const mapped = animals.map((a) => ({
+      id: a.id,
+      name: a.name,
+      species: a.species,
+      breed: a.breed,
+      gender: a.gender,
+      owner: {
+        id: a.owner.id,
+        name: a.owner.name,
+        phone: a.owner.phone,
+      },
+      latestWeight: a.weightRecords[0]?.weight ?? null,
+      lastVisit: lastVisitMap.get(a.id)?.toISOString() ?? null,
+      nextAppointment: nextApptMap.get(a.id)?.toISOString() ?? null,
+    }))
+
+    return NextResponse.json({ data: { animals: mapped, total, page, limit } })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
-      { error: { ar: 'خطأ في جلب بيانات الحيوانات', en: 'Failed to fetch animals', detail: error.message } },
-      { status: 500 }
+      { error: { ar: 'خطأ في جلب بيانات الحيوانات', en: 'Failed to fetch animals', detail: message } },
+      { status: 500 },
     )
   }
 }
@@ -79,11 +103,10 @@ export async function POST(req: Request) {
   }
   const { session } = authCheck
 
-  // Verify the user belongs to a clinic
   if (!session.user.clinicId && session.user.role !== 'SUPER_ADMIN') {
     return NextResponse.json(
       { error: { ar: 'المستخدم غير مرتبط بعيادة', en: 'User not associated with a clinic' } },
-      { status: 400 }
+      { status: 400 },
     )
   }
 
@@ -102,15 +125,16 @@ export async function POST(req: Request) {
         medicalHistory: parsed.medicalHistory || null,
         notes: parsed.notes || null,
         ownerId: parsed.ownerId,
-        clinicId: session.user.clinicId || body.clinicId, // Fallback for super admin
+        clinicId: session.user.clinicId || body.clinicId,
       },
     })
 
-    return NextResponse.json(animal)
-  } catch (error: any) {
+    return NextResponse.json({ data: { animal } })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
-      { error: { ar: 'فشل في حفظ بيانات الحيوان', en: 'Failed to create animal', detail: error.message } },
-      { status: 400 }
+      { error: { ar: 'فشل في حفظ بيانات الحيوان', en: 'Failed to create animal', detail: message } },
+      { status: 400 },
     )
   }
 }

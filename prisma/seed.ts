@@ -34,6 +34,7 @@ async function main() {
       nameAr: 'عيادة فيت كير البيطرية',
       address: 'Cairo, Egypt',
       phone: '0100000000',
+      defaultSessionFee: 300,
     },
   })
 

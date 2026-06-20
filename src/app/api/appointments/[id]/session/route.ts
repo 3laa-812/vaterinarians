@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { requireAuth, clinicScope } from '@/lib/auth'
 import { sessionSchema } from '@/lib/validations/session.schema'
+import { calculatePaymentStatus } from '@/lib/payment'
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const authCheck = await requireAuth()
   if (authCheck.error) {
@@ -16,7 +17,6 @@ export async function GET(
 
   try {
     const scope = clinicScope(session)
-    // Find appointment, ensuring it belongs to user's clinic
     const appointment = await prisma.appointment.findFirst({
       where: {
         id,
@@ -41,22 +41,23 @@ export async function GET(
     if (!appointment) {
       return NextResponse.json(
         { error: { ar: 'الموعد غير موجود', en: 'Appointment not found' } },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
     return NextResponse.json({ data: { appointment } })
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
-      { error: { ar: 'خطأ في جلب بيانات الجلسة', en: 'Failed to fetch session', detail: error.message } },
-      { status: 500 }
+      { error: { ar: 'خطأ في جلب بيانات الجلسة', en: 'Failed to fetch session', detail: message } },
+      { status: 500 },
     )
   }
 }
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const authCheck = await requireAuth()
   if (authCheck.error) {
@@ -70,7 +71,6 @@ export async function POST(
     const validated = sessionSchema.parse(body)
 
     const scope = clinicScope(userSession)
-    // Find appointment, ensuring it belongs to user's clinic
     const appointment = await prisma.appointment.findFirst({
       where: {
         id,
@@ -83,23 +83,14 @@ export async function POST(
     if (!appointment) {
       return NextResponse.json(
         { error: { ar: 'الموعد غير موجود', en: 'Appointment not found' } },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
-    // Determine payment status
-    let paymentStatus: 'PAID' | 'PARTIAL' | 'UNPAID' = 'UNPAID'
-    if (validated.paidAmount >= validated.totalAmount && validated.totalAmount > 0) {
-      paymentStatus = 'PAID'
-    } else if (validated.paidAmount > 0) {
-      paymentStatus = 'PARTIAL'
-    }
-
+    const paymentStatus = calculatePaymentStatus(validated.totalAmount, validated.paidAmount)
     const nextVisitDate = validated.nextVisitDate ? new Date(validated.nextVisitDate) : null
 
-    // Execute session creation/update inside a transaction
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Create or Update Session
       const examSession = await tx.session.upsert({
         where: { appointmentId: id },
         create: {
@@ -117,7 +108,6 @@ export async function POST(
         },
       })
 
-      // 2. Create or Update Payment
       const payment = await tx.payment.upsert({
         where: { appointmentId: id },
         create: {
@@ -135,7 +125,6 @@ export async function POST(
         },
       })
 
-      // 3. Create weight record if weight is supplied
       if (validated.weight) {
         await tx.weightRecord.create({
           data: {
@@ -145,20 +134,52 @@ export async function POST(
         })
       }
 
-      // 4. Update appointment status to COMPLETED
       await tx.appointment.update({
         where: { id },
         data: { status: 'COMPLETED' },
       })
 
-      return { session: examSession, payment }
+      let nextAppointment = null
+
+      if (nextVisitDate) {
+        const conflict = await tx.appointment.findFirst({
+          where: {
+            animalId: appointment.animalId,
+            scheduledAt: nextVisitDate,
+            status: 'SCHEDULED',
+          },
+        })
+
+        if (conflict) {
+          nextAppointment = conflict
+        } else {
+          nextAppointment = await tx.appointment.create({
+            data: {
+              animalId: appointment.animalId,
+              doctorId: appointment.doctorId,
+              scheduledAt: nextVisitDate,
+              status: 'SCHEDULED',
+              fee: validated.totalAmount,
+            },
+          })
+        }
+      }
+
+      return { session: examSession, payment, nextAppointment }
     })
 
-    return NextResponse.json(result)
-  } catch (error: any) {
+    return NextResponse.json({
+      data: {
+        session: result.session,
+        payment: result.payment,
+        nextAppointment: result.nextAppointment,
+      },
+    })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
-      { error: { ar: 'فشل حفظ الجلسة والدفع', en: 'Failed to save session and payment', detail: error.message } },
-      { status: 500 }
+      { error: { ar: 'فشل حفظ الجلسة والدفع', en: 'Failed to save session and payment', detail: message } },
+      { status: 500 },
     )
   }
 }

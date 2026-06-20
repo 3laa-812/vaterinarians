@@ -1,4 +1,13 @@
 {
+  "brand": {
+    "prefix": "Vet",
+    "accent": "Care"
+  },
+  "sidebar": {
+    "home": "Home",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
+  },
   "nav": {
     "home": "Today",
     "animals": "Animals",
@@ -29,6 +38,12 @@
     "addNew": "Add New Patient",
     "search": "Search by name or owner",
     "noAnimals": "No animals registered",
+    "pageTitle": "Patients (Animals)",
+    "pageSubtitle": "Manage and view pet patient records",
+    "addNewSubtitle": "Register a new patient and owner in the system",
+    "loadFailed": "Failed to load patients",
+    "notFound": "Patient not found",
+    "backToList": "Back to Patients",
     "owner": "Owner",
     "call": "Call",
     "male": "Male",
@@ -36,7 +51,17 @@
     "viewDetails": "View Details",
     "kg": "kg",
     "years": "yr",
-    "months": "mo"
+    "months": "mo",
+    "totalOwed": "Total Owed",
+    "weightChange": "Weight Change",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this animal?",
+    "noMedicalHistory": "No medical history recorded.",
+    "visitsHistory": "Visits & Appointments History",
+    "noAppointmentsYet": "No appointments yet",
+    "doctor": "Doctor",
+    "viewSession": "View Session",
+    "noWeightRecords": "No weight records"
   },
   "session": {
     "weight": "Weight",
@@ -54,7 +79,16 @@
     "weightDelta": "Change from last session",
     "chooseDate": "Choose date",
     "chooseTime": "Choose time",
-    "companion": "Companion"
+    "companion": "Companion",
+    "clinicalDetails": "Clinical Details",
+    "billingPayment": "Billing & Payment",
+    "clinicalNotesPlaceholder": "Write clinical observations and diagnosis...",
+    "treatmentPlanPlaceholder": "Specify medications, dosages, exercises...",
+    "paymentNotesPlaceholder": "Cash, Vodafone Cash, unpaid...",
+    "currency": "EGP",
+    "nextVisitDate": "Next Visit Date",
+    "nextVisitTime": "Next Visit Time",
+    "nextVisitScheduled": "Next visit scheduled: {date}"
   },
   "payment": {
     "fee": "Session Fee",
@@ -69,6 +103,8 @@
     }
   },
   "appointment": {
+    "pageTitle": "Appointments & Calendar",
+    "pageSubtitle": "View, manage and book patient visits",
     "new": "New Appointment",
     "date": "Date",
     "time": "Time",
@@ -77,6 +113,8 @@
     "notes": "Notes",
     "book": "Book Appointment",
     "cancel": "Cancel Appointment",
+    "selectAnimal": "Select Animal",
+    "selectPatientPlaceholder": "-- Choose Patient --",
     "status": {
       "SCHEDULED": "Scheduled",
       "COMPLETED": "Completed",
@@ -93,6 +131,9 @@
     "animals": "Registered Animals",
     "search": "Search by owner name or phone",
     "noOwners": "No owners registered",
+    "noAnimals": "No animals registered for this owner",
+    "pageTitle": "Owners (Clients)",
+    "pageSubtitle": "Manage pet owners and their contact details",
     "addNew": "Add New Owner",
     "existingOwner": "Existing Owner",
     "newOwner": "New Owner",
@@ -128,6 +169,12 @@
     "welcome": "Welcome to the Vet Clinic System"
   },
   "admin": {
+    "pageTitle": "Admin Command Center",
+    "pageSubtitle": "Manage clinics, medical staff, and access rights",
+    "accessDenied": "Access Denied",
+    "accessDeniedDesc": "This page is only accessible to system administrators.",
+    "noClinics": "No clinics registered.",
+    "noDoctors": "No doctors/staff registered.",
     "clinics": "Clinics",
     "doctors": "Doctors",
     "addClinic": "Add Clinic",

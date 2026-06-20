@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { requireAuth, clinicScope } from '@/lib/auth'
+import { calculateRemaining } from '@/lib/payment'
 import { animalSchema } from '@/lib/validations/animal.schema'
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -63,7 +64,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
     const unpaidAmount = animal.appointments.reduce((sum, ap) => {
       if (ap.payment) {
-        return sum + (ap.payment.totalAmount - ap.payment.paidAmount)
+        return sum + calculateRemaining(ap.payment.totalAmount, ap.payment.paidAmount)
       }
       return sum
     }, 0)

@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useRouter } from '@/lib/i18n-navigation'
 import { useSession } from 'next-auth/react'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { Button } from '@/components/shared/Button'
 
 export default function NewDoctorPage() {
   const t = useTranslations('admin')
@@ -53,7 +55,7 @@ export default function NewDoctorPage() {
 
   return (
     <div className="p-6 max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold text-on-surface mb-6">{t('addDoctor')}</h1>
+      <PageHeader title={t('addDoctor')} />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {[
@@ -99,13 +101,9 @@ export default function NewDoctorPage() {
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-xl bg-primary text-on-primary font-semibold py-3 hover:bg-primary/90 transition-all disabled:opacity-50"
-        >
-          {loading ? '...' : t('createDoctor')}
-        </button>
+        <Button type="submit" loading={loading} className="w-full">
+          {t('createDoctor')}
+        </Button>
       </form>
     </div>
   )

@@ -1,0 +1,21 @@
+// Generates PWA icons from the brand SVG. Run once, commit the output PNGs.
+import sharp from 'sharp'
+
+const svg = `
+<svg width="512" height="512" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <rect width="40" height="40" rx="11" fill="#14B8A6"/>
+  <path d="M20 9c-1.1 0-2 .9-2 2v3.2c0 .6.4 1 1 1h2c.6 0 1-.4 1-1V11c0-1.1-.9-2-2-2z" fill="#FFFFFF"/>
+  <path d="M14.5 13.5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM25.5 13.5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" fill="#FFFFFF"/>
+  <path d="M20 17.5c-3.6 0-7 2.8-7 6.8 0 2.6 1.9 4.2 4.2 4.2.9 0 1.5-.3 2.1-.7.5-.3.9-.5 1.7-.5s1.2.2 1.7.5c.6.4 1.2.7 2.1.7 2.3 0 4.2-1.6 4.2-4.2 0-4-3.4-6.8-7-6.8z" fill="#FFFFFF"/>
+</svg>
+`.trim()
+
+const sizes = [192, 512]
+
+for (const size of sizes) {
+  await sharp(Buffer.from(svg))
+    .resize(size, size)
+    .png()
+    .toFile(`public/icons/icon-${size}.png`)
+  console.log(`✓ icon-${size}.png`)
+}

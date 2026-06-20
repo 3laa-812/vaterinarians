@@ -16,6 +16,7 @@ export default function SessionDetailPage() {
   const locale = useLocale()
   const router = useRouter()
   const t = useTranslations('session')
+  const tAnimal = useTranslations('animal')
   const tPayment = useTranslations('payment')
 
   const [isEditing, setIsEditing] = useState(false)
@@ -122,7 +123,7 @@ export default function SessionDetailPage() {
               <div>
                 <span className="text-xs text-secondary block">{t('weight')}</span>
                 <span className="text-lg font-bold text-primary mt-1 block font-mono">
-                  {sessionData?.weight ? `${sessionData.weight} ${t('kg')}` : '—'}
+                  {sessionData?.weight ? `${sessionData.weight} ${tAnimal('kg')}` : '—'}
                 </span>
               </div>
               <div>

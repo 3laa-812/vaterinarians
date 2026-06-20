@@ -1,11 +1,13 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n-navigation'
 import { useLocale } from 'next-intl'
 import type { AppointmentWithDetails } from '@/types'
 import { StatusBadge } from './StatusBadge'
 import { useUpdateAppointment } from '@/hooks/useAppointments'
+import { Card } from '@/components/shared/Card'
+import { Button } from '@/components/shared/Button'
 
 interface AppointmentCardProps {
   appointment: AppointmentWithDetails
@@ -45,51 +47,48 @@ export function AppointmentCard({ appointment, onStatusChange, className = '' }:
   }
 
   return (
-    <div className={`bg-surface border border-outline/10 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-200 ${className}`}>
+    <Card className={className}>
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
-          <span className="text-xs text-secondary font-mono bg-outline/5 px-2 py-0.5 rounded">
+          <span className="text-xs text-on-surface-variant font-mono bg-surface-container px-2 py-0.5 rounded">
             {formatTime(appointment.scheduledAt)}
           </span>
-          <h4 className="text-lg font-semibold text-primary mt-2">
-            <Link href={`/${locale}/animals/${appointment.animal.id}`} className="hover:text-teal-600 transition-colors">
+          <h4 className="text-lg font-semibold text-on-surface mt-2">
+            <Link href={`/animals/${appointment.animal.id}`} className="hover:text-primary transition-colors">
               {appointment.animal.name}
             </Link>
           </h4>
           {appointment.owner && (
-            <p className="text-xs text-secondary mt-0.5">
+            <p className="text-xs text-on-surface-variant mt-0.5">
               {appointment.owner.name} • <span className="font-mono">{appointment.owner.phone}</span>
             </p>
           )}
-
         </div>
         <StatusBadge status={appointment.status} />
       </div>
 
       {appointment.notes && (
-        <p className="text-sm text-secondary bg-outline/5 rounded-xl p-3 mb-4">
+        <p className="text-sm text-on-surface-variant bg-surface-container rounded-xl p-3 mb-4">
           {appointment.notes}
         </p>
       )}
 
-      <div className="flex flex-wrap gap-2 border-t border-outline/5 pt-4">
+      <div className="flex flex-wrap gap-2 border-t border-outline-variant pt-4">
         {appointment.status === 'SCHEDULED' && (
           <>
-            <Link
-              href={`/${locale}/sessions/new?appointmentId=${appointment.id}`}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-xl transition-colors duration-200"
-            >
-              {tHome('startSession')}
+            <Link href={`/sessions/new?appointmentId=${appointment.id}`}>
+              <Button className="px-4 py-2 text-xs">{tHome('startSession')}</Button>
             </Link>
-            <button
+            <Button
+              variant="secondary"
               onClick={() => handleStatusUpdate('POSTPONED')}
-              className="px-4 py-2 border border-outline/20 text-primary text-xs font-semibold rounded-xl hover:bg-outline/5 transition-colors duration-200"
+              className="px-4 py-2 text-xs"
             >
               {t('status.POSTPONED')}
-            </button>
+            </Button>
             <button
               onClick={() => handleStatusUpdate('ABSENT')}
-              className="px-4 py-2 border border-outline/20 text-rose-600 hover:bg-rose-50 text-xs font-semibold rounded-xl transition-colors duration-200"
+              className="px-4 py-2 border border-error/30 text-error text-xs font-semibold rounded-xl hover:bg-error-container/20 transition-colors"
             >
               {t('status.ABSENT')}
             </button>
@@ -97,14 +96,13 @@ export function AppointmentCard({ appointment, onStatusChange, className = '' }:
         )}
 
         {appointment.status === 'COMPLETED' && appointment.hasSession && (
-          <Link
-            href={`/${locale}/sessions/${appointment.id}`}
-            className="px-4 py-2 border border-outline/20 text-primary text-xs font-semibold rounded-xl hover:bg-outline/5 transition-colors duration-200"
-          >
-            {tHome('editAppointment')}
+          <Link href={`/sessions/${appointment.id}`}>
+            <Button variant="secondary" className="px-4 py-2 text-xs">
+              {tHome('editAppointment')}
+            </Button>
           </Link>
         )}
       </div>
-    </div>
+    </Card>
   )
 }

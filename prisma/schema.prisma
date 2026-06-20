@@ -39,16 +39,18 @@ enum AnimalGender {
 // ─────────────────────────────────────────
 
 model Clinic {
-  id        String   @id @default(cuid())
-  name      String
-  nameAr    String? // Arabic name if different
-  address   String?
-  phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String   @id @default(cuid())
+  name              String
+  nameAr            String? // Arabic name if different
+  address           String?
+  phone             String?
+  defaultSessionFee Float    @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   users   User[]
   animals Animal[]
+  owners  Owner[]
 }
 
 // ─────────────────────────────────────────
@@ -86,10 +88,16 @@ model Owner {
   address String?
   notes   String?
 
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+  clinicId String
+
   animals Animal[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([clinicId, phone])
+  @@index([clinicId, phone])
 }
 
 // ─────────────────────────────────────────
@@ -129,6 +137,7 @@ model Appointment {
   scheduledAt DateTime
   status      AppointmentStatus @default(SCHEDULED)
   notes       String? // pre-session notes by doctor
+  fee         Float             @default(0)
 
   animal   Animal @relation(fields: [animalId], references: [id])
   animalId String
@@ -145,6 +154,9 @@ model Appointment {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([animalId, status, scheduledAt])
+  @@index([doctorId, scheduledAt])
 }
 
 // ─────────────────────────────────────────
@@ -194,4 +206,6 @@ model WeightRecord {
 
   animal   Animal @relation(fields: [animalId], references: [id])
   animalId String
+
+  @@index([animalId, recordedAt])
 }

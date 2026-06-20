@@ -1,16 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
-import { useAnimals, useAnimalProfile, useDeleteAnimal } from '@/hooks/useAnimals'
+import { useRouter, Link } from '@/lib/i18n-navigation'
+import { useAnimalProfile, useDeleteAnimal } from '@/hooks/useAnimals'
 import { OwnerBlock } from '@/components/owners/OwnerBlock'
 import { SpeciesTag } from '@/components/shared/SpeciesTag'
+import { AnimalAvatar } from '@/components/shared/AnimalAvatar'
 import { StatusBadge } from '@/components/appointments/StatusBadge'
-import Link from 'next/link'
-import { format } from 'date-fns'
-import { ar } from 'date-fns/locale'
+import { Card } from '@/components/shared/Card'
+import { Button } from '@/components/shared/Button'
+import { Input } from '@/components/shared/Input'
 
 export default function AnimalProfilePage() {
   const params = useParams<{ id: string }>()
@@ -19,7 +21,7 @@ export default function AnimalProfilePage() {
   const router = useRouter()
   const t = useTranslations('animal')
   const tForm = useTranslations('form')
-  const tPayment = useTranslations('payment')
+  const tSession = useTranslations('session')
 
   const { data: profile, isLoading, error, refetch } = useAnimalProfile(id)
   const deleteMutation = useDeleteAnimal()
@@ -29,10 +31,10 @@ export default function AnimalProfilePage() {
   const [isSubmittingWeight, setIsSubmittingWeight] = useState(false)
 
   const handleDeleteAnimal = async () => {
-    if (!confirm(locale === 'ar' ? 'هل أنت متأكد من حذف ملف هذا الحيوان؟' : 'Are you sure you want to delete this animal?')) return
+    if (!confirm(t('deleteConfirm'))) return
     try {
       await deleteMutation.mutateAsync(id)
-      router.push(`/${locale}/animals`)
+      router.push('/animals')
     } catch (err) {
       console.error(err)
     }
@@ -75,9 +77,9 @@ export default function AnimalProfilePage() {
     return (
       <div className="p-6 text-center max-w-md mx-auto py-20">
         <span className="text-4xl block mb-4">⚠️</span>
-        <p className="text-secondary">{t('noAnimals')}</p>
-        <Link href={`/${locale}/animals`} className="mt-4 inline-block text-teal-600 font-semibold hover:underline">
-          {locale === 'ar' ? 'الرجوع إلى المرضى' : 'Back to Patients'}
+        <p className="text-on-surface-variant">{t('notFound')}</p>
+        <Link href="/animals" className="mt-4 inline-block text-primary font-semibold hover:underline">
+          {t('backToList')}
         </Link>
       </div>
     )
@@ -115,17 +117,15 @@ export default function AnimalProfilePage() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       {/* Profile Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm">
+      <Card className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-4">
-          <div className="w-16 h-16 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 text-3xl font-bold">
-            {profile.name[0]?.toUpperCase()}
-          </div>
+          <AnimalAvatar id={profile.id} species={profile.species} size={64} />
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-2xl font-bold text-primary">{profile.name}</h1>
+              <h1 className="text-2xl font-bold text-on-surface">{profile.name}</h1>
               <SpeciesTag species={profile.species} />
             </div>
-            <p className="text-sm text-secondary mt-1">
+            <p className="text-sm text-on-surface-variant mt-1">
               {profile.breed || ''} {profile.gender === 'FEMALE' ? t('female') : t('male')} • {calculateAge(profile.birthDate)}
             </p>
           </div>
@@ -134,42 +134,44 @@ export default function AnimalProfilePage() {
         <div className="flex items-center gap-2">
           <button
             onClick={handleDeleteAnimal}
-            className="px-4 py-2.5 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-sm font-semibold transition-colors"
+            className="px-4 py-2.5 rounded-xl border border-error/30 text-error hover:bg-error/10 text-sm font-semibold transition-colors"
           >
-            {locale === 'ar' ? 'حذف' : 'Delete'}
+            {t('delete')}
           </button>
         </div>
-      </div>
+      </Card>
 
       {/* Stats and Calculations Panel */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-surface border border-outline/10 rounded-2xl p-4 text-center">
-          <span className="text-xs text-secondary uppercase tracking-wider">{t('currentWeight')}</span>
-          <span className="block text-2xl font-bold text-teal-600 mt-2 font-mono">
+        <Card className="p-4 text-center">
+          <span className="text-xs text-on-surface-variant uppercase tracking-wider">{t('currentWeight')}</span>
+          <span className="block text-2xl font-bold text-primary mt-2 font-mono">
             {profile.latestWeight !== null ? `${profile.latestWeight} ${t('kg')}` : '—'}
           </span>
-        </div>
+        </Card>
 
-        <div className="bg-surface border border-outline/10 rounded-2xl p-4 text-center">
-          <span className="text-xs text-secondary uppercase tracking-wider">{locale === 'ar' ? 'تغير الوزن' : 'Weight Change'}</span>
-          <span className={`block text-2xl font-bold mt-2 font-mono ${profile.weightDelta && profile.weightDelta > 0 ? 'text-amber-500' : profile.weightDelta && profile.weightDelta < 0 ? 'text-primary' : 'text-on-surface-variant'}`}>
+        <Card className="p-4 text-center">
+          <span className="text-xs text-on-surface-variant uppercase tracking-wider">{t('weightChange')}</span>
+          <span className={`block text-2xl font-bold mt-2 font-mono ${profile.weightDelta && profile.weightDelta > 0 ? 'text-secondary' : profile.weightDelta && profile.weightDelta < 0 ? 'text-primary' : 'text-on-surface-variant'}`}>
             {profile.weightDelta !== null ? `${profile.weightDelta > 0 ? '+' : ''}${profile.weightDelta} ${t('kg')}` : '—'}
           </span>
-        </div>
+        </Card>
 
-        <div className="bg-surface border border-outline/10 rounded-2xl p-4 text-center">
-          <span className="text-xs text-secondary uppercase tracking-wider">{t('sessions')}</span>
-          <span className="block text-2xl font-bold text-primary mt-2 font-mono">
+        <Card className="p-4 text-center">
+          <span className="text-xs text-on-surface-variant uppercase tracking-wider">{t('sessions')}</span>
+          <span className="block text-2xl font-bold text-on-surface mt-2 font-mono">
             {profile.sessionCount}
           </span>
-        </div>
+        </Card>
 
-        <div className="bg-surface border border-outline/10 rounded-2xl p-4 text-center">
-          <span className="text-xs text-secondary uppercase tracking-wider">{tPayment('remaining')}</span>
-          <span className={`block text-2xl font-bold mt-2 font-mono ${profile.unpaidAmount > 0 ? 'text-rose-500' : 'text-teal-600'}`}>
-            {profile.unpaidAmount} EGP
-          </span>
-        </div>
+        {profile.unpaidAmount > 0 && (
+          <Card className="p-4 text-center">
+            <span className="text-xs text-on-surface-variant uppercase tracking-wider">{t('totalOwed')}</span>
+            <span className="block text-2xl font-bold text-secondary mt-2 font-mono">
+              {profile.unpaidAmount.toFixed(2)} {tSession('currency')}
+            </span>
+          </Card>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -187,20 +189,17 @@ export default function AnimalProfilePage() {
           }} />
 
           {/* Medical History */}
-          <div className="bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-primary mb-4">{t('medicalHistory')}</h3>
-            <p className="text-sm text-primary whitespace-pre-line bg-outline/5 p-4 rounded-xl">
-              {profile.medicalHistory || (locale === 'ar' ? 'لا يوجد سجل طبي مسجل.' : 'No medical history recorded.')}
+          <Card>
+            <h3 className="text-lg font-semibold text-on-surface mb-4">{t('medicalHistory')}</h3>
+            <p className="text-sm text-on-surface whitespace-pre-line bg-surface-container p-4 rounded-xl">
+              {profile.medicalHistory || t('noMedicalHistory')}
             </p>
-          </div>
+          </Card>
 
-          {/* Appointment/Session History */}
-          <div className="bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-primary mb-4">
-              {locale === 'ar' ? 'سجل الزيارات والمواعيد' : 'Visits & Appointments History'}
-            </h3>
+          <Card>
+            <h3 className="text-lg font-semibold text-on-surface mb-4">{t('visitsHistory')}</h3>
             {profile.appointments.length === 0 ? (
-              <p className="text-sm text-secondary italic">{locale === 'ar' ? 'لا توجد زيارات سابقة' : 'No appointments yet'}</p>
+              <p className="text-sm text-on-surface-variant italic">{t('noAppointmentsYet')}</p>
             ) : (
               <div className="space-y-4">
                 {profile.appointments.map((ap) => (
@@ -209,18 +208,18 @@ export default function AnimalProfilePage() {
                       <h4 className="text-sm font-semibold text-primary">
                         {formatDate(ap.scheduledAt)}
                       </h4>
-                      <p className="text-xs text-secondary mt-0.5">
-                        {locale === 'ar' ? 'الطبيب' : 'Doctor'}: {ap.doctor.name}
+                      <p className="text-xs text-on-surface-variant mt-0.5">
+                        {t('doctor')}: {ap.doctor.name}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
                       <StatusBadge status={ap.status} />
                       {ap.session && (
                         <Link
-                          href={`/${locale}/sessions/${ap.id}`}
-                          className="text-xs font-semibold text-teal-600 hover:underline px-2.5 py-1 bg-teal-50 rounded"
+                          href={`/sessions/${ap.id}`}
+                          className="text-xs font-semibold text-primary hover:underline px-2.5 py-1 bg-primary/10 rounded"
                         >
-                          {locale === 'ar' ? 'عرض الجلسة' : 'View Session'}
+                          {t('viewSession')}
                         </Link>
                       )}
                     </div>
@@ -228,35 +227,35 @@ export default function AnimalProfilePage() {
                 ))}
               </div>
             )}
-          </div>
+          </Card>
         </div>
 
-        {/* Right Column: Weight History & Quick entry */}
         <div className="space-y-6">
-          <div className="bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-primary mb-4">{t('weightHistory')}</h3>
+          <Card>
+            <h3 className="text-lg font-semibold text-on-surface mb-4">{t('weightHistory')}</h3>
 
             <form onSubmit={handleAddWeight} className="flex gap-2 mb-6">
-              <input
+              <Input
                 type="number"
                 step="0.01"
                 placeholder="0.0"
                 value={newWeight}
                 onChange={(e) => setNewWeight(e.target.value)}
-                className="flex-1 px-3 py-2 text-sm rounded-xl border border-outline/20 bg-surface text-primary outline-none focus:ring-2 focus:ring-teal-500"
+                className="flex-1 text-sm py-2"
               />
-              <button
+              <Button
                 type="submit"
                 disabled={isSubmittingWeight || !newWeight}
-                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-xl disabled:opacity-50 transition-colors"
+                loading={isSubmittingWeight}
+                className="px-4 py-2 text-xs"
               >
                 {tForm('save')}
-              </button>
+              </Button>
             </form>
 
             <div className="space-y-3 max-h-[300px] overflow-y-auto">
               {profile.weightRecords.length === 0 ? (
-                <p className="text-xs text-secondary italic text-center py-4">{locale === 'ar' ? 'لا يوجد سجلات وزن' : 'No weight records'}</p>
+                <p className="text-xs text-on-surface-variant italic text-center py-4">{t('noWeightRecords')}</p>
               ) : (
                 profile.weightRecords.map((record) => (
                   <div key={record.id} className="flex items-center justify-between text-sm py-2 border-b border-outline/5 last:border-0">
@@ -266,7 +265,7 @@ export default function AnimalProfilePage() {
                 ))
               )}
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>
