@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useLocale, useTranslations } from 'next-intl'
-import { useAdmin } from '@/hooks/useAdmin'
+import { useAdminClinics, useCreateClinic, useAdminDoctors, useCreateDoctor } from '@/hooks/useAdmin'
 import { ZodError } from 'zod'
+import { Lock } from 'lucide-react'
 import { clinicCreateSchema, doctorCreateSchema } from '@/lib/validations/admin.schema'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Card } from '@/components/shared/Card'
@@ -16,14 +17,11 @@ export default function AdminPage() {
   const t = useTranslations('admin')
   const tForm = useTranslations('form')
 
-  const { useGetClinics, useCreateClinic, useGetDoctors, useCreateDoctor } = useAdmin()
-
   const isSuperAdmin = session?.user.role === 'SUPER_ADMIN'
   const isClinicAdmin = session?.user.role === 'CLINIC_ADMIN'
 
-  // Fetch data
-  const { data: clinics = [], isLoading: loadingClinics } = useGetClinics(isSuperAdmin)
-  const { data: doctors = [], isLoading: loadingDoctors, refetch: refetchDoctors } = useGetDoctors()
+  const { data: clinics = [], isLoading: loadingClinics } = useAdminClinics(isSuperAdmin)
+  const { data: doctors = [], isLoading: loadingDoctors, refetch: refetchDoctors } = useAdminDoctors()
 
   const createClinicMutation = useCreateClinic()
   const createDoctorMutation = useCreateDoctor()
@@ -43,7 +41,7 @@ export default function AdminPage() {
   if (!isSuperAdmin && !isClinicAdmin) {
     return (
       <div className="p-6 text-center max-w-md mx-auto py-20">
-        <span className="text-4xl block mb-4">🔒</span>
+        <Lock className="w-10 h-10 mx-auto mb-4 text-on-surface-variant" />
         <h1 className="text-xl font-bold text-on-surface">{t('accessDenied')}</h1>
         <p className="text-on-surface-variant mt-2">{t('accessDeniedDesc')}</p>
       </div>

@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import type { PaymentStatus } from '@/lib/payment'
+import type { PaymentStatus } from '@/types'
 
 const styles: Record<PaymentStatus, string> = {
   PAID: 'bg-primary/10 text-primary border-primary/30',

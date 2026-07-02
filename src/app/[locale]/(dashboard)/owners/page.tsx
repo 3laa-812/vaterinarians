@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Plus, Users } from 'lucide-react'
+import { Plus, Users, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useOwners, useCreateOwner } from '@/hooks/useOwners'
 import { OwnerBlock } from '@/components/owners/OwnerBlock'
 import { OwnerForm } from '@/components/owners/OwnerForm'
@@ -14,9 +14,14 @@ import { Button } from '@/components/shared/Button'
 export default function OwnersPage() {
   const t = useTranslations('owner')
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
   const [showAddForm, setShowAddForm] = useState(false)
+  const limit = 20
 
-  const { data: owners, isLoading, refetch } = useOwners(search)
+  const { data, isLoading, refetch } = useOwners(search, page, limit)
+  const owners = data?.owners
+  const total = data?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(total / limit))
   const createMutation = useCreateOwner()
 
   const handleCreateOwner = async (data: Parameters<typeof createMutation.mutateAsync>[0]) => {
@@ -58,7 +63,10 @@ export default function OwnersPage() {
           type="text"
           placeholder={t('search')}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value)
+            setPage(1)
+          }}
           className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface outline-none focus:border-primary transition-colors"
         />
       </div>
@@ -71,11 +79,37 @@ export default function OwnersPage() {
       ) : !owners || owners.length === 0 ? (
         <EmptyState icon={Users} message={t('noOwners')} />
       ) : (
-        <div className="grid grid-cols-1 gap-6">
-          {owners.map((owner) => (
-            <OwnerBlock key={owner.id} owner={owner} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-6">
+            {owners.map((owner) => (
+              <OwnerBlock key={owner.id} owner={owner} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-4 pt-4">
+              <Button
+                variant="secondary"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="inline-flex items-center gap-1"
+              >
+                <ChevronLeft size={16} />
+              </Button>
+              <span className="text-sm text-on-surface-variant">
+                {page} / {totalPages}
+              </span>
+              <Button
+                variant="secondary"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className="inline-flex items-center gap-1"
+              >
+                <ChevronRight size={16} />
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

@@ -15,6 +15,23 @@ import type {
 
 // ── Animal ────────────────────────────────────────────────────────────────────
 
+export type OwnerListItem = {
+  id: string
+  name: string
+  phone: string
+  email: string | null
+  address: string | null
+  notes: string | null
+  animals: { id: string; name: string; species: string }[]
+}
+
+export type OwnerProfile = Owner & {
+  animals: (Animal & {
+    weightRecords: WeightRecord[]
+    appointments: Appointment[]
+  })[]
+}
+
 export type AnimalWithOwner = Animal & {
   owner: Pick<Owner, 'id' | 'name' | 'phone'>
 }

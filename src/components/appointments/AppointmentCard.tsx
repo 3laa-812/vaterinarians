@@ -76,7 +76,7 @@ export function AppointmentCard({ appointment, onStatusChange, className = '' }:
       <div className="flex flex-wrap gap-2 border-t border-outline-variant pt-4">
         {appointment.status === 'SCHEDULED' && (
           <>
-            <Link href={`/sessions/new?appointmentId=${appointment.id}`}>
+            <Link href={`/animals/${appointment.animal.id}/session/new?appointmentId=${appointment.id}`}>
               <Button className="px-4 py-2 text-xs">{tHome('startSession')}</Button>
             </Link>
             <Button

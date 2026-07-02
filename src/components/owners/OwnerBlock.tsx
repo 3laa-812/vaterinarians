@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { Link } from '@/lib/i18n-navigation'
-import type { OwnerListItem } from '@/hooks/useOwners'
+import type { OwnerListItem } from '@/types'
 import { SpeciesTag } from '@/components/shared/SpeciesTag'
 import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'

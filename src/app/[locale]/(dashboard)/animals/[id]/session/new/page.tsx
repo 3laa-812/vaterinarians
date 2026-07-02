@@ -2,6 +2,7 @@
 
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
+import { useSession } from 'next-auth/react'
 import { SessionForm } from '@/components/sessions/SessionForm'
 import { useAnimalProfile } from '@/hooks/useAnimals'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
@@ -15,9 +16,30 @@ export default function NewSessionPage() {
   const t = useTranslations('session')
 
   const { data: animal, isLoading } = useAnimalProfile(id)
+  const { data: authSession } = useSession()
 
   async function handleSubmit(data: any) {
-    const res = await fetch(`/api/appointments/${appointmentId}/session`, {
+    let finalApptId = appointmentId
+    if (!finalApptId) {
+      const apptRes = await fetch(`/api/appointments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          animalId: id,
+          doctorId: authSession?.user?.id || '',
+          scheduledAt: new Date().toISOString(),
+          status: 'SCHEDULED'
+        })
+      })
+      if (!apptRes.ok) {
+        const errJson = await apptRes.json()
+        throw new Error(locale === 'ar' ? errJson.error?.ar : errJson.error?.en)
+      }
+      const apptJson = await apptRes.json()
+      finalApptId = apptJson.data.appointment.id
+    }
+
+    const res = await fetch(`/api/appointments/${finalApptId}/session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),

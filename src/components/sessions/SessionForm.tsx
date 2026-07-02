@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { sessionSchema, type SessionInput } from '@/lib/validations/session.schema'
-import { calculatePaymentStatus, calculateRemaining } from '@/lib/payment'
+import { calculatePaymentStatus, calculateRemaining } from '@/domain/payment'
 import { ZodError } from 'zod'
 import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
@@ -97,6 +97,10 @@ export function SessionForm({ initialData, onSubmit, onCancel, isLoading = false
           fieldErrors[path] = zodErr.message
         })
         setErrors(fieldErrors)
+      } else if (err instanceof Error) {
+        alert(err.message)
+      } else {
+        alert(String(err))
       }
     }
   }

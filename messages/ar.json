@@ -10,6 +10,7 @@
   },
   "nav": {
     "home": "اليوم",
+    "newSession": "كشف جديد",
     "animals": "المرضى",
     "appointments": "المواعيد",
     "owners": "المرافقون",
@@ -19,7 +20,7 @@
   "home": {
     "greeting": "مرحباً {name}",
     "nextAppointment": "التالي — بعد {minutes} دقيقة",
-    "noAppointments": "لا مواعيد اليوم — استمتع بيومك ☀️",
+    "noAppointments": "لا مواعيد اليوم — استمتع بيومك",
     "allDone": "أنهيت كل مواعيد اليوم ✓",
     "todaySchedule": "جدول اليوم",
     "startSession": "ابدأ الكشف",

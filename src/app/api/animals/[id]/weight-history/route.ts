@@ -1,98 +1,51 @@
-import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { requireAuth, clinicScope } from '@/lib/auth'
+import { withAuth } from '@/lib/api/handler'
+import { apiSuccess } from '@/lib/api/response'
+import { AppError, NotFoundError } from '@/lib/api/errors'
+import { clinicScope } from '@/lib/scope'
 
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const authCheck = await requireAuth()
-  if (authCheck.error) {
-    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status })
+export const GET = withAuth<{ id: string }>(async (req, { session, params }) => {
+  const scope = clinicScope(session)
+
+  const animalExists = await prisma.animal.findFirst({
+    where: { id: params.id, ...scope },
+  })
+
+  if (!animalExists) {
+    throw new NotFoundError({ ar: 'الحيوان', en: 'Animal' })
   }
-  const { session } = authCheck
-  const { id } = await params
 
-  try {
-    const scope = clinicScope(session)
+  const records = await prisma.weightRecord.findMany({
+    where: { animalId: params.id },
+    orderBy: { recordedAt: 'asc' },
+  })
 
-    // Verify animal exists and belongs to clinic
-    const animalExists = await prisma.animal.findFirst({
-      where: {
-        id,
-        ...scope,
-      },
-    })
+  return apiSuccess({ weightRecords: records })
+})
 
-    if (!animalExists) {
-      return NextResponse.json(
-        { error: { ar: 'لم يتم العثور على الحيوان', en: 'Animal not found' } },
-        { status: 404 }
-      )
-    }
+export const POST = withAuth<{ id: string }>(async (req, { session, params }) => {
+  const scope = clinicScope(session)
 
-    const records = await prisma.weightRecord.findMany({
-      where: {
-        animalId: id,
-      },
-      orderBy: {
-        recordedAt: 'asc',
-      },
-    })
+  const animalExists = await prisma.animal.findFirst({
+    where: { id: params.id, ...scope },
+  })
 
-    return NextResponse.json(records)
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: { ar: 'خطأ في جلب سجلات الوزن', en: 'Failed to fetch weight history', detail: error.message } },
-      { status: 500 }
-    )
+  if (!animalExists) {
+    throw new NotFoundError({ ar: 'الحيوان', en: 'Animal' })
   }
-}
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const authCheck = await requireAuth()
-  if (authCheck.error) {
-    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status })
+  const body = await req.json()
+  if (typeof body.weight !== 'number' || body.weight <= 0) {
+    throw new AppError('وزن غير صالح', 'Invalid weight value', 400, 'INVALID_INPUT')
   }
-  const { session } = authCheck
-  const { id } = await params
 
-  try {
-    const scope = clinicScope(session)
+  const record = await prisma.weightRecord.create({
+    data: {
+      weight: body.weight,
+      recordedAt: body.recordedAt ? new Date(body.recordedAt) : new Date(),
+      animalId: params.id,
+    },
+  })
 
-    // Verify animal exists and belongs to clinic
-    const animalExists = await prisma.animal.findFirst({
-      where: {
-        id,
-        ...scope,
-      },
-    })
-
-    if (!animalExists) {
-      return NextResponse.json(
-        { error: { ar: 'لم يتم العثور على الحيوان', en: 'Animal not found' } },
-        { status: 404 }
-      )
-    }
-
-    const body = await req.json()
-    if (typeof body.weight !== 'number' || body.weight <= 0) {
-      return NextResponse.json(
-        { error: { ar: 'وزن غير صالح', en: 'Invalid weight value' } },
-        { status: 400 }
-      )
-    }
-
-    const record = await prisma.weightRecord.create({
-      data: {
-        weight: body.weight,
-        recordedAt: body.recordedAt ? new Date(body.recordedAt) : new Date(),
-        animalId: id,
-      },
-    })
-
-    return NextResponse.json(record)
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: { ar: 'فشل في إضافة سجل الوزن', en: 'Failed to add weight record', detail: error.message } },
-      { status: 400 }
-    )
-  }
-}
+  return apiSuccess({ weightRecord: record })
+})

@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react'
 import { CalendarView } from '@/components/appointments/CalendarView'
 import { useCreateAppointment } from '@/hooks/useAppointments'
 import { useAnimals } from '@/hooks/useAnimals'
+import { useDoctors } from '@/hooks/useDoctors'
 import { useClinicSettings } from '@/hooks/useClinicSettings'
 import { ZodError } from 'zod'
 import { appointmentSchema } from '@/lib/validations/appointment.schema'
@@ -29,7 +30,6 @@ export default function AppointmentsPage() {
   const [fee, setFee] = useState(0)
   const [feeManuallyEdited, setFeeManuallyEdited] = useState(false)
   const [notes, setNotes] = useState('')
-  const [doctors, setDoctors] = useState<{ id: string; name: string }[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -37,18 +37,13 @@ export default function AppointmentsPage() {
   const { data: animalsData } = useAnimals(1, 100)
   const animals = animalsData?.animals
   const { data: clinic } = useClinicSettings()
+  const { data: doctors = [] } = useDoctors()
 
   useEffect(() => {
-    fetch('/api/doctors')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setDoctors(data)
-          if (data[0]) setDoctorId(data[0].id)
-        }
-      })
-      .catch((err) => console.error(err))
-  }, [])
+    if (doctors[0] && !doctorId) {
+      setDoctorId(doctors[0].id)
+    }
+  }, [doctors, doctorId])
 
   useEffect(() => {
     if (clinic && !feeManuallyEdited) {

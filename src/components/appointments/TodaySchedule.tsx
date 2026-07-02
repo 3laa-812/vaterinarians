@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl'
 import { AppointmentCard } from './AppointmentCard'
 import { useAppointments } from '@/hooks/useAppointments'
 import { startOfDay, format } from 'date-fns'
+import { Link } from '@/lib/i18n-navigation'
+import { Plus } from 'lucide-react'
 
 export function TodaySchedule() {
   const t = useTranslations('home')
@@ -83,6 +85,16 @@ export function TodaySchedule() {
             <AppointmentCard key={ap.id} appointment={ap} onStatusChange={refetch} />
           ))}
         </div>
+      </div>
+
+      <div className="pt-6 border-t border-outline-variant">
+        <h3 className="text-sm font-semibold text-on-surface-variant mb-4 uppercase tracking-wider">
+          مواعيد بدون تحديد وقت (Walk-ins)
+        </h3>
+        <Link href="/session/new" className="flex items-center justify-center gap-2 w-full py-4 bg-transparent hover:bg-surface-container-high text-primary rounded-2xl font-semibold transition-all border-2 border-dashed border-primary/30 hover:border-primary/60">
+          <Plus size={20} />
+          كشف جديد لمريض
+        </Link>
       </div>
     </div>
   )

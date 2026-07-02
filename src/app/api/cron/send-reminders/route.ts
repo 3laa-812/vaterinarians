@@ -1,19 +1,20 @@
-import { NextResponse } from 'next/server'
+import { apiSuccess, apiError } from '@/lib/api/response'
 import { prisma } from '@/lib/db'
 import { triggerAppointmentReminder } from '@/lib/novu'
-import { addHours, subHours } from 'date-fns'
+import { addHours } from 'date-fns'
 
 export async function GET(req: Request) {
-  // Validate cron secret if configured
   const authHeader = req.headers.get('authorization')
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return apiError(
+      { ar: 'غير مصرح', en: 'Unauthorized', code: 'UNAUTHORIZED' },
+      401,
+    )
   }
 
   const now = new Date()
 
   try {
-    // 1. Fetch appointments for 24-hour reminder
     const range24hStart = addHours(now, 23)
     const range24hEnd = addHours(now, 25)
 
@@ -37,7 +38,6 @@ export async function GET(req: Request) {
       },
     })
 
-    // 2. Fetch appointments for 1-hour reminder
     const range1hStart = addHours(now, 0.5)
     const range1hEnd = addHours(now, 1.5)
 
@@ -63,7 +63,6 @@ export async function GET(req: Request) {
 
     const results = []
 
-    // Trigger 24h reminders
     for (const app of appointments24h) {
       try {
         await triggerAppointmentReminder({
@@ -81,12 +80,12 @@ export async function GET(req: Request) {
         })
 
         results.push({ id: app.id, type: '24h', success: true })
-      } catch (err: any) {
-        results.push({ id: app.id, type: '24h', success: false, error: err.message })
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Unknown error'
+        results.push({ id: app.id, type: '24h', success: false, error: message })
       }
     }
 
-    // Trigger 1h reminders
     for (const app of appointments1h) {
       try {
         await triggerAppointmentReminder({
@@ -104,13 +103,18 @@ export async function GET(req: Request) {
         })
 
         results.push({ id: app.id, type: '1h', success: true })
-      } catch (err: any) {
-        results.push({ id: app.id, type: '1h', success: false, error: err.message })
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Unknown error'
+        results.push({ id: app.id, type: '1h', success: false, error: message })
       }
     }
 
-    return NextResponse.json({ processed: results.length, details: results })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return apiSuccess({ processed: results.length, details: results })
+  } catch (error: unknown) {
+    console.error('Cron send-reminders failed:', error)
+    return apiError(
+      { ar: 'فشل إرسال التذكيرات', en: 'Failed to send reminders', code: 'INTERNAL_ERROR' },
+      500,
+    )
   }
 }

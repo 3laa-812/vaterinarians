@@ -28,7 +28,8 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
     initialData?.owner ? { id: initialData.ownerId!, name: initialData.owner.name, phone: '' } : null
   )
 
-  const { data: owners, isLoading: isSearchingOwners } = useOwners(phoneSearch)
+  const { data: ownersData, isLoading: isSearchingOwners } = useOwners(phoneSearch)
+  const owners = ownersData?.owners
   const createOwnerMutation = useCreateOwner()
   const { data: session } = useSession()
   const isSuperAdmin = session?.user?.role === 'SUPER_ADMIN'
@@ -118,7 +119,7 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
           notes: newOwnerData.notes,
         })
 
-        setSelectedOwner({ id: res.id, name: res.name, phone: res.phone })
+        setSelectedOwner({ id: res.owner.id, name: res.owner.name, phone: res.owner.phone })
         setStep(2)
       } catch (err: any) {
         setErrors({ ownerCreation: err.message })

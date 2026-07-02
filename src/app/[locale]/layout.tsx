@@ -2,7 +2,7 @@
 
 import { notFound } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
+import { getMessages, setRequestLocale } from 'next-intl/server'
 import { AuthProvider } from '@/components/providers/AuthProvider'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 
@@ -20,6 +20,8 @@ export default async function LocaleLayout({
   if (!locales.includes(locale)) {
     notFound()
   }
+
+  setRequestLocale(locale)
 
   const messages = await getMessages()
 

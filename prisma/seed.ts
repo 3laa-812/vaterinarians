@@ -66,10 +66,7 @@ async function main() {
     },
   })
 
-  console.log('✅ Seed complete')
-  console.log('   Super Admin:  admin@vetclinic.com       / Admin@1234')
-  console.log('   Doctor:       doctor@vetclinic.com      / Doctor@1234')
-  console.log('   Clinic Admin: clinicadmin@vetclinic.com / ClinicAdmin@1234')
+  console.log('✅ Seed complete (see README for demo account credentials)')
 }
 
 main()

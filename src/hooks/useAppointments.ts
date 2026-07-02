@@ -1,19 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { AppointmentWithDetails } from '@/types'
 import type { AppointmentInput } from '@/lib/validations/appointment.schema'
+import { apiClient } from '@/lib/api/client'
 
 export function useAppointments(date?: string, doctorId?: string) {
   return useQuery<AppointmentWithDetails[]>({
     queryKey: ['appointments', date, doctorId],
-    queryFn: async () => {
+    queryFn: () => {
       const params = new URLSearchParams()
       if (date) params.append('date', date)
       if (doctorId) params.append('doctorId', doctorId)
 
-      const res = await fetch(`/api/appointments?${params.toString()}`)
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error?.en ?? 'Failed to fetch appointments')
-      return json.data.appointments as AppointmentWithDetails[]
+      return apiClient.get<{ appointments: AppointmentWithDetails[] }>(`/api/appointments?${params.toString()}`).then(res => res.appointments)
     },
     staleTime: 1000 * 60 * 5,
   })
@@ -22,12 +20,7 @@ export function useAppointments(date?: string, doctorId?: string) {
 export function useAppointment(id: string) {
   return useQuery<AppointmentWithDetails>({
     queryKey: ['appointments', id],
-    queryFn: async () => {
-      const res = await fetch(`/api/appointments/${id}`)
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error?.en ?? 'Failed to fetch appointment details')
-      return json.data.appointment as AppointmentWithDetails
-    },
+    queryFn: () => apiClient.get<{ appointment: AppointmentWithDetails }>(`/api/appointments/${id}`).then(res => res.appointment),
     enabled: !!id,
   })
 }
@@ -35,16 +28,7 @@ export function useAppointment(id: string) {
 export function useCreateAppointment() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (data: AppointmentInput) => {
-      const res = await fetch('/api/appointments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error?.en ?? 'Failed to create appointment')
-      return json.data?.appointment ?? json
-    },
+    mutationFn: (data: AppointmentInput) => apiClient.post<{ appointment: AppointmentWithDetails }>('/api/appointments', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['appointments'] })
     },
@@ -54,16 +38,7 @@ export function useCreateAppointment() {
 export function useUpdateAppointment(id: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (data: AppointmentInput) => {
-      const res = await fetch(`/api/appointments/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error?.en ?? 'Failed to update appointment')
-      return json.data?.appointment ?? json
-    },
+    mutationFn: (data: AppointmentInput) => apiClient.put<{ appointment: AppointmentWithDetails }>(`/api/appointments/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['appointments'] })
       queryClient.invalidateQueries({ queryKey: ['appointments', id] })
@@ -74,14 +49,7 @@ export function useUpdateAppointment(id: string) {
 export function useDeleteAppointment() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (appointmentId: string) => {
-      const res = await fetch(`/api/appointments/${appointmentId}`, {
-        method: 'DELETE',
-      })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error?.en ?? 'Failed to delete appointment')
-      return json
-    },
+    mutationFn: (appointmentId: string) => apiClient.delete<{ success: true }>(`/api/appointments/${appointmentId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['appointments'] })
     },

@@ -1,73 +1,42 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { ClinicCreateInput, DoctorCreateInput } from '@/lib/validations/admin.schema'
+import { apiClient } from '@/lib/api/client'
+import type { Clinic, User } from '@prisma/client'
 
-export function useAdmin() {
+export function useAdminClinics(enabled = false) {
+  return useQuery({
+    queryKey: ['admin-clinics'],
+    queryFn: () => apiClient.get<{ clinics: Clinic[] }>('/api/admin/clinics').then(res => res.clinics),
+    enabled,
+  })
+}
+
+export function useCreateClinic() {
   const queryClient = useQueryClient()
 
-  const useGetClinics = (enabled = false) =>
-    useQuery({
-      queryKey: ['admin-clinics'],
-      queryFn: async () => {
-        const res = await fetch('/api/admin/clinics')
-        if (!res.ok) throw new Error('Failed to fetch clinics')
-        return res.json()
-      },
-      enabled,
-    })
+  return useMutation({
+    mutationFn: (data: ClinicCreateInput) => apiClient.post<{ clinic: Clinic }>('/api/admin/clinics', data).then(res => res.clinic),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-clinics'] })
+    },
+  })
+}
 
-  const useCreateClinic = () =>
-    useMutation({
-      mutationFn: async (data: ClinicCreateInput) => {
-        const res = await fetch('/api/admin/clinics', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        })
-        if (!res.ok) {
-          const err = await res.json()
-          throw new Error(err.error?.en || 'Failed to create clinic')
-        }
-        return res.json()
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['admin-clinics'] })
-      },
-    })
+export function useAdminDoctors() {
+  return useQuery({
+    queryKey: ['admin-doctors'],
+    queryFn: () => apiClient.get<{ doctors: User[] }>('/api/admin/doctors').then(res => res.doctors),
+  })
+}
 
-  const useGetDoctors = () =>
-    useQuery({
-      queryKey: ['admin-doctors'],
-      queryFn: async () => {
-        const res = await fetch('/api/admin/doctors')
-        if (!res.ok) throw new Error('Failed to fetch doctors')
-        return res.json()
-      },
-    })
+export function useCreateDoctor() {
+  const queryClient = useQueryClient()
 
-  const useCreateDoctor = () =>
-    useMutation({
-      mutationFn: async (data: DoctorCreateInput) => {
-        const res = await fetch('/api/admin/doctors', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        })
-        if (!res.ok) {
-          const err = await res.json()
-          throw new Error(err.error?.en || 'Failed to create doctor')
-        }
-        return res.json()
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['admin-doctors'] })
-        queryClient.invalidateQueries({ queryKey: ['doctors'] })
-      },
-    })
-
-  return {
-    useGetClinics,
-    useCreateClinic,
-    useGetDoctors,
-    useCreateDoctor,
-  }
+  return useMutation({
+    mutationFn: (data: DoctorCreateInput) => apiClient.post<{ doctor: User }>('/api/admin/doctors', data).then(res => res.doctor),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-doctors'] })
+      queryClient.invalidateQueries({ queryKey: ['doctors'] })
+    },
+  })
 }

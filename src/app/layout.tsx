@@ -2,8 +2,8 @@
 // Locale-specific lang/dir are resolved via next-intl on each request.
 
 import type { Metadata, Viewport } from 'next'
-import { getLocale } from 'next-intl/server'
 import { Cairo, Inter } from 'next/font/google'
+import { cookies } from 'next/headers'
 import './globals.css'
 
 const cairo = Cairo({
@@ -33,7 +33,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const locale = await getLocale()
+  const cookieStore = await cookies()
+  const nextLocale = cookieStore.get('NEXT_LOCALE')?.value
+  const locale = nextLocale === 'en' ? 'en' : 'ar'
   const dir = locale === 'ar' ? 'rtl' : 'ltr'
 
   return (

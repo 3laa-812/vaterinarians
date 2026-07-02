@@ -15,14 +15,17 @@ export function LangToggle() {
     const newLocale = locale === 'ar' ? 'en' : 'ar'
 
     if (session?.user) {
-      fetch('/api/auth/language', {
+      await fetch('/api/auth/language', {
         method: 'PATCH',
         body: JSON.stringify({ lang: newLocale }),
         headers: { 'Content-Type': 'application/json' },
       })
     }
 
-    router.replace(pathname, { locale: newLocale })
+    if (typeof window !== 'undefined') {
+      document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`
+      window.location.href = window.location.pathname.replace(/^\/(ar|en)/, `/${newLocale}`) + window.location.search
+    }
   }
 
   return (

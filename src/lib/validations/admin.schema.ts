@@ -10,7 +10,7 @@ export const clinicCreateSchema = z.object({
 export const doctorCreateSchema = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
   email: z.string().email({ message: 'Invalid email address' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+  password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
   phone: z.string().optional().or(z.literal('')),
   role: z.enum(['CLINIC_ADMIN', 'DOCTOR']).default('DOCTOR'),
   clinicId: z.string().optional(),

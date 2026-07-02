@@ -1,39 +1,34 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { OwnerInput } from '@/lib/validations/owner.schema'
+import type { OwnerListItem, OwnerProfile } from '@/types'
+import { apiClient } from '@/lib/api/client'
 
-export type OwnerListItem = {
-  id: string
-  name: string
-  phone: string
-  email: string | null
-  address: string | null
-  notes: string | null
-  animals: { id: string; name: string; species: string }[]
+type OwnersResponse = {
+  owners: OwnerListItem[]
+  total: number
+  page: number
+  limit: number
 }
 
-export function useOwners(search: string = '') {
-  return useQuery<OwnerListItem[]>({
-    queryKey: ['owners', search],
-    queryFn: async () => {
-      const url = search ? `/api/owners?search=${encodeURIComponent(search)}` : '/api/owners'
-      const res = await fetch(url)
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error?.en ?? 'Failed to fetch owners')
-      return json.data.owners as OwnerListItem[]
+export function useOwners(search: string = '', page = 1, limit = 20) {
+  return useQuery<OwnersResponse>({
+    queryKey: ['owners', search, page, limit],
+    queryFn: () => {
+      const params = new URLSearchParams()
+      if (search) params.set('search', search)
+      params.set('page', String(page))
+      params.set('limit', String(limit))
+
+      return apiClient.get<OwnersResponse>(`/api/owners?${params.toString()}`)
     },
     staleTime: 1000 * 60 * 5,
   })
 }
 
 export function useOwnerDetails(id: string) {
-  return useQuery<OwnerListItem>({
+  return useQuery<OwnerProfile>({ // Using OwnerProfile for detailed view
     queryKey: ['owners', id],
-    queryFn: async () => {
-      const res = await fetch(`/api/owners/${id}`)
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error?.en ?? 'Failed to fetch owner details')
-      return json.data.owner as OwnerListItem
-    },
+    queryFn: () => apiClient.get<{ owner: OwnerProfile }>(`/api/owners/${id}`).then(res => res.owner),
     enabled: !!id,
   })
 }
@@ -41,16 +36,7 @@ export function useOwnerDetails(id: string) {
 export function useCreateOwner() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (data: OwnerInput) => {
-      const res = await fetch('/api/owners', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error?.en ?? 'Failed to create owner')
-      return json.data?.owner ?? json
-    },
+    mutationFn: (data: OwnerInput) => apiClient.post<{ owner: OwnerListItem }>('/api/owners', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['owners'] })
     },
@@ -60,16 +46,7 @@ export function useCreateOwner() {
 export function useUpdateOwner(id: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (data: OwnerInput) => {
-      const res = await fetch(`/api/owners/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error?.en ?? 'Failed to update owner')
-      return json.data?.owner ?? json
-    },
+    mutationFn: (data: OwnerInput) => apiClient.put<{ owner: OwnerListItem }>(`/api/owners/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['owners'] })
       queryClient.invalidateQueries({ queryKey: ['owners', id] })
@@ -80,14 +57,7 @@ export function useUpdateOwner(id: string) {
 export function useDeleteOwner() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (ownerId: string) => {
-      const res = await fetch(`/api/owners/${ownerId}`, {
-        method: 'DELETE',
-      })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error?.en ?? 'Failed to delete owner')
-      return json
-    },
+    mutationFn: (ownerId: string) => apiClient.delete<{ success: true }>(`/api/owners/${ownerId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['owners'] })
     },

@@ -10,6 +10,7 @@
   },
   "nav": {
     "home": "Today",
+    "newSession": "New Session",
     "animals": "Animals",
     "appointments": "Appointments",
     "owners": "Owners",
@@ -19,7 +20,7 @@
   "home": {
     "greeting": "Hello, {name}",
     "nextAppointment": "Next — in {minutes} minutes",
-    "noAppointments": "No appointments today — enjoy your day ☀️",
+    "noAppointments": "No appointments today — enjoy your day",
     "allDone": "All done for today ✓",
     "todaySchedule": "Today's Schedule",
     "startSession": "Start Session",
