@@ -9,10 +9,10 @@ const speciesIcons: Record<string, LucideIcon> = {
 }
 
 const palette = [
-  'bg-primary/15 text-primary',
-  'bg-secondary/15 text-secondary',
-  'bg-tertiary/15 text-tertiary',
-  'bg-primary-container/30 text-on-primary-container',
+  'bg-primary/10 text-primary border-primary/20',
+  'bg-secondary/10 text-secondary border-secondary/20',
+  'bg-tertiary/10 text-tertiary border-tertiary/20',
+  'bg-teal-500/10 text-teal-600 border-teal-500/20',
 ]
 
 function pickColorFromId(id: string) {
@@ -32,10 +32,10 @@ export function AnimalAvatar({ id, species, size = 40 }: AnimalAvatarProps) {
 
   return (
     <div
-      className={`flex items-center justify-center rounded-full flex-shrink-0 ${colorClass}`}
+      className={`flex items-center justify-center rounded-2xl flex-shrink-0 border shadow-sm ${colorClass}`}
       style={{ width: size, height: size }}
     >
-      <Icon size={size * 0.55} strokeWidth={2} />
+      <Icon size={Math.round(size * 0.48)} strokeWidth={2} />
     </div>
   )
 }

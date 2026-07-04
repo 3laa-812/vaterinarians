@@ -6,6 +6,9 @@ import { withAuth } from '@/lib/api/handler'
 import { appointmentClinicFilter } from '@/lib/scope'
 
 export const GET = withAuth(async (req, { session, params }) => {
+  const url = new URL(req.url)
+  const locale = url.searchParams.get('locale') || 'en'
+
   const appointment = await prisma.appointment.findFirst({
     where: {
       id: params.id,
@@ -31,6 +34,7 @@ export const GET = withAuth(async (req, { session, params }) => {
       animal={appointment.animal}
       owner={appointment.animal.owner}
       clinic={appointment.animal.clinic}
+      locale={locale}
     />
   )
 

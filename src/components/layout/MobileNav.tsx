@@ -34,7 +34,7 @@ export function MobileNav() {
               <Link
                 id={id}
                 href={href}
-                className="absolute -top-6 flex items-center justify-center w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg hover:bg-primary/90 transition-transform active:scale-95"
+                className="absolute -top-6 flex items-center justify-center w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg shadow-primary/50 hover:bg-primary/90 transition-transform active:scale-95"
               >
                 <Icon size={28} />
               </Link>

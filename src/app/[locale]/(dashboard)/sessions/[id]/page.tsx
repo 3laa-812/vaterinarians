@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/lib/i18n-navigation'
 import { useSession, useSaveSession } from '@/hooks/useSessions'
 import { SessionForm } from '@/components/sessions/SessionForm'
+import { AnimalAvatar } from '@/components/shared/AnimalAvatar'
 import { SpeciesTag } from '@/components/shared/SpeciesTag'
 import { PaymentStatusBadge } from '@/components/shared/PaymentStatusBadge'
 import { Card } from '@/components/shared/Card'
@@ -74,14 +75,15 @@ export default function SessionDetailPage() {
           <p className="text-xs text-on-surface-variant uppercase tracking-wider font-semibold mb-1">
             {t('sessionDetails')}
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <AnimalAvatar id={appointment.animal.id} species={appointment.animal.species} size={48} />
             <h1 className="text-2xl font-bold text-on-surface">{appointment.animal.name}</h1>
             <SpeciesTag species={appointment.animal.species} />
           </div>
           <p className="text-sm text-on-surface-variant mt-1">{formatDate(appointment.scheduledAt)}</p>
         </div>
         <div className="flex items-center gap-2">
-          <a href={`/api/sessions/${id}/pdf`} target="_blank" rel="noreferrer">
+          <a href={`/api/sessions/${id}/pdf?locale=${locale}`} target="_blank" rel="noreferrer">
             <Button variant="secondary" className="text-xs px-4 py-2">
               {t('printReport')}
             </Button>

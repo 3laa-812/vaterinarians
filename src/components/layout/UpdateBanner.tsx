@@ -5,6 +5,7 @@
 
 import { usePWAUpdate } from '@/hooks/usePWAUpdate'
 import { useTranslations } from 'next-intl'
+import { Download } from 'lucide-react'
 
 export function UpdateBanner() {
   const { updateAvailable, applyUpdate } = usePWAUpdate()
@@ -14,8 +15,8 @@ export function UpdateBanner() {
 
   return (
     <div className="w-full bg-primary-container/80 border-b border-primary/20 px-4 py-2 flex items-center justify-between gap-3 text-sm">
-      <span className="text-on-primary-container font-medium">
-        🆕 {t('available')}
+      <span className="flex items-center gap-2 text-on-primary-container font-medium">
+        <Download size={16} /> {t('available')}
       </span>
       <button
         id="update-app-button"

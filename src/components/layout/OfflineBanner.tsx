@@ -5,6 +5,7 @@
 
 import { useOffline } from '@/hooks/useOffline'
 import { useTranslations } from 'next-intl'
+import { WifiOff } from 'lucide-react'
 
 export function OfflineBanner() {
   const isOffline = useOffline()
@@ -16,9 +17,9 @@ export function OfflineBanner() {
     <div
       role="alert"
       aria-live="polite"
-      className="w-full bg-secondary-container/80 border-b border-secondary/20 px-4 py-2 text-center text-sm font-medium text-on-secondary-container"
+      className="w-full bg-secondary-container/80 border-b border-secondary/20 px-4 py-2 flex items-center justify-center gap-2 text-sm font-medium text-on-secondary-container"
     >
-      📡 {t('banner')}
+      <WifiOff size={16} /> {t('banner')}
     </div>
   )
 }

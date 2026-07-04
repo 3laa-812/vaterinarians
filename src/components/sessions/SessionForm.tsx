@@ -11,6 +11,7 @@ import { Input } from '@/components/shared/Input'
 import { Textarea } from '@/components/shared/Textarea'
 import { FormField } from '@/components/shared/FormField'
 import { PaymentStatusBadge } from '@/components/shared/PaymentStatusBadge'
+import { useLocale } from 'next-intl'
 
 interface SessionFormProps {
   initialData?: Partial<SessionInput>
@@ -34,6 +35,8 @@ export function SessionForm({ initialData, onSubmit, onCancel, isLoading = false
   const t = useTranslations('session')
   const tPayment = useTranslations('payment')
   const tAnimal = useTranslations('animal')
+  const locale = useLocale()
+  const isRTL = locale === 'ar'
 
   const initialVisit = splitDateTime(initialData?.nextVisitDate)
 
@@ -112,205 +115,229 @@ export function SessionForm({ initialData, onSubmit, onCancel, isLoading = false
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <Card className="space-y-4">
-        <h3 className="text-lg font-semibold text-on-surface border-b border-outline-variant pb-2">
-          {t('clinicalDetails')}
-        </h3>
+    <form onSubmit={handleSubmit}>
+      <Card className="space-y-8 p-6 md:p-8">
+        
+        {/* Section: Clinical Details */}
+        <div className="space-y-6">
+          <h3 className="text-xl font-bold text-on-surface">
+            {t('clinicalDetails')}
+          </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField label={`${t('weight')} (${tAnimal('kg')})`}>
-            <Input
-              type="number"
-              step="0.01"
-              name="weight"
-              value={formData.weight === undefined || formData.weight === null ? '' : formData.weight}
-              onChange={handleChange}
-              placeholder="0.0"
-              error={errors.weight}
-            />
-          </FormField>
-
-          <FormField label={t('nextVisitDate')}>
-            <Input
-              type="date"
-              name="nextVisitDate"
-              value={nextDate}
-              onChange={(e) => setNextDate(e.target.value)}
-            />
-          </FormField>
-
-          <FormField label={t('nextVisitTime')}>
-            <Input
-              type="time"
-              name="nextVisitTime"
-              value={nextTime}
-              onChange={(e) => setNextTime(e.target.value)}
-            />
-          </FormField>
-        </div>
-
-        <FormField label={t('chiefComplaint')}>
-          <Input
-            name="chiefComplaint"
-            value={formData.chiefComplaint}
-            onChange={handleChange}
-            placeholder={t('chiefComplaintPlaceholder')}
-          />
-        </FormField>
-
-        <FormField label={t('diagnosis')}>
-          <Textarea
-            name="diagnosis"
-            rows={2}
-            value={formData.diagnosis}
-            onChange={handleChange}
-            placeholder={t('diagnosisPlaceholder')}
-          />
-        </FormField>
-
-        <FormField label={t('clinicalNotes')}>
-          <Textarea
-            name="clinicalNotes"
-            rows={3}
-            value={formData.clinicalNotes}
-            onChange={handleChange}
-            placeholder={t('clinicalNotesPlaceholder')}
-          />
-        </FormField>
-
-        <FormField label={t('treatmentPlan')}>
-          <Textarea
-            name="treatmentPlan"
-            rows={3}
-            value={formData.treatmentPlan}
-            onChange={handleChange}
-            placeholder={t('treatmentPlanPlaceholder')}
-          />
-        </FormField>
-      </Card>
-
-      <Card className="space-y-4">
-        <div className="flex items-center justify-between border-b border-outline-variant pb-2">
-          <h3 className="text-lg font-semibold text-on-surface">{t('medications')}</h3>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => setMedications(prev => [
-              ...prev,
-              { name: '', dosage: '', duration: '', notes: '' }
-            ])}
-            className="text-xs px-3 py-1.5"
-          >
-            + {t('addMedication')}
-          </Button>
-        </div>
-
-        {medications.length === 0 && (
-          <p className="text-sm text-on-surface-variant italic">{t('noMedications')}</p>
-        )}
-
-        {medications.map((med, index) => (
-          <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-3 pb-4 border-b border-outline-variant last:border-0 last:pb-0">
-            <FormField label={t('medicationName')} required>
-              <Input
-                value={med.name}
-                onChange={(e) => {
-                  const updated = [...medications]
-                  updated[index] = { ...updated[index], name: e.target.value }
-                  setMedications(updated)
-                }}
-                placeholder={t('medicationNamePlaceholder')}
-              />
-            </FormField>
-            <FormField label={t('medicationDosage')} required>
-              <Input
-                value={med.dosage}
-                onChange={(e) => {
-                  const updated = [...medications]
-                  updated[index] = { ...updated[index], dosage: e.target.value }
-                  setMedications(updated)
-                }}
-                placeholder={t('medicationDosagePlaceholder')}
-              />
-            </FormField>
-            <FormField label={t('medicationDuration')} required>
-              <div className="flex gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <FormField label={`${t('weight')} (${tAnimal('kg')})`}>
+              <div className="relative">
                 <Input
-                  value={med.duration}
-                  onChange={(e) => {
-                    const updated = [...medications]
-                    updated[index] = { ...updated[index], duration: e.target.value }
-                    setMedications(updated)
-                  }}
-                  placeholder={t('medicationDurationPlaceholder')}
+                  type="number"
+                  step="0.01"
+                  name="weight"
+                  className="text-2xl font-bold font-mono h-14 bg-surface-container-low border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all rounded-xl"
+                  style={{ paddingLeft: isRTL ? '1rem' : '4rem', paddingRight: isRTL ? '4rem' : '1rem' }}
+                  value={formData.weight === undefined || formData.weight === null ? '' : formData.weight}
+                  onChange={handleChange}
+                  placeholder="0.00"
                 />
-                <button
-                  type="button"
-                  onClick={() => setMedications(prev => prev.filter((_, i) => i !== index))}
-                  className="text-error hover:text-error/80 transition-colors flex-shrink-0 px-2"
-                  aria-label="Remove medication"
-                >
-                  ✕
-                </button>
+                <span className={`absolute top-1/2 -translate-y-1/2 text-on-surface-variant font-medium ${isRTL ? 'right-4' : 'left-4'}`}>
+                  {tAnimal('kg')}
+                </span>
               </div>
+              {errors.weight && <p className="text-error text-xs mt-1">{errors.weight}</p>}
+            </FormField>
+
+            <div className="grid grid-cols-2 gap-3">
+              <FormField label={t('nextVisitDate')}>
+                <Input
+                  type="date"
+                  name="nextVisitDate"
+                  value={nextDate}
+                  onChange={(e) => setNextDate(e.target.value)}
+                />
+              </FormField>
+
+              <FormField label={t('nextVisitTime')}>
+                <Input
+                  type="time"
+                  name="nextVisitTime"
+                  value={nextTime}
+                  onChange={(e) => setNextTime(e.target.value)}
+                />
+              </FormField>
+            </div>
+          </div>
+
+          <FormField label={t('chiefComplaint')}>
+            <Input
+              name="chiefComplaint"
+              value={formData.chiefComplaint}
+              onChange={handleChange}
+              placeholder={t('chiefComplaintPlaceholder')}
+            />
+          </FormField>
+
+          <FormField label={t('diagnosis')}>
+            <Textarea
+              name="diagnosis"
+              rows={2}
+              value={formData.diagnosis}
+              onChange={handleChange}
+              placeholder={t('diagnosisPlaceholder')}
+            />
+          </FormField>
+
+          <FormField label={t('clinicalNotes')}>
+            <Textarea
+              name="clinicalNotes"
+              rows={3}
+              value={formData.clinicalNotes}
+              onChange={handleChange}
+              placeholder={t('clinicalNotesPlaceholder')}
+            />
+          </FormField>
+
+          <FormField label={t('treatmentPlan')}>
+            <Textarea
+              name="treatmentPlan"
+              rows={3}
+              value={formData.treatmentPlan}
+              onChange={handleChange}
+              placeholder={t('treatmentPlanPlaceholder')}
+            />
+          </FormField>
+        </div>
+
+        <hr className="border-outline-variant/60" />
+
+        {/* Section: Medications */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-bold text-on-surface">{t('medications')}</h3>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setMedications(prev => [
+                ...prev,
+                { name: '', dosage: '', duration: '', notes: '' }
+              ])}
+              className="text-xs px-3 py-1.5"
+            >
+              + {t('addMedication')}
+            </Button>
+          </div>
+
+          {medications.length === 0 && (
+            <div className="bg-surface-container rounded-xl p-4 text-center">
+              <p className="text-sm text-on-surface-variant font-medium">{t('noMedications')}</p>
+            </div>
+          )}
+
+          <div className="space-y-4">
+            {medications.map((med, index) => (
+              <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-surface-container-low border border-outline-variant/50 rounded-xl relative group">
+                <FormField label={t('medicationName')} required>
+                  <Input
+                    value={med.name}
+                    onChange={(e) => {
+                      const updated = [...medications]
+                      updated[index] = { ...updated[index], name: e.target.value }
+                      setMedications(updated)
+                    }}
+                    placeholder={t('medicationNamePlaceholder')}
+                  />
+                </FormField>
+                <FormField label={t('medicationDosage')} required>
+                  <Input
+                    value={med.dosage}
+                    onChange={(e) => {
+                      const updated = [...medications]
+                      updated[index] = { ...updated[index], dosage: e.target.value }
+                      setMedications(updated)
+                    }}
+                    placeholder={t('medicationDosagePlaceholder')}
+                  />
+                </FormField>
+                <FormField label={t('medicationDuration')} required>
+                  <div className="flex gap-2">
+                    <Input
+                      value={med.duration}
+                      onChange={(e) => {
+                        const updated = [...medications]
+                        updated[index] = { ...updated[index], duration: e.target.value }
+                        setMedications(updated)
+                      }}
+                      placeholder={t('medicationDurationPlaceholder')}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setMedications(prev => prev.filter((_, i) => i !== index))}
+                      className="text-error bg-error/10 hover:bg-error/20 w-10 h-10 flex items-center justify-center rounded-lg transition-colors flex-shrink-0"
+                      aria-label="Remove medication"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </FormField>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <hr className="border-outline-variant/60" />
+
+        {/* Section: Billing Payment */}
+        <div className="space-y-6">
+          <h3 className="text-xl font-bold text-on-surface">
+            {t('billingPayment')}
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField label={`${tPayment('fee')} (${t('currency')})`} required>
+              <Input
+                type="number"
+                name="totalAmount"
+                value={formData.totalAmount || ''}
+                onChange={handleChange}
+                required
+                className="font-mono bg-surface-container-low"
+                error={errors.totalAmount}
+              />
+            </FormField>
+
+            <FormField label={`${tPayment('paid')} (${t('currency')})`} required>
+              <Input
+                type="number"
+                name="paidAmount"
+                value={formData.paidAmount || ''}
+                onChange={handleChange}
+                required
+                className="font-mono bg-surface-container-low"
+                error={errors.paidAmount}
+              />
             </FormField>
           </div>
-        ))}
-      </Card>
 
-      <Card className="space-y-4">
-        <h3 className="text-lg font-semibold text-on-surface border-b border-outline-variant pb-2">
-          {t('billingPayment')}
-        </h3>
+          <div className="flex items-center justify-between rounded-xl bg-surface-container px-4 py-4 border border-outline-variant/50">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-on-surface-variant">{tPayment('remaining')}</span>
+              <PaymentStatusBadge status={paymentStatus} />
+            </div>
+            <span className={`font-mono text-lg font-bold ${remaining > 0 ? 'text-secondary' : 'text-primary'}`}>
+              {remaining.toFixed(2)} {t('currency')}
+            </span>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField label={`${tPayment('fee')} (${t('currency')})`} required>
+          <FormField label={tPayment('notes')}>
             <Input
-              type="number"
-              name="totalAmount"
-              value={formData.totalAmount || ''}
+              type="text"
+              name="notes"
+              value={formData.notes}
               onChange={handleChange}
-              required
-              className="font-mono"
-              error={errors.totalAmount}
-            />
-          </FormField>
-
-          <FormField label={`${tPayment('paid')} (${t('currency')})`} required>
-            <Input
-              type="number"
-              name="paidAmount"
-              value={formData.paidAmount || ''}
-              onChange={handleChange}
-              required
-              className="font-mono"
-              error={errors.paidAmount}
+              placeholder={t('paymentNotesPlaceholder')}
             />
           </FormField>
         </div>
-
-        <div className="flex items-center justify-between rounded-xl bg-surface-container px-4 py-3">
-          <span className="text-sm text-on-surface-variant">{tPayment('remaining')}</span>
-          <span className={`font-mono font-semibold ${remaining > 0 ? 'text-secondary' : 'text-primary'}`}>
-            {remaining.toFixed(2)} {t('currency')}
-          </span>
-        </div>
-
-        <PaymentStatusBadge status={paymentStatus} />
-
-        <FormField label={tPayment('notes')}>
-          <Input
-            type="text"
-            name="notes"
-            value={formData.notes}
-            onChange={handleChange}
-            placeholder={t('paymentNotesPlaceholder')}
-          />
-        </FormField>
       </Card>
 
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant">
+      <div className="flex items-center justify-end gap-3 mt-6">
         {onCancel && (
           <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading}>
             {t('cancel')}

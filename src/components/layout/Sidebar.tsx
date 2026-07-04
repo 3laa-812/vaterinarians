@@ -106,26 +106,48 @@ export function Sidebar() {
       )}
 
       <nav className="flex-1 py-2">
-        {navItems.map(({ href, Icon, label, id, isPrimaryAction }) => (
-          <Link
-            key={id}
-            id={id}
-            href={href}
-            title={!sidebarExpanded ? label : undefined}
-            className={`flex items-center gap-3 px-4 py-3 mx-2 rounded-xl transition-all ${
-              isPrimaryAction
-                ? 'bg-primary text-on-primary shadow-sm hover:bg-primary/90 mt-2 mb-4'
-                : isActive(href)
-                ? 'bg-primary/10 text-primary'
-                : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-            }`}
-          >
-            <Icon size={20} className="flex-shrink-0" />
-            {sidebarExpanded && (
-              <span className="text-sm font-medium truncate">{label}</span>
-            )}
-          </Link>
-        ))}
+        {navItems.map(({ href, Icon, label, id, isPrimaryAction }) => {
+          const active = isActive(href)
+          
+          if (isPrimaryAction) {
+            return (
+              <div key={id} className="px-3 mb-6 mt-2">
+                <Link
+                  id={id}
+                  href={href}
+                  title={!sidebarExpanded ? label : undefined}
+                  className={`flex items-center justify-center gap-2 rounded-2xl bg-primary text-on-primary font-bold transition-all active:scale-95 shadow-lg shadow-primary/40 ${
+                    sidebarExpanded ? 'py-3' : 'py-3 aspect-square'
+                  }`}
+                >
+                  <Icon size={sidebarExpanded ? 18 : 20} strokeWidth={sidebarExpanded ? 2.5 : 2} />
+                  {sidebarExpanded && <span>{label}</span>}
+                </Link>
+              </div>
+            )
+          }
+
+          // Standard items
+          return (
+            <div key={id} className="px-2 mb-1">
+              <Link
+                id={id}
+                href={href}
+                title={!sidebarExpanded ? label : undefined}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+                  active
+                    ? 'bg-primary/10 text-primary font-semibold'
+                    : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                }`}
+              >
+                <Icon size={20} className={active ? 'text-primary' : 'text-on-surface-variant'} />
+                {sidebarExpanded && (
+                  <span className="text-sm truncate">{label}</span>
+                )}
+              </Link>
+            </div>
+          )
+        })}
       </nav>
 
       {sidebarExpanded && session?.user && (

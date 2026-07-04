@@ -36,7 +36,7 @@
     "logout": "تسجيل الخروج"
   },
   "home": {
-    "greeting": "مرحبًا، {name} 👋",
+    "greeting": "مرحبًا، {name}",
     "nextAppointment": "التالي — بعد {minutes} دقيقة",
     "noAppointments": "لا مواعيد اليوم — استمتع بيومك",
     "allDone": "أنهيت كل مواعيد اليوم ✓",
@@ -48,10 +48,13 @@
       "total": "مواعيد اليوم",
       "done": "مكتملة",
       "remaining": "متبقية",
-      "groupLabel": "ملخص مواعيد اليوم"
+      "groupLabel": "ملخص مواعيد اليوم",
+      "progress": "تقدم اليوم"
     },
     "viewSessionDetails": "عرض تفاصيل الكشف",
-    "addWalkIn": "إضافة كشف لحالة بدون موعد مسبق"
+    "addWalkIn": "إضافة كشف لحالة بدون موعد مسبق",
+    "nowPlaceholder": "الآن",
+    "noAppointmentsHint": "استخدم زر كشف جديد لإضافة زيارة"
   },
   "animal": {
     "currentWeight": "الوزن الحالي",
@@ -91,7 +94,9 @@
     "noWeightRecords": "لا يوجد سجلات وزن",
     "notEnoughWeightData": "لا توجد بيانات كافية للرسم البياني",
     "targetWeight": "الوزن المستهدف",
-    "targetWeightPlaceholder": "0.0"
+    "targetWeightPlaceholder": "0.0",
+    "lastVisitShort": "آخر زيارة",
+    "nextShort": "القادم"
   },
   "session": {
     "weight": "الوزن",
@@ -132,9 +137,13 @@
     "medicationDosagePlaceholder": "مثال: قرص مرتين يومياً",
     "medicationDuration": "المدة",
     "medicationDurationPlaceholder": "مثال: 7 أيام",
-    "printReport": "طباعة التقرير"
+    "printReport": "طباعة التقرير",
+    "sessionDetails": "تفاصيل الكشف",
+    "editSession": "تعديل الكشف"
   },
   "payment": {
+    "title": "تفاصيل الدفع",
+    "statusLabel": "حالة الدفع",
     "fee": "رسوم الكشف",
     "paid": "المدفوع",
     "remaining": "المتبقي",
@@ -220,7 +229,8 @@
     "loginButton": "دخول",
     "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
     "logout": "تسجيل الخروج",
-    "welcome": "أهلاً بك في نظام العيادة البيطرية"
+    "welcome": "أهلاً بك في نظام العيادة البيطرية",
+    "welcomeSubtitle": "نظام إدارة العيادة البيطرية"
   },
   "admin": {
     "pageTitle": "لوحة تحكم المسؤول",

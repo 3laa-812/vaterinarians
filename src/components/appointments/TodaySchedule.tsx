@@ -5,7 +5,7 @@ import { AppointmentCard } from './AppointmentCard'
 import { useAppointments } from '@/hooks/useAppointments'
 import { startOfDay, format } from 'date-fns'
 import { Link } from '@/lib/i18n-navigation'
-import { Plus } from 'lucide-react'
+import { Plus, CalendarDays } from 'lucide-react'
 import { StatsStrip } from '../home/StatsStrip'
 import { displayOwnerName } from '@/lib/format'
 
@@ -26,11 +26,12 @@ export function TodaySchedule() {
 
   if (!appointments || appointments.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <span className="text-4xl mb-4">☀️</span>
-        <p className="text-secondary font-medium">
-          {t('noAppointments')}
-        </p>
+      <div className="flex flex-col items-center justify-center py-16 text-center px-8">
+        <div className="w-14 h-14 rounded-2xl bg-surface-container border border-outline-variant flex items-center justify-center mb-4">
+          <CalendarDays size={24} className="text-on-surface-variant" />
+        </div>
+        <p className="font-semibold text-on-surface">{t('noAppointments')}</p>
+        <p className="text-sm text-on-surface-variant mt-1">{t('noAppointmentsHint')}</p>
       </div>
     )
   }
@@ -52,20 +53,35 @@ export function TodaySchedule() {
   return (
     <div className="space-y-5 pb-5">
       {/* Banner indicator */}
-      {nextApp && minutesDiff <= 60 && (
-        <div className="bg-surface-container border border-primary/30 rounded-2xl p-4 flex items-center justify-between mx-5">
-          <div>
-            <h4 className="text-sm font-semibold text-primary">
-              {t('nextAppointment', { minutes: minutesDiff })}
-            </h4>
-            <p className="text-xs text-on-surface-variant mt-0.5">
-              {nextApp.animal.name} {nextApp.owner ? `(${displayOwnerName(nextApp.owner.name)})` : ''}
-            </p>
+      {nextApp && (
+        <div className="mx-5 mb-2">
+          <div className="relative rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border border-primary/30 p-5 overflow-hidden">
+            {/* Background shimmer */}
+            <div className="absolute inset-0 bg-mesh opacity-30" />
+
+            <div className="relative flex items-center justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">
+                  {minutesDiff <= 0
+                    ? t('nowPlaceholder')
+                    : t('nextAppointment', { minutes: minutesDiff })}
+                </p>
+                <h3 className="text-xl font-bold text-on-surface truncate">{nextApp.animal.name}</h3>
+                {nextApp.owner && (
+                  <p className="text-sm text-on-surface-variant mt-0.5 truncate">
+                    {displayOwnerName(nextApp.owner.name)} · {nextApp.owner.phone}
+                  </p>
+                )}
+              </div>
+              <div className="flex-shrink-0 flex flex-col items-center gap-2">
+                <div className="ring-pulse w-10 h-10 rounded-full bg-primary/20 border-2 border-primary/60 flex items-center justify-center">
+                  <span className="text-primary font-bold text-xs">
+                    {new Date(nextApp.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-          <span className="relative flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-primary" />
-          </span>
         </div>
       )}
 

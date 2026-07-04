@@ -36,7 +36,7 @@
     "logout": "Log Out"
   },
   "home": {
-    "greeting": "Hello, {name} 👋",
+    "greeting": "Hello, {name}",
     "nextAppointment": "Next — in {minutes} minutes",
     "noAppointments": "No appointments today — enjoy your day",
     "allDone": "All done for today ✓",
@@ -48,10 +48,13 @@
       "total": "Today's appointments",
       "done": "Completed",
       "remaining": "Remaining",
-      "groupLabel": "Today's appointment summary"
+      "groupLabel": "Today's appointment summary",
+      "progress": "Today's Progress"
     },
     "viewSessionDetails": "View exam details",
-    "addWalkIn": "Add a walk-in exam"
+    "addWalkIn": "Add a walk-in exam",
+    "nowPlaceholder": "Now",
+    "noAppointmentsHint": "Use the New Session button to add a visit"
   },
   "animal": {
     "currentWeight": "Current Weight",
@@ -91,7 +94,9 @@
     "noWeightRecords": "No weight records",
     "notEnoughWeightData": "Not enough data for chart",
     "targetWeight": "Target Weight",
-    "targetWeightPlaceholder": "0.0"
+    "targetWeightPlaceholder": "0.0",
+    "lastVisitShort": "Last visit",
+    "nextShort": "Next"
   },
   "session": {
     "weight": "Weight",
@@ -132,9 +137,13 @@
     "medicationDosagePlaceholder": "e.g. 1 tab twice daily",
     "medicationDuration": "Duration",
     "medicationDurationPlaceholder": "e.g. 7 days",
-    "printReport": "Print Report"
+    "printReport": "Print Report",
+    "sessionDetails": "Session Details",
+    "editSession": "Edit Session"
   },
   "payment": {
+    "title": "Payment Details",
+    "statusLabel": "Payment Status",
     "fee": "Session Fee",
     "paid": "Amount Paid",
     "remaining": "Remaining",
@@ -220,7 +229,8 @@
     "loginButton": "Sign In",
     "invalidCredentials": "Incorrect email or password",
     "logout": "Sign Out",
-    "welcome": "Welcome to the Vet Clinic System"
+    "welcome": "Welcome to the Vet Clinic System",
+    "welcomeSubtitle": "Veterinary Practice Management"
   },
   "admin": {
     "pageTitle": "Admin Command Center",

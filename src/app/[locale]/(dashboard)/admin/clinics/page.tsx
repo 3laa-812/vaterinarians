@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useAdminClinics, useCreateClinic, useAdminDoctors, useCreateDoctor } from '@/hooks/useAdmin'
 import { ZodError } from 'zod'
-import { Lock } from 'lucide-react'
+import { Lock, MapPin, Phone, Mail, Building2 } from 'lucide-react'
 import { clinicCreateSchema, doctorCreateSchema } from '@/lib/validations/admin.schema'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Card } from '@/components/shared/Card'
@@ -154,9 +154,9 @@ export default function AdminPage() {
                   {clinic.nameAr && locale !== 'ar' && (
                     <p className="text-xs text-secondary">{clinic.nameAr}</p>
                   )}
-                  <div className="mt-4 space-y-1 text-sm text-secondary">
-                    <p>📍 {clinic.address || '—'}</p>
-                    <p>📞 {clinic.phone || '—'}</p>
+                  <div className="mt-4 space-y-2 text-sm text-secondary">
+                    <p className="flex items-center gap-2"><MapPin size={14} /> {clinic.address || '—'}</p>
+                    <p className="flex items-center gap-2"><Phone size={14} /> {clinic.phone || '—'}</p>
                   </div>
                 </Card>
               ))}
@@ -194,12 +194,12 @@ export default function AdminPage() {
                         {doc.role === 'CLINIC_ADMIN' ? (locale === 'ar' ? 'مسؤول عيادة' : 'Clinic Admin') : (locale === 'ar' ? 'طبيب' : 'Doctor')}
                       </span>
                     </div>
-                    <div className="mt-4 space-y-1 text-sm text-secondary">
-                      <p>✉️ {doc.email}</p>
-                      <p>📞 {doc.phone || '—'}</p>
+                    <div className="mt-4 space-y-2 text-sm text-secondary">
+                      <p className="flex items-center gap-2"><Mail size={14} /> {doc.email}</p>
+                      <p className="flex items-center gap-2"><Phone size={14} /> {doc.phone || '—'}</p>
                       {doc.clinic && (
-                        <p className="text-xs font-semibold text-teal-600 mt-2">
-                          🏥 {locale === 'ar' && doc.clinic.nameAr ? doc.clinic.nameAr : doc.clinic.name}
+                        <p className="flex items-center gap-2 text-xs font-semibold text-teal-600 mt-2">
+                          <Building2 size={14} /> {locale === 'ar' && doc.clinic.nameAr ? doc.clinic.nameAr : doc.clinic.name}
                         </p>
                       )}
                     </div>
