@@ -7,10 +7,11 @@ export type ClinicSettings = {
   defaultSessionFee: number
 }
 
-export function useClinicSettings() {
+export function useClinicSettings(enabled = true) {
   return useQuery<ClinicSettings>({
     queryKey: ['clinic-settings'],
     queryFn: () => apiClient.get<{ clinic: ClinicSettings }>('/api/clinic/settings').then(res => res.clinic),
     staleTime: 1000 * 60 * 10,
+    enabled,
   })
 }

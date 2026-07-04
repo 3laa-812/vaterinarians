@@ -8,6 +8,8 @@ import { StatusBadge } from './StatusBadge'
 import { useUpdateAppointment } from '@/hooks/useAppointments'
 import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
+import { AppointmentOverflowMenu } from './AppointmentOverflowMenu'
+import { displayOwnerName } from '@/lib/format'
 
 interface AppointmentCardProps {
   appointment: AppointmentWithDetails
@@ -60,7 +62,7 @@ export function AppointmentCard({ appointment, onStatusChange, className = '' }:
           </h4>
           {appointment.owner && (
             <p className="text-xs text-on-surface-variant mt-0.5">
-              {appointment.owner.name} • <span className="font-mono">{appointment.owner.phone}</span>
+              {displayOwnerName(appointment.owner.name)} • <span className="font-mono">{appointment.owner.phone}</span>
             </p>
           )}
         </div>
@@ -73,32 +75,23 @@ export function AppointmentCard({ appointment, onStatusChange, className = '' }:
         </p>
       )}
 
-      <div className="flex flex-wrap gap-2 border-t border-outline-variant pt-4">
+      <div className="flex items-center gap-2 border-t border-outline-variant pt-4">
         {appointment.status === 'SCHEDULED' && (
           <>
-            <Link href={`/animals/${appointment.animal.id}/session/new?appointmentId=${appointment.id}`}>
-              <Button className="px-4 py-2 text-xs">{tHome('startSession')}</Button>
+            <Link href={`/animals/${appointment.animal.id}/session/new?appointmentId=${appointment.id}`} className="flex-1">
+              <Button className="w-full px-4 py-2 text-xs">{tHome('startSession')}</Button>
             </Link>
-            <Button
-              variant="secondary"
-              onClick={() => handleStatusUpdate('POSTPONED')}
-              className="px-4 py-2 text-xs"
-            >
-              {t('status.POSTPONED')}
-            </Button>
-            <button
-              onClick={() => handleStatusUpdate('ABSENT')}
-              className="px-4 py-2 border border-error/30 text-error text-xs font-semibold rounded-xl hover:bg-error-container/20 transition-colors"
-            >
-              {t('status.ABSENT')}
-            </button>
+            <AppointmentOverflowMenu
+              onPostpone={() => handleStatusUpdate('POSTPONED')}
+              onMarkAbsent={() => handleStatusUpdate('ABSENT')}
+            />
           </>
         )}
 
         {appointment.status === 'COMPLETED' && appointment.hasSession && (
-          <Link href={`/sessions/${appointment.id}`}>
-            <Button variant="secondary" className="px-4 py-2 text-xs">
-              {tHome('editAppointment')}
+          <Link href={`/sessions/${appointment.id}`} className="flex-1">
+            <Button variant="secondary" className="w-full px-4 py-2 text-xs">
+              {tHome('viewSessionDetails')}
             </Button>
           </Link>
         )}

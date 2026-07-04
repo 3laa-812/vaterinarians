@@ -8,6 +8,8 @@ import { usePathname } from '@/lib/i18n-navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui.store'
 import { useSession } from 'next-auth/react'
+import { useClinicSettings } from '@/hooks/useClinicSettings'
+import { useAdminClinics } from '@/hooks/useAdmin'
 import { Logo } from '@/components/brand/Logo'
 import {
   Home,
@@ -29,6 +31,10 @@ export function Sidebar() {
   const { sidebarExpanded, toggleSidebar } = useUIStore()
   const { data: session } = useSession()
 
+  const isSuperAdmin = session?.user.role === 'SUPER_ADMIN'
+  const { data: clinicSettings } = useClinicSettings(!isSuperAdmin)
+  const { data: clinics } = useAdminClinics(isSuperAdmin)
+
   const isRTL = locale === 'ar'
   const isAdmin =
     session?.user.role === 'SUPER_ADMIN' ||
@@ -40,9 +46,12 @@ export function Sidebar() {
     { href: `/${locale}/animals`, Icon: PawPrint, label: t('animals'), id: 'nav-animals' },
     { href: `/${locale}/appointments`, Icon: CalendarDays, label: t('appointments'), id: 'nav-appointments' },
     { href: `/${locale}/owners`, Icon: Users, label: t('owners'), id: 'nav-owners' },
-    { href: `/${locale}/reports`, Icon: LineChart, label: t('reports'), id: 'nav-reports' },
     ...(isAdmin
-      ? [{ href: `/${locale}/admin/clinics`, Icon: Settings, label: t('admin'), id: 'nav-admin' }]
+      ? [
+          { href: `/${locale}/reports`, Icon: LineChart, label: t('reports'), id: 'nav-reports' },
+          { href: `/${locale}/admin/doctors`, Icon: Settings, label: t('doctors', { fallback: 'Doctors' }), id: 'nav-admin-doctors' },
+          ...(isSuperAdmin ? [{ href: `/${locale}/admin/clinics`, Icon: Settings, label: t('admin'), id: 'nav-admin' }] : [])
+        ]
       : []),
   ]
 
@@ -122,7 +131,9 @@ export function Sidebar() {
       {sidebarExpanded && session?.user && (
         <div className="border-t border-outline-variant p-4">
           <p className="text-xs text-on-surface-variant truncate">
-            {session.user.name}
+            {isSuperAdmin
+              ? `${clinics?.length || 0} عيادات نشطة`
+              : clinicSettings?.name || '...'}
           </p>
         </div>
       )}

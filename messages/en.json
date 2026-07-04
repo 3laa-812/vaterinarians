@@ -3,6 +3,11 @@
     "prefix": "Vet",
     "accent": "Care"
   },
+  "roles": {
+    "SUPER_ADMIN": "Super Admin",
+    "CLINIC_ADMIN": "Clinic Admin",
+    "DOCTOR": "Doctor"
+  },
   "sidebar": {
     "home": "Home",
     "collapse": "Collapse sidebar",
@@ -16,17 +21,37 @@
     "owners": "Owners",
     "admin": "Admin",
     "profile": "Profile",
-    "reports": "Reports"
+    "reports": "Reports",
+    "doctors": "Doctors"
+  },
+  "profile": {
+    "pageTitle": "My Account",
+    "preferences": "Preferences",
+    "language": "Language",
+    "adminSection": "Admin",
+    "reports": "Reports",
+    "owners": "Owners",
+    "manageClinics": "Manage Clinics",
+    "manageDoctors": "Manage Doctors",
+    "logout": "Log Out"
   },
   "home": {
-    "greeting": "Hello, {name}",
+    "greeting": "Hello, {name} 👋",
     "nextAppointment": "Next — in {minutes} minutes",
     "noAppointments": "No appointments today — enjoy your day",
     "allDone": "All done for today ✓",
     "todaySchedule": "Today's Schedule",
     "startSession": "Start Session",
     "editAppointment": "Edit Appointment",
-    "remaining": "Later today"
+    "remaining": "Later today",
+    "stats": {
+      "total": "Today's appointments",
+      "done": "Completed",
+      "remaining": "Remaining",
+      "groupLabel": "Today's appointment summary"
+    },
+    "viewSessionDetails": "View exam details",
+    "addWalkIn": "Add a walk-in exam"
   },
   "animal": {
     "currentWeight": "Current Weight",

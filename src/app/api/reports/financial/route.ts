@@ -10,6 +10,10 @@ const querySchema = z.object({
 })
 
 export const GET = withAuth(async (req, { session }) => {
+  if (session.user.role !== 'SUPER_ADMIN' && session.user.role !== 'CLINIC_ADMIN') {
+    return apiError({ en: 'Not authorized', ar: 'غير مصرح لك بالوصول', code: 'FORBIDDEN' }, 403)
+  }
+
   const url = new URL(req.url)
   const q   = querySchema.safeParse(Object.fromEntries(url.searchParams))
 
@@ -17,11 +21,18 @@ export const GET = withAuth(async (req, { session }) => {
 
   const { startDate, endDate } = q.data
   
-  const whereClause: any = { ...clinicScope(session) }
+  const whereClause: any = {}
+  const scope = clinicScope(session)
+  if ('clinicId' in scope) {
+    whereClause.appointment = { animal: { clinicId: scope.clinicId } }
+  }
+
   if (startDate && endDate) {
+    const end = new Date(endDate)
+    end.setHours(23, 59, 59, 999)
     whereClause.createdAt = {
       gte: new Date(startDate),
-      lte: new Date(endDate),
+      lte: end,
     }
   }
 

@@ -3,6 +3,11 @@
     "prefix": "فيت",
     "accent": "كير"
   },
+  "roles": {
+    "SUPER_ADMIN": "المدير العام",
+    "CLINIC_ADMIN": "مدير العيادة",
+    "DOCTOR": "طبيب"
+  },
   "sidebar": {
     "home": "الرئيسية",
     "collapse": "طي القائمة الجانبية",
@@ -16,17 +21,37 @@
     "owners": "المرافقون",
     "admin": "الإدارة",
     "profile": "حسابي",
-    "reports": "التقارير"
+    "reports": "التقارير",
+    "doctors": "الأطباء"
+  },
+  "profile": {
+    "pageTitle": "حسابي",
+    "preferences": "التفضيلات",
+    "language": "اللغة",
+    "adminSection": "الإدارة",
+    "reports": "التقارير",
+    "owners": "المرافقون",
+    "manageClinics": "إدارة العيادات",
+    "manageDoctors": "إدارة الأطباء",
+    "logout": "تسجيل الخروج"
   },
   "home": {
-    "greeting": "مرحباً {name}",
+    "greeting": "مرحبًا، {name} 👋",
     "nextAppointment": "التالي — بعد {minutes} دقيقة",
     "noAppointments": "لا مواعيد اليوم — استمتع بيومك",
     "allDone": "أنهيت كل مواعيد اليوم ✓",
     "todaySchedule": "جدول اليوم",
     "startSession": "ابدأ الكشف",
     "editAppointment": "تعديل الموعد",
-    "remaining": "الباقي من اليوم"
+    "remaining": "الباقي من اليوم",
+    "stats": {
+      "total": "مواعيد اليوم",
+      "done": "مكتملة",
+      "remaining": "متبقية",
+      "groupLabel": "ملخص مواعيد اليوم"
+    },
+    "viewSessionDetails": "عرض تفاصيل الكشف",
+    "addWalkIn": "إضافة كشف لحالة بدون موعد مسبق"
   },
   "animal": {
     "currentWeight": "الوزن الحالي",

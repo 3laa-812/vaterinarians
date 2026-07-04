@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { apiClient } from '@/lib/api/client'
+import { useSession } from 'next-auth/react'
+import { useRouter } from '@/lib/i18n-navigation'
+import { useEffect } from 'react'
 import { Card } from '@/components/shared/Card'
 import { Input } from '@/components/shared/Input'
 import {
@@ -13,6 +16,15 @@ import {
 
 export default function ReportsPage() {
   const t = useTranslations('reports')
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (status === 'loading') return
+    if (session && session.user.role !== 'SUPER_ADMIN' && session.user.role !== 'CLINIC_ADMIN') {
+      router.replace('/home')
+    }
+  }, [session, status, router])
 
   const [dateRange, setDateRange] = useState({
     startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0],
@@ -29,6 +41,10 @@ export default function ReportsPage() {
 
   const stats = (data as any)?.data?.summary || { totalRevenue: 0, totalCollected: 0, totalPending: 0 }
   const chartData = (data as any)?.data?.chartData || []
+
+  if (status === 'loading' || (session && session.user.role !== 'SUPER_ADMIN' && session.user.role !== 'CLINIC_ADMIN')) {
+    return null
+  }
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-6">

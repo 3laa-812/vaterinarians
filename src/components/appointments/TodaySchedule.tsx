@@ -6,6 +6,8 @@ import { useAppointments } from '@/hooks/useAppointments'
 import { startOfDay, format } from 'date-fns'
 import { Link } from '@/lib/i18n-navigation'
 import { Plus } from 'lucide-react'
+import { StatsStrip } from '../home/StatsStrip'
+import { displayOwnerName } from '@/lib/format'
 
 export function TodaySchedule() {
   const t = useTranslations('home')
@@ -48,52 +50,50 @@ export function TodaySchedule() {
   const isAllDone = appointments.every((ap) => ap.status !== 'SCHEDULED')
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 pb-5">
       {/* Banner indicator */}
       {nextApp && minutesDiff <= 60 && (
-        <div className="bg-teal-50 border border-teal-200 rounded-2xl p-4 flex items-center justify-between animate-fade-in">
+        <div className="bg-surface-container border border-primary/30 rounded-2xl p-4 flex items-center justify-between mx-5">
           <div>
-            <h4 className="text-sm font-semibold text-teal-800">
+            <h4 className="text-sm font-semibold text-primary">
               {t('nextAppointment', { minutes: minutesDiff })}
             </h4>
-            <p className="text-xs text-teal-600 mt-0.5">
-              {nextApp.animal.name} {nextApp.owner ? `(${nextApp.owner.name})` : ''}
+            <p className="text-xs text-on-surface-variant mt-0.5">
+              {nextApp.animal.name} {nextApp.owner ? `(${displayOwnerName(nextApp.owner.name)})` : ''}
             </p>
-
           </div>
           <span className="relative flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-primary" />
           </span>
         </div>
       )}
 
       {isAllDone && appointments.length > 0 && (
-        <div className="bg-teal-50 border border-teal-200 rounded-2xl p-4 text-center">
-          <p className="text-sm font-semibold text-teal-800">
-            {t('allDone')}
-          </p>
+        <div className="text-primary text-sm font-semibold text-center py-1">
+          {t('allDone')}
         </div>
       )}
+      <StatsStrip appointments={appointments} />
 
-      <div>
+      <div className="px-5">
         <h3 className="text-lg font-semibold text-primary mb-4">
           {t('todaySchedule')}
         </h3>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {appointments.map((ap) => (
             <AppointmentCard key={ap.id} appointment={ap} onStatusChange={refetch} />
           ))}
         </div>
       </div>
 
-      <div className="pt-6 border-t border-outline-variant">
-        <h3 className="text-sm font-semibold text-on-surface-variant mb-4 uppercase tracking-wider">
-          مواعيد بدون تحديد وقت (Walk-ins)
-        </h3>
-        <Link href="/session/new" className="flex items-center justify-center gap-2 w-full py-4 bg-transparent hover:bg-surface-container-high text-primary rounded-2xl font-semibold transition-all border-2 border-dashed border-primary/30 hover:border-primary/60">
-          <Plus size={20} />
-          كشف جديد لمريض
+      <div className="pt-5 border-t border-outline-variant">
+        <Link
+          href="/session/new"
+          className="flex items-center justify-center gap-2 mx-5 mt-1 py-3 rounded-2xl border border-dashed border-primary/40 bg-primary/10 text-primary text-sm font-semibold"
+        >
+          <Plus size={16} />
+          {t('addWalkIn')}
         </Link>
       </div>
     </div>
