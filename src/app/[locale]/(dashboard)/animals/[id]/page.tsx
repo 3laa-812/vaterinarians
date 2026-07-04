@@ -13,6 +13,7 @@ import { StatusBadge } from '@/components/appointments/StatusBadge'
 import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
 import { Input } from '@/components/shared/Input'
+import { WeightChart } from '@/components/animals/WeightChart'
 
 export default function AnimalProfilePage() {
   const params = useParams<{ id: string }>()
@@ -252,6 +253,10 @@ export default function AnimalProfilePage() {
                 {tForm('save')}
               </Button>
             </form>
+
+            <div className="mb-6">
+              <WeightChart records={profile.weightRecords} targetWeight={(profile as any).targetWeight} />
+            </div>
 
             <div className="space-y-3 max-h-[300px] overflow-y-auto">
               {profile.weightRecords.length === 0 ? (

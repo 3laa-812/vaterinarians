@@ -18,6 +18,7 @@ import {
   ChevronRight,
   ChevronLeft,
   Plus,
+  LineChart,
 } from 'lucide-react'
 
 export function Sidebar() {
@@ -39,6 +40,7 @@ export function Sidebar() {
     { href: `/${locale}/animals`, Icon: PawPrint, label: t('animals'), id: 'nav-animals' },
     { href: `/${locale}/appointments`, Icon: CalendarDays, label: t('appointments'), id: 'nav-appointments' },
     { href: `/${locale}/owners`, Icon: Users, label: t('owners'), id: 'nav-owners' },
+    { href: `/${locale}/reports`, Icon: LineChart, label: t('reports'), id: 'nav-reports' },
     ...(isAdmin
       ? [{ href: `/${locale}/admin/clinics`, Icon: Settings, label: t('admin'), id: 'nav-admin' }]
       : []),

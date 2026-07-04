@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/lib/i18n-navigation'
 import { Search, UserPlus, PawPrint } from 'lucide-react'
-import { useAnimals } from '@/hooks/useAnimals'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { AnimalAvatar } from '@/components/shared/AnimalAvatar'
 import { SpeciesTag } from '@/components/shared/SpeciesTag'
@@ -15,19 +14,29 @@ export default function PatientFinderPage() {
   const tAnimal = useTranslations('animal')
   
   const [search, setSearch] = useState('')
-  const { data, isLoading } = useAnimals(1, 100) // fetch more for local filtering
-  
-  const animals = data?.animals || []
-  
-  const filteredAnimals = animals.filter(animal => {
-    if (!search.trim()) return false // Show no results until searching
-    const searchLower = search.toLowerCase()
-    return (
-      animal.name.toLowerCase().includes(searchLower) ||
-      animal.owner.name.toLowerCase().includes(searchLower) ||
-      animal.owner.phone.includes(searchLower)
-    )
-  })
+  const [results, setResults] = useState<any[]>([])
+  const [searching, setSearching] = useState(false)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    if (!search.trim()) { setResults([]); return }
+
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(async () => {
+      setSearching(true)
+      try {
+        const res = await fetch(`/api/animals/search?q=${encodeURIComponent(search)}`)
+        const json = await res.json()
+        setResults(json.data?.animals ?? [])
+      } finally {
+        setSearching(false)
+      }
+    }, 300)
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [search])
 
   return (
     <div className="p-4 md:p-6 max-w-xl mx-auto space-y-8">
@@ -55,14 +64,14 @@ export default function PatientFinderPage() {
 
       {search.trim().length > 0 && (
         <div className="bg-surface-container rounded-2xl p-2 border border-outline-variant shadow-sm max-h-[300px] overflow-y-auto">
-          {isLoading ? (
+          {searching ? (
             <div className="p-4 space-y-4">
                <div className="h-12 bg-outline-variant/30 animate-pulse rounded-lg" />
                <div className="h-12 bg-outline-variant/30 animate-pulse rounded-lg" />
             </div>
-          ) : filteredAnimals.length > 0 ? (
+          ) : results.length > 0 ? (
             <div className="flex flex-col gap-2">
-              {filteredAnimals.map(animal => (
+              {results.map(animal => (
                 <Link
                   key={animal.id}
                   href={`/animals/${animal.id}/session/new`}

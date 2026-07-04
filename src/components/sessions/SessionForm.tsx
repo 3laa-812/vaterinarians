@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { sessionSchema, type SessionInput } from '@/lib/validations/session.schema'
+import { sessionSchema, type SessionInput, type MedicationInput } from '@/lib/validations/session.schema'
 import { calculatePaymentStatus, calculateRemaining } from '@/domain/payment'
 import { ZodError } from 'zod'
 import { Card } from '@/components/shared/Card'
@@ -39,12 +39,17 @@ export function SessionForm({ initialData, onSubmit, onCancel, isLoading = false
 
   const [formData, setFormData] = useState({
     weight: initialData?.weight ?? undefined as number | undefined,
+    chiefComplaint: initialData?.chiefComplaint || '',
+    diagnosis: initialData?.diagnosis || '',
     clinicalNotes: initialData?.clinicalNotes || '',
     treatmentPlan: initialData?.treatmentPlan || '',
     totalAmount: initialData?.totalAmount || 0,
     paidAmount: initialData?.paidAmount || 0,
     notes: initialData?.notes || '',
   })
+  const [medications, setMedications] = useState<MedicationInput[]>(
+    (initialData as any)?.medications || []
+  )
   const [nextDate, setNextDate] = useState(initialVisit.date)
   const [nextTime, setNextTime] = useState(initialVisit.time)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -87,6 +92,7 @@ export function SessionForm({ initialData, onSubmit, onCancel, isLoading = false
         ...formData,
         weight: formData.weight === undefined ? null : formData.weight,
         nextVisitDate: combinedDateTime,
+        medications,
       })
       await onSubmit(validated)
     } catch (err) {
@@ -144,6 +150,25 @@ export function SessionForm({ initialData, onSubmit, onCancel, isLoading = false
           </FormField>
         </div>
 
+        <FormField label={t('chiefComplaint')}>
+          <Input
+            name="chiefComplaint"
+            value={formData.chiefComplaint}
+            onChange={handleChange}
+            placeholder={t('chiefComplaintPlaceholder')}
+          />
+        </FormField>
+
+        <FormField label={t('diagnosis')}>
+          <Textarea
+            name="diagnosis"
+            rows={2}
+            value={formData.diagnosis}
+            onChange={handleChange}
+            placeholder={t('diagnosisPlaceholder')}
+          />
+        </FormField>
+
         <FormField label={t('clinicalNotes')}>
           <Textarea
             name="clinicalNotes"
@@ -163,6 +188,75 @@ export function SessionForm({ initialData, onSubmit, onCancel, isLoading = false
             placeholder={t('treatmentPlanPlaceholder')}
           />
         </FormField>
+      </Card>
+
+      <Card className="space-y-4">
+        <div className="flex items-center justify-between border-b border-outline-variant pb-2">
+          <h3 className="text-lg font-semibold text-on-surface">{t('medications')}</h3>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setMedications(prev => [
+              ...prev,
+              { name: '', dosage: '', duration: '', notes: '' }
+            ])}
+            className="text-xs px-3 py-1.5"
+          >
+            + {t('addMedication')}
+          </Button>
+        </div>
+
+        {medications.length === 0 && (
+          <p className="text-sm text-on-surface-variant italic">{t('noMedications')}</p>
+        )}
+
+        {medications.map((med, index) => (
+          <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-3 pb-4 border-b border-outline-variant last:border-0 last:pb-0">
+            <FormField label={t('medicationName')} required>
+              <Input
+                value={med.name}
+                onChange={(e) => {
+                  const updated = [...medications]
+                  updated[index] = { ...updated[index], name: e.target.value }
+                  setMedications(updated)
+                }}
+                placeholder={t('medicationNamePlaceholder')}
+              />
+            </FormField>
+            <FormField label={t('medicationDosage')} required>
+              <Input
+                value={med.dosage}
+                onChange={(e) => {
+                  const updated = [...medications]
+                  updated[index] = { ...updated[index], dosage: e.target.value }
+                  setMedications(updated)
+                }}
+                placeholder={t('medicationDosagePlaceholder')}
+              />
+            </FormField>
+            <FormField label={t('medicationDuration')} required>
+              <div className="flex gap-2">
+                <Input
+                  value={med.duration}
+                  onChange={(e) => {
+                    const updated = [...medications]
+                    updated[index] = { ...updated[index], duration: e.target.value }
+                    setMedications(updated)
+                  }}
+                  placeholder={t('medicationDurationPlaceholder')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setMedications(prev => prev.filter((_, i) => i !== index))}
+                  className="text-error hover:text-error/80 transition-colors flex-shrink-0 px-2"
+                  aria-label="Remove medication"
+                >
+                  ✕
+                </button>
+              </div>
+            </FormField>
+          </div>
+        ))}
       </Card>
 
       <Card className="space-y-4">

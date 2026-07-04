@@ -15,7 +15,8 @@
     "appointments": "المواعيد",
     "owners": "المرافقون",
     "admin": "الإدارة",
-    "profile": "حسابي"
+    "profile": "حسابي",
+    "reports": "التقارير"
   },
   "home": {
     "greeting": "مرحباً {name}",
@@ -62,7 +63,10 @@
     "noAppointmentsYet": "لا توجد زيارات سابقة",
     "doctor": "الطبيب",
     "viewSession": "عرض الجلسة",
-    "noWeightRecords": "لا يوجد سجلات وزن"
+    "noWeightRecords": "لا يوجد سجلات وزن",
+    "notEnoughWeightData": "لا توجد بيانات كافية للرسم البياني",
+    "targetWeight": "الوزن المستهدف",
+    "targetWeightPlaceholder": "0.0"
   },
   "session": {
     "weight": "الوزن",
@@ -89,7 +93,21 @@
     "currency": "جنيه",
     "nextVisitDate": "تاريخ الموعد القادم",
     "nextVisitTime": "وقت الموعد القادم",
-    "nextVisitScheduled": "تم تحديد الموعد القادم: {date}"
+    "nextVisitScheduled": "تم تحديد الموعد القادم: {date}",
+    "chiefComplaint": "الشكوى الرئيسية",
+    "chiefComplaintPlaceholder": "مثال: قيء وخمول...",
+    "diagnosis": "التشخيص",
+    "diagnosisPlaceholder": "مثال: التهاب المسالك البولية السفلي...",
+    "medications": "الأدوية الموصوفة",
+    "addMedication": "إضافة دواء",
+    "noMedications": "لم يتم وصف أدوية بعد.",
+    "medicationName": "اسم الدواء",
+    "medicationNamePlaceholder": "مثال: أموكسيسيلين",
+    "medicationDosage": "الجرعة",
+    "medicationDosagePlaceholder": "مثال: قرص مرتين يومياً",
+    "medicationDuration": "المدة",
+    "medicationDurationPlaceholder": "مثال: 7 أيام",
+    "printReport": "طباعة التقرير"
   },
   "payment": {
     "fee": "رسوم الكشف",
@@ -102,6 +120,16 @@
       "PARTIAL": "دفع جزء",
       "UNPAID": "لم يُدفع"
     }
+  },
+  "reports": {
+    "financialOverview": "نظرة عامة مالية",
+    "subtitle": "تتبع الأداء المالي لعيادتك",
+    "totalRevenue": "إجمالي الإيرادات",
+    "collected": "المُحصّل",
+    "pending": "المعلق",
+    "revenueVsCollected": "الإيرادات مقابل المُحصّل (30 يوم)",
+    "noData": "لا توجد بيانات مالية لهذه الفترة",
+    "currency": "ج.م"
   },
   "appointment": {
     "pageTitle": "المواعيد والجدول",

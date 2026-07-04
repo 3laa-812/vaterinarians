@@ -15,7 +15,8 @@
     "appointments": "Appointments",
     "owners": "Owners",
     "admin": "Admin",
-    "profile": "Profile"
+    "profile": "Profile",
+    "reports": "Reports"
   },
   "home": {
     "greeting": "Hello, {name}",
@@ -62,7 +63,10 @@
     "noAppointmentsYet": "No appointments yet",
     "doctor": "Doctor",
     "viewSession": "View Session",
-    "noWeightRecords": "No weight records"
+    "noWeightRecords": "No weight records",
+    "notEnoughWeightData": "Not enough data for chart",
+    "targetWeight": "Target Weight",
+    "targetWeightPlaceholder": "0.0"
   },
   "session": {
     "weight": "Weight",
@@ -89,7 +93,21 @@
     "currency": "EGP",
     "nextVisitDate": "Next Visit Date",
     "nextVisitTime": "Next Visit Time",
-    "nextVisitScheduled": "Next visit scheduled: {date}"
+    "nextVisitScheduled": "Next visit scheduled: {date}",
+    "chiefComplaint": "Chief Complaint",
+    "chiefComplaintPlaceholder": "e.g. Vomiting and lethargy...",
+    "diagnosis": "Diagnosis",
+    "diagnosisPlaceholder": "e.g. Feline lower urinary tract disease...",
+    "medications": "Prescribed Medications",
+    "addMedication": "Add Medication",
+    "noMedications": "No medications prescribed yet.",
+    "medicationName": "Medication Name",
+    "medicationNamePlaceholder": "e.g. Amoxicillin",
+    "medicationDosage": "Dosage",
+    "medicationDosagePlaceholder": "e.g. 1 tab twice daily",
+    "medicationDuration": "Duration",
+    "medicationDurationPlaceholder": "e.g. 7 days",
+    "printReport": "Print Report"
   },
   "payment": {
     "fee": "Session Fee",
@@ -102,6 +120,16 @@
       "PARTIAL": "Partial",
       "UNPAID": "Unpaid"
     }
+  },
+  "reports": {
+    "financialOverview": "Financial Overview",
+    "subtitle": "Track your clinic's financial performance",
+    "totalRevenue": "Total Revenue",
+    "collected": "Collected",
+    "pending": "Pending",
+    "revenueVsCollected": "Revenue vs Collected (30 Days)",
+    "noData": "No financial data for this period",
+    "currency": "EGP"
   },
   "appointment": {
     "pageTitle": "Appointments & Calendar",

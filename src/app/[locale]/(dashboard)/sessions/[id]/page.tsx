@@ -1,44 +1,42 @@
 'use client'
 
 import { useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
-import { useLocale } from 'next-intl'
+import { useParams } from 'next/navigation'
+import { useTranslations, useLocale } from 'next-intl'
+import { Link } from '@/lib/i18n-navigation'
 import { useSession, useSaveSession } from '@/hooks/useSessions'
 import { SessionForm } from '@/components/sessions/SessionForm'
 import { SpeciesTag } from '@/components/shared/SpeciesTag'
-import { StatusBadge } from '@/components/appointments/StatusBadge'
-import Link from 'next/link'
+import { PaymentStatusBadge } from '@/components/shared/PaymentStatusBadge'
+import { Card } from '@/components/shared/Card'
+import { Button } from '@/components/shared/Button'
+import { calculateRemaining } from '@/domain/payment'
 
 export default function SessionDetailPage() {
-  const params = useParams<{ id: string }>()
-  const id = params?.id || ''
-  const locale = useLocale()
-  const router = useRouter()
-  const t = useTranslations('session')
-  const tAnimal = useTranslations('animal')
+  const params  = useParams<{ id: string }>()
+  const id      = params?.id || ''
+  const locale  = useLocale()
+  const t       = useTranslations('session')
   const tPayment = useTranslations('payment')
+  const tAnimal  = useTranslations('animal')
+  const tErrors  = useTranslations('errors')
 
   const [isEditing, setIsEditing] = useState(false)
 
   const { data: appointment, isLoading, error, refetch } = useSession(id)
   const saveMutation = useSaveSession(id)
 
-  const handleSubmit = async (data: any) => {
-    try {
-      await saveMutation.mutateAsync(data)
-      setIsEditing(false)
-      refetch()
-    } catch (err) {
-      console.error(err)
-    }
+  async function handleSubmit(data: any) {
+    await saveMutation.mutateAsync(data)
+    setIsEditing(false)
+    refetch()
   }
 
   if (isLoading) {
     return (
       <div className="p-6 max-w-4xl mx-auto space-y-6 animate-pulse">
-        <div className="h-24 bg-outline/10 rounded-2xl" />
-        <div className="h-96 bg-outline/10 rounded-2xl" />
+        <div className="h-24 bg-outline-variant/20 rounded-2xl" />
+        <div className="h-96 bg-outline-variant/20 rounded-2xl" />
       </div>
     )
   }
@@ -46,12 +44,9 @@ export default function SessionDetailPage() {
   if (error || !appointment) {
     return (
       <div className="p-6 text-center max-w-md mx-auto py-20">
-        <span className="text-4xl block mb-4">⚠️</span>
-        <p className="text-secondary">
-          {locale === 'ar' ? 'الجلسة غير موجودة' : 'Session not found'}
-        </p>
-        <Link href={`/${locale}/appointments`} className="mt-4 inline-block text-teal-600 font-semibold hover:underline">
-          {locale === 'ar' ? 'الرجوع إلى الجدول' : 'Back to Schedule'}
+        <p className="text-on-surface-variant">{tErrors('notFound')}</p>
+        <Link href="/appointments" className="mt-4 inline-block text-primary font-semibold hover:underline">
+          {t('backToSchedule')}
         </Link>
       </div>
     )
@@ -59,53 +54,63 @@ export default function SessionDetailPage() {
 
   const sessionData = appointment.session
   const paymentData = appointment.payment
+  const remaining   = paymentData
+    ? calculateRemaining(paymentData.totalAmount, paymentData.paidAmount)
+    : 0
+
+  const formatDate = (d: Date | string | null) => {
+    if (!d) return '—'
+    return new Date(d).toLocaleDateString(
+      locale === 'ar' ? 'ar-EG' : 'en-US',
+      { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }
+    )
+  }
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
-      {/* Patient info card */}
-      <div className="bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header */}
+      <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs text-secondary uppercase tracking-wider font-semibold">
-            {locale === 'ar' ? 'تفاصيل جلسة الكشف' : 'Exam Session Details'}
-          </span>
-          <div className="flex items-center gap-2 mt-1">
-            <h1 className="text-2xl font-bold text-primary">
-              {appointment.animal.name}
-            </h1>
+          <p className="text-xs text-on-surface-variant uppercase tracking-wider font-semibold mb-1">
+            {t('sessionDetails')}
+          </p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-on-surface">{appointment.animal.name}</h1>
             <SpeciesTag species={appointment.animal.species} />
           </div>
-          <p className="text-sm text-secondary mt-1">
-            {appointment.animal.breed || ''}
-          </p>
+          <p className="text-sm text-on-surface-variant mt-1">{formatDate(appointment.scheduledAt)}</p>
         </div>
-        <div className="text-start sm:text-end flex flex-col sm:items-end gap-2">
-          <p className="text-sm font-medium text-primary">
-            {new Date(appointment.scheduledAt).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', {
-              weekday: 'long',
-              month: 'long',
-              day: 'numeric',
-              year: 'numeric',
-            })}
-          </p>
-          <button
+        <div className="flex items-center gap-2">
+          <a href={`/api/sessions/${id}/pdf`} target="_blank" rel="noreferrer">
+            <Button variant="secondary" className="text-xs px-4 py-2">
+              {t('printReport')}
+            </Button>
+          </a>
+          <Button
             onClick={() => setIsEditing(!isEditing)}
-            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-xl transition-colors"
+            variant={isEditing ? 'secondary' : 'primary'}
+            className="text-xs px-4 py-2"
           >
-            {isEditing ? t('cancel') : (locale === 'ar' ? 'تعديل الجلسة' : 'Edit Session')}
-          </button>
+            {isEditing ? t('cancel') : t('editSession')}
+          </Button>
         </div>
-      </div>
+      </Card>
 
       {isEditing ? (
         <SessionForm
           initialData={{
-            weight: sessionData?.weight || undefined,
-            clinicalNotes: sessionData?.clinicalNotes || '',
-            treatmentPlan: sessionData?.treatmentPlan || '',
-            nextVisitDate: sessionData?.nextVisitDate ? new Date(sessionData.nextVisitDate).toISOString().split('T')[0] : '',
+            weight:         sessionData?.weight || undefined,
+            chiefComplaint: sessionData?.chiefComplaint || '',
+            diagnosis:      sessionData?.diagnosis || '',
+            clinicalNotes:  sessionData?.clinicalNotes || '',
+            treatmentPlan:  sessionData?.treatmentPlan || '',
+            medications:    (sessionData as any)?.medications || [],
+            nextVisitDate:  sessionData?.nextVisitDate
+              ? new Date(sessionData.nextVisitDate).toISOString()
+              : '',
             totalAmount: paymentData?.totalAmount || 0,
-            paidAmount: paymentData?.paidAmount || 0,
-            notes: paymentData?.notes || '',
+            paidAmount:  paymentData?.paidAmount || 0,
+            notes:       paymentData?.notes || '',
           }}
           onSubmit={handleSubmit}
           onCancel={() => setIsEditing(false)}
@@ -113,88 +118,129 @@ export default function SessionDetailPage() {
         />
       ) : (
         <div className="space-y-6">
-          {/* Clinical observations */}
-          <div className="bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm space-y-4">
-            <h3 className="text-lg font-semibold text-teal-600 border-b border-outline/5 pb-2">
-              {locale === 'ar' ? 'البيانات السريرية' : 'Clinical Details'}
+          {/* Clinical section */}
+          <Card className="space-y-4">
+            <h3 className="text-lg font-semibold text-on-surface border-b border-outline-variant pb-2">
+              {t('clinicalDetails')}
             </h3>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {/* Weight */}
+            {sessionData?.weight && (
               <div>
-                <span className="text-xs text-secondary block">{t('weight')}</span>
-                <span className="text-lg font-bold text-primary mt-1 block font-mono">
-                  {sessionData?.weight ? `${sessionData.weight} ${tAnimal('kg')}` : '—'}
+                <span className="text-xs text-on-surface-variant block mb-1">{t('weight')}</span>
+                <span className="text-2xl font-bold text-on-surface font-mono">
+                  {sessionData.weight} {tAnimal('kg')}
                 </span>
               </div>
-              <div>
-                <span className="text-xs text-secondary block">{t('nextVisit')}</span>
-                <span className="text-lg font-bold text-primary mt-1 block">
-                  {sessionData?.nextVisitDate
-                    ? new Date(sessionData.nextVisitDate).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })
-                    : '—'}
-                </span>
-              </div>
-            </div>
+            )}
 
-            <div>
-              <span className="text-xs text-secondary block mb-2">{t('clinicalNotes')}</span>
-              <p className="text-sm text-primary whitespace-pre-line bg-outline/5 p-4 rounded-xl">
-                {sessionData?.clinicalNotes || (locale === 'ar' ? 'لا توجد ملاحظات سريرية.' : 'No clinical notes.')}
-              </p>
-            </div>
-
-            <div>
-              <span className="text-xs text-secondary block mb-2">{t('treatmentPlan')}</span>
-              <p className="text-sm text-primary whitespace-pre-line bg-outline/5 p-4 rounded-xl">
-                {sessionData?.treatmentPlan || (locale === 'ar' ? 'لا توجد خطة علاجية.' : 'No treatment plan.')}
-              </p>
-            </div>
-          </div>
-
-          {/* Payment Details */}
-          <div className="bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm space-y-4">
-            <h3 className="text-lg font-semibold text-teal-600 border-b border-outline/5 pb-2">
-              {locale === 'ar' ? 'تفاصيل الدفع والرسوم' : 'Billing & Payment Details'}
-            </h3>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Chief Complaint */}
+            {sessionData?.chiefComplaint && (
               <div>
-                <span className="text-xs text-secondary block">{tPayment('fee')}</span>
-                <span className="text-lg font-bold text-primary mt-1 block font-mono">
-                  {paymentData?.totalAmount || 0} EGP
-                </span>
-              </div>
-              <div>
-                <span className="text-xs text-secondary block">{tPayment('paid')}</span>
-                <span className="text-lg font-bold text-teal-600 mt-1 block font-mono">
-                  {paymentData?.paidAmount || 0} EGP
-                </span>
-              </div>
-              <div>
-                <span className="text-xs text-secondary block">{tPayment('remaining')}</span>
-                <span className={`text-lg font-bold mt-1 block font-mono ${(paymentData?.totalAmount || 0) - (paymentData?.paidAmount || 0) > 0 ? 'text-rose-500' : 'text-teal-600'}`}>
-                  {(paymentData?.totalAmount || 0) - (paymentData?.paidAmount || 0)} EGP
-                </span>
-              </div>
-              <div>
-                <span className="text-xs text-secondary block mb-1">{locale === 'ar' ? 'حالة الدفع' : 'Payment Status'}</span>
-                {paymentData && <StatusBadge status={paymentData.status} />}
-              </div>
-            </div>
-
-            {paymentData?.notes && (
-              <div>
-                <span className="text-xs text-secondary block mb-1">{tPayment('notes')}</span>
-                <p className="text-sm text-primary bg-outline/5 p-3 rounded-xl">
-                  {paymentData.notes}
+                <span className="text-xs text-on-surface-variant block mb-1">{t('chiefComplaint')}</span>
+                <p className="text-sm text-on-surface bg-surface-container p-3 rounded-xl">
+                  {sessionData.chiefComplaint}
                 </p>
               </div>
             )}
-          </div>
+
+            {/* Diagnosis */}
+            {sessionData?.diagnosis && (
+              <div>
+                <span className="text-xs text-on-surface-variant block mb-1">{t('diagnosis')}</span>
+                <p className="text-sm text-on-surface bg-surface-container p-3 rounded-xl">
+                  {sessionData.diagnosis}
+                </p>
+              </div>
+            )}
+
+            {/* Clinical notes */}
+            <div>
+              <span className="text-xs text-on-surface-variant block mb-1">{t('clinicalNotes')}</span>
+              <p className="text-sm text-on-surface whitespace-pre-line bg-surface-container p-4 rounded-xl">
+                {sessionData?.clinicalNotes || '—'}
+              </p>
+            </div>
+
+            {/* Treatment plan */}
+            <div>
+              <span className="text-xs text-on-surface-variant block mb-1">{t('treatmentPlan')}</span>
+              <p className="text-sm text-on-surface whitespace-pre-line bg-surface-container p-4 rounded-xl">
+                {sessionData?.treatmentPlan || '—'}
+              </p>
+            </div>
+
+            {/* Next visit */}
+            {sessionData?.nextVisitDate && (
+              <div>
+                <span className="text-xs text-on-surface-variant block mb-1">{t('nextVisit')}</span>
+                <p className="text-sm font-semibold text-primary">
+                  {formatDate(sessionData.nextVisitDate)}
+                </p>
+              </div>
+            )}
+          </Card>
+
+          {/* Medications */}
+          {(sessionData as any)?.medications?.length > 0 && (
+            <Card className="space-y-3">
+              <h3 className="text-lg font-semibold text-on-surface border-b border-outline-variant pb-2">
+                {t('medications')}
+              </h3>
+              {(sessionData as any).medications.map((med: any, i: number) => (
+                <div key={i} className="grid grid-cols-3 gap-3 text-sm pb-3 border-b border-outline-variant last:border-0 last:pb-0">
+                  <div>
+                    <span className="text-xs text-on-surface-variant block">{t('medicationName')}</span>
+                    <span className="font-medium text-on-surface">{med.name}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-on-surface-variant block">{t('medicationDosage')}</span>
+                    <span className="text-on-surface">{med.dosage}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-on-surface-variant block">{t('medicationDuration')}</span>
+                    <span className="text-on-surface">{med.duration}</span>
+                  </div>
+                </div>
+              ))}
+            </Card>
+          )}
+
+          {/* Payment */}
+          <Card className="space-y-4">
+            <h3 className="text-lg font-semibold text-on-surface border-b border-outline-variant pb-2">
+              {tPayment('title')}
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <span className="text-xs text-on-surface-variant block">{tPayment('fee')}</span>
+                <span className="text-lg font-bold text-on-surface font-mono mt-1 block">
+                  {paymentData?.totalAmount ?? 0} {t('currency')}
+                </span>
+              </div>
+              <div>
+                <span className="text-xs text-on-surface-variant block">{tPayment('paid')}</span>
+                <span className="text-lg font-bold text-success font-mono mt-1 block">
+                  {paymentData?.paidAmount ?? 0} {t('currency')}
+                </span>
+              </div>
+              <div>
+                <span className="text-xs text-on-surface-variant block">{tPayment('remaining')}</span>
+                <span className={`text-lg font-bold font-mono mt-1 block ${remaining > 0 ? 'text-warning' : 'text-success'}`}>
+                  {remaining} {t('currency')}
+                </span>
+              </div>
+              <div>
+                <span className="text-xs text-on-surface-variant block mb-1">{tPayment('statusLabel')}</span>
+                {paymentData && <PaymentStatusBadge status={paymentData.status} />}
+              </div>
+            </div>
+            {paymentData?.notes && (
+              <p className="text-sm text-on-surface-variant bg-surface-container p-3 rounded-xl">
+                {paymentData.notes}
+              </p>
+            )}
+          </Card>
         </div>
       )}
     </div>

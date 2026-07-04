@@ -15,7 +15,7 @@ export const sessionService = {
         animal: { ...scope },
       },
       include: {
-        session: true,
+        session: { include: { medications: true } },
         payment: true,
         animal: {
           select: { id: true, name: true, species: true, breed: true },
@@ -44,78 +44,92 @@ export const sessionService = {
     const nextVisitDate = input.nextVisitDate ? new Date(input.nextVisitDate) : null
 
     return prisma.$transaction(async (tx) => {
+      // 1. Upsert session with all fields
       const examSession = await tx.session.upsert({
         where: { appointmentId },
         create: {
           appointmentId,
-          weight: input.weight || null,
-          clinicalNotes: input.clinicalNotes || '',
-          treatmentPlan: input.treatmentPlan || '',
+          weight:         input.weight ?? null,
+          chiefComplaint: input.chiefComplaint || null,
+          diagnosis:      input.diagnosis || null,
+          clinicalNotes:  input.clinicalNotes || null,
+          treatmentPlan:  input.treatmentPlan || null,
           nextVisitDate,
         },
         update: {
-          weight: input.weight || null,
-          clinicalNotes: input.clinicalNotes || '',
-          treatmentPlan: input.treatmentPlan || '',
+          weight:         input.weight ?? null,
+          chiefComplaint: input.chiefComplaint || null,
+          diagnosis:      input.diagnosis || null,
+          clinicalNotes:  input.clinicalNotes || null,
+          treatmentPlan:  input.treatmentPlan || null,
           nextVisitDate,
         },
       })
 
+      // 2. Replace medications (delete old, create new)
+      await tx.medication.deleteMany({ where: { sessionId: examSession.id } })
+      if (input.medications && input.medications.length > 0) {
+        await tx.medication.createMany({
+          data: input.medications.map((m) => ({
+            sessionId: examSession.id,
+            name:      m.name,
+            dosage:    m.dosage,
+            duration:  m.duration,
+            notes:     m.notes || null,
+          })),
+        })
+      }
+
+      // 3. Upsert payment
       const payment = await tx.payment.upsert({
         where: { appointmentId },
         create: {
           appointmentId,
           totalAmount: input.totalAmount,
-          paidAmount: input.paidAmount,
-          status: paymentStatus,
-          notes: input.notes || '',
+          paidAmount:  input.paidAmount,
+          status:      paymentStatus,
+          notes:       input.notes || null,
         },
         update: {
           totalAmount: input.totalAmount,
-          paidAmount: input.paidAmount,
-          status: paymentStatus,
-          notes: input.notes || '',
+          paidAmount:  input.paidAmount,
+          status:      paymentStatus,
+          notes:       input.notes || null,
         },
       })
 
+      // 4. Record weight history
       if (input.weight) {
         await tx.weightRecord.create({
-          data: {
-            animalId: appointment.animalId,
-            weight: input.weight,
-          },
+          data: { animalId: appointment.animalId, weight: input.weight },
         })
       }
 
+      // 5. Mark appointment completed
       await tx.appointment.update({
         where: { id: appointmentId },
-        data: { status: 'COMPLETED' },
+        data:  { status: 'COMPLETED' },
       })
 
+      // 6. Auto-book next appointment
       let nextAppointment = null
-
       if (nextVisitDate) {
         const conflict = await tx.appointment.findFirst({
           where: {
-            animalId: appointment.animalId,
+            animalId:    appointment.animalId,
             scheduledAt: nextVisitDate,
-            status: 'SCHEDULED',
+            status:      'SCHEDULED',
           },
         })
-
-        if (conflict) {
-          nextAppointment = conflict
-        } else {
-          nextAppointment = await tx.appointment.create({
-            data: {
-              animalId: appointment.animalId,
-              doctorId: appointment.doctorId,
-              scheduledAt: nextVisitDate,
-              status: 'SCHEDULED',
-              fee: input.totalAmount,
-            },
-          })
-        }
+        nextAppointment = conflict ?? await tx.appointment.create({
+          data: {
+            animalId:    appointment.animalId,
+            doctorId:    appointment.doctorId,
+            scheduledAt: nextVisitDate,
+            status:      'SCHEDULED',
+            fee:         input.totalAmount,
+          },
+        })
       }
 
       return { session: examSession, payment, nextAppointment }

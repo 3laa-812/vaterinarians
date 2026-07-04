@@ -20,6 +20,7 @@
     "@novu/api": "^3.17.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@react-pdf/renderer": "^4.5.1",
     "@tanstack/react-query": "^5.101.0",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^3.0.3",

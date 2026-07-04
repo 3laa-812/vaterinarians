@@ -6,7 +6,7 @@
 import Link from 'next/link'
 import { usePathname } from '@/lib/i18n-navigation'
 import { useLocale, useTranslations } from 'next-intl'
-import { Home, PawPrint, CalendarDays, Users, Plus } from 'lucide-react'
+import { Home, PawPrint, CalendarDays, Users, Plus, LineChart } from 'lucide-react'
 
 export function MobileNav() {
   const t = useTranslations('nav')
@@ -19,6 +19,7 @@ export function MobileNav() {
     { href: `/${locale}/session/new`, Icon: Plus, label: t('newSession'), id: 'mobile-nav-new-session', isFab: true },
     { href: `/${locale}/appointments`, Icon: CalendarDays, label: t('appointments'), id: 'mobile-nav-appointments' },
     { href: `/${locale}/owners`, Icon: Users, label: t('owners'), id: 'mobile-nav-owners' },
+    { href: `/${locale}/reports`, Icon: LineChart, label: t('reports'), id: 'mobile-nav-reports' },
   ]
 
   function isActive(href: string) {
