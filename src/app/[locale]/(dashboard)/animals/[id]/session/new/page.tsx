@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { useSession } from 'next-auth/react'
 import { SessionForm } from '@/components/sessions/SessionForm'
 import { useAnimalProfile } from '@/hooks/useAnimals'
+import { useClinicSettings } from '@/hooks/useClinicSettings'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
 
 export default function NewSessionPage() {
@@ -17,6 +18,7 @@ export default function NewSessionPage() {
 
   const { data: animal, isLoading } = useAnimalProfile(id)
   const { data: authSession } = useSession()
+  const { data: clinicSettings, isLoading: isLoadingSettings } = useClinicSettings()
 
   async function handleSubmit(data: any) {
     let finalApptId = appointmentId
@@ -53,7 +55,7 @@ export default function NewSessionPage() {
     router.push(`/${locale}/animals/${id}`)
   }
 
-  if (isLoading) return <div className="p-6"><SkeletonCard /></div>
+  if (isLoading || isLoadingSettings) return <div className="p-6"><SkeletonCard /></div>
   if (!animal) return null
 
   return (
@@ -67,6 +69,7 @@ export default function NewSessionPage() {
       </div>
 
       <SessionForm
+        initialData={{ totalAmount: clinicSettings?.defaultSessionFee ?? 0 }}
         onSubmit={handleSubmit}
         onCancel={() => router.back()}
       />

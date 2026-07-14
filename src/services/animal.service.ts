@@ -39,9 +39,16 @@ export const animalService = {
     const animal = await prisma.animal.findFirst({
       where: { id, ...clinicScope(session) },
       include: {
-        owner: true,
+        owner: {
+          include: {
+            animals: {
+              select: { id: true, name: true, species: true }
+            }
+          }
+        },
         weightRecords: { orderBy: { recordedAt: 'desc' } },
         appointments: {
+          where: session.user.role === 'DOCTOR' ? { doctorId: session.user.id } : undefined,
           include: { doctor: { select: { id: true, name: true } }, session: true, payment: true },
           orderBy: { scheduledAt: 'desc' },
         },
@@ -115,7 +122,19 @@ export const animalService = {
 
     if (!existing) throw new NotFoundError({ ar: 'الحيوان', en: 'Animal' })
 
-    await prisma.animal.delete({ where: { id } })
+    const appointments = await prisma.appointment.findMany({ 
+      where: { animalId: id }, 
+      select: { id: true } 
+    })
+    const apptIds = appointments.map(a => a.id)
+
+    await prisma.$transaction([
+      prisma.weightRecord.deleteMany({ where: { animalId: id } }),
+      prisma.session.deleteMany({ where: { appointmentId: { in: apptIds } } }),
+      prisma.payment.deleteMany({ where: { appointmentId: { in: apptIds } } }),
+      prisma.appointment.deleteMany({ where: { animalId: id } }),
+      prisma.animal.delete({ where: { id } }),
+    ])
   },
 
   // Private helpers — not exported, only used within this service

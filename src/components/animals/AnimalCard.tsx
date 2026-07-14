@@ -5,6 +5,7 @@ import { Link } from '@/lib/i18n-navigation'
 import type { AnimalListItem } from '@/types'
 import { AnimalAvatar } from '@/components/shared/AnimalAvatar'
 import { ArrowLeft, ArrowRight, AlertCircle } from 'lucide-react'
+import { AtRiskBadge } from './AtRiskBadge'
 
 interface AnimalCardProps { animal: AnimalListItem; className?: string }
 
@@ -41,7 +42,7 @@ export function AnimalCard({ animal, className = '' }: AnimalCardProps) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
                 <h3 className="font-bold text-on-surface truncate">{animal.name}</h3>
-                {isOverdue && <AlertCircle size={14} className="text-warning flex-shrink-0" />}
+                {isOverdue && <AtRiskBadge />}
               </div>
               <p className="text-xs text-on-surface-variant truncate">
                 {animal.breed ?? animal.species} · {animal.owner.name}

@@ -1,6 +1,3 @@
-// Home page — today's schedule
-// Shows greeting, date, and today's appointments
-
 import { getTranslations } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
@@ -39,9 +36,10 @@ export default async function HomePage({
       </div>
 
       {/* Schedule */}
-      <div className="max-w-3xl mx-auto px-4 md:px-8 py-6">
+      <div className="max-w-3xl mx-auto px-4 md:px-8 py-6 space-y-6">
         <TodaySchedule />
       </div>
     </div>
   )
 }
+

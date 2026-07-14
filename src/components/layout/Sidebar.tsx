@@ -21,6 +21,7 @@ import {
   ChevronLeft,
   Plus,
   LineChart,
+  ClipboardList,
 } from 'lucide-react'
 
 export function Sidebar() {
@@ -45,6 +46,7 @@ export function Sidebar() {
     { href: `/${locale}/session/new`, Icon: Plus, label: t('newSession'), id: 'nav-new-session', isPrimaryAction: true },
     { href: `/${locale}/animals`, Icon: PawPrint, label: t('animals'), id: 'nav-animals' },
     { href: `/${locale}/appointments`, Icon: CalendarDays, label: t('appointments'), id: 'nav-appointments' },
+    { href: `/${locale}/sessions`, Icon: ClipboardList, label: t('sessions', { fallback: 'Sessions' }), id: 'nav-sessions' },
     { href: `/${locale}/owners`, Icon: Users, label: t('owners'), id: 'nav-owners' },
     ...(isAdmin
       ? [

@@ -49,7 +49,9 @@ export type AnimalListItem = {
 }
 
 export type AnimalProfile = Animal & {
-  owner: Owner
+  owner: Owner & {
+    animals: { id: string; name: string; species: string }[]
+  }
   latestWeight: number | null
   weightDelta: number | null
   totalWeightLost: number | null

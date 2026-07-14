@@ -6,6 +6,7 @@ import type { OwnerListItem } from '@/types'
 import { SpeciesTag } from '@/components/shared/SpeciesTag'
 import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
+import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon'
 
 interface OwnerBlockProps {
   owner: OwnerListItem
@@ -24,8 +25,14 @@ export function OwnerBlock({ owner, className = '' }: OwnerBlockProps) {
           <p className="text-sm text-on-surface-variant mt-1 font-mono">{owner.phone}</p>
         </div>
         <div className="flex gap-2">
-          <a href={`tel:${owner.phone}`}>
-            <Button className="px-4 py-2 text-sm">{tAnimal('call')}</Button>
+          <a
+            href={`https://wa.me/${owner.phone.startsWith('0') ? `+20${owner.phone.substring(1)}` : owner.phone}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 text-sm rounded-xl font-bold hover:bg-[#20bd5a] transition-colors"
+          >
+            <WhatsAppIcon className="w-4 h-4" />
+            WhatsApp
           </a>
 
           {owner.email && (

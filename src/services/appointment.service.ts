@@ -18,7 +18,7 @@ export const appointmentService = {
     const appointments = await prisma.appointment.findMany({
       where: {
         ...appointmentClinicFilter(session),
-        doctorId: doctorId || undefined,
+        doctorId: session.user.role === 'DOCTOR' ? session.user.id : (doctorId || undefined),
         ...dateFilter,
       },
       include: {
@@ -60,7 +60,11 @@ export const appointmentService = {
 
   async getById(session: Session, id: string) {
     const appointment = await prisma.appointment.findFirst({
-      where: { id, ...appointmentClinicFilter(session) },
+      where: {
+        id,
+        ...appointmentClinicFilter(session),
+        ...(session.user.role === 'DOCTOR' ? { doctorId: session.user.id } : {}),
+      },
       include: {
         animal: { include: { owner: true } },
         doctor: { select: { id: true, name: true } },
@@ -88,7 +92,11 @@ export const appointmentService = {
       }
 
       const doctor = await prisma.user.findFirst({
-        where: { id: input.doctorId, role: 'DOCTOR', clinicId: session.user.clinicId! },
+        where: {
+          id: input.doctorId,
+          role: { in: ['DOCTOR', 'CLINIC_ADMIN'] },
+          clinicId: session.user.clinicId!,
+        },
       })
       if (!doctor) {
         throw new AppError('الطبيب غير موجود في عيادتك', 'Doctor not found in your clinic', 400, 'INVALID_DOCTOR')
@@ -109,7 +117,11 @@ export const appointmentService = {
 
   async update(session: Session, id: string, input: AppointmentInput) {
     const existing = await prisma.appointment.findFirst({
-      where: { id, ...appointmentClinicFilter(session) },
+      where: {
+        id,
+        ...appointmentClinicFilter(session),
+        ...(session.user.role === 'DOCTOR' ? { doctorId: session.user.id } : {}),
+      },
     })
 
     if (!existing) throw new NotFoundError({ ar: 'الموعد', en: 'Appointment' })
@@ -117,7 +129,13 @@ export const appointmentService = {
     if (session.user.role !== 'SUPER_ADMIN') {
       const [animal, doctor] = await Promise.all([
         prisma.animal.findFirst({ where: { id: input.animalId, clinicId: session.user.clinicId! } }),
-        prisma.user.findFirst({ where: { id: input.doctorId, role: 'DOCTOR', clinicId: session.user.clinicId! } }),
+        prisma.user.findFirst({
+          where: {
+            id: input.doctorId,
+            role: { in: ['DOCTOR', 'CLINIC_ADMIN'] },
+            clinicId: session.user.clinicId!,
+          },
+        }),
       ])
 
       if (!animal || !doctor) {
@@ -139,7 +157,11 @@ export const appointmentService = {
 
   async delete(session: Session, id: string) {
     const existing = await prisma.appointment.findFirst({
-      where: { id, ...appointmentClinicFilter(session) },
+      where: {
+        id,
+        ...appointmentClinicFilter(session),
+        ...(session.user.role === 'DOCTOR' ? { doctorId: session.user.id } : {}),
+      },
     })
 
     if (!existing) throw new NotFoundError({ ar: 'الموعد', en: 'Appointment' })

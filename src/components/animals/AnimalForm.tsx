@@ -286,19 +286,6 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
 
               <div>
                 <label className="block text-sm font-medium text-primary mb-1">
-                  {tOwner('email')}
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={newOwnerData.email}
-                  onChange={handleNewOwnerChange}
-                  className="w-full px-4 py-3 rounded-xl border border-outline/20 bg-surface text-primary outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-primary mb-1">
                   {tOwner('address')}
                 </label>
                 <input

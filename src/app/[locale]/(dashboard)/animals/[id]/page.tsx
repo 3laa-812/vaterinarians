@@ -14,6 +14,7 @@ import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
 import { Input } from '@/components/shared/Input'
 import { WeightChart } from '@/components/animals/WeightChart'
+import { AtRiskBanner } from '@/components/animals/AtRiskBanner'
 
 export default function AnimalProfilePage() {
   const params = useParams<{ id: string }>()
@@ -115,8 +116,14 @@ export default function AnimalProfilePage() {
     })
   }
 
+  const isAtRisk = profile.appointments.some(
+    (ap: any) => ap.status === 'SCHEDULED' && new Date(ap.scheduledAt) < new Date()
+  )
+
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
+      {isAtRisk && <AtRiskBanner phone={profile.owner.phone} />}
+      
       {/* Profile Header */}
       <Card className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-4">
@@ -186,7 +193,7 @@ export default function AnimalProfilePage() {
             email: profile.owner.email,
             address: profile.owner.address,
             notes: profile.owner.notes,
-            animals: [],
+            animals: profile.owner.animals || [],
           }} />
 
           {/* Medical History */}

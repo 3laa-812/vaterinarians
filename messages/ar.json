@@ -18,6 +18,7 @@
     "newSession": "كشف جديد",
     "animals": "المرضى",
     "appointments": "المواعيد",
+    "sessions": "سجل الجلسات",
     "owners": "المرافقون",
     "admin": "الإدارة",
     "profile": "حسابي",
@@ -114,6 +115,7 @@
     "weightDelta": "الفرق عن الجلسة السابقة",
     "chooseDate": "اختر تاريخ",
     "chooseTime": "اختر وقت",
+    "backToSchedule": "العودة للجدول",
     "companion": "المرافق",
     "clinicalDetails": "البيانات السريرية",
     "billingPayment": "الرسوم والدفع",
@@ -278,5 +280,16 @@
     "rabbit": "أرنب",
     "hamster": "هامستر",
     "other": "أخرى"
+  },
+  "outstandingPayments": {
+    "title": "المدفوعات المعلقة",
+    "owes": "عليه",
+    "viewProfile": "عرض الملف",
+    "empty": "لا توجد مدفوعات معلقة."
+  },
+  "atRisk": {
+    "title": "مريض معرض للخطر",
+    "missedVisits": "تغيب عن آخر موعدين",
+    "contactWhatsapp": "تواصل عبر واتساب"
   }
 }

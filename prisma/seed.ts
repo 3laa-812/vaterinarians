@@ -38,12 +38,12 @@ async function main() {
     },
   })
 
-  // Demo Doctor
+  // Demo Doctor 1
   await prisma.user.upsert({
     where: { email: 'doctor@vetclinic.com' },
     update: {},
     create: {
-      name: 'د. سارة أحمد',
+      name: 'د. سارة',
       email: 'doctor@vetclinic.com',
       password: await bcrypt.hash('Doctor@1234', 12),
       role: 'DOCTOR',
@@ -52,14 +52,28 @@ async function main() {
     },
   })
 
-  // Demo Clinic Admin
+  // Demo Doctor 2
   await prisma.user.upsert({
-    where: { email: 'clinicadmin@vetclinic.com' },
+    where: { email: 'doctor2@vetclinic.com' },
+    update: {},
+    create: {
+      name: 'د. خالد',
+      email: 'doctor2@vetclinic.com',
+      password: await bcrypt.hash('Doctor@1234', 12),
+      role: 'DOCTOR',
+      clinicId: clinic.id,
+      preferredLang: 'ar',
+    },
+  })
+
+  // Demo Clinic Admin (Manager)
+  await prisma.user.upsert({
+    where: { email: 'manager@vetclinic.com' },
     update: {},
     create: {
       name: 'مدير العيادة',
-      email: 'clinicadmin@vetclinic.com',
-      password: await bcrypt.hash('ClinicAdmin@1234', 12),
+      email: 'manager@vetclinic.com',
+      password: await bcrypt.hash('Manager@1234', 12),
       role: 'CLINIC_ADMIN',
       clinicId: clinic.id,
       preferredLang: 'ar',

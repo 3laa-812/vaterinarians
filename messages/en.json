@@ -18,6 +18,7 @@
     "newSession": "New Session",
     "animals": "Animals",
     "appointments": "Appointments",
+    "sessions": "Sessions",
     "owners": "Owners",
     "admin": "Admin",
     "profile": "Profile",
@@ -114,6 +115,7 @@
     "weightDelta": "Change from last session",
     "chooseDate": "Choose date",
     "chooseTime": "Choose time",
+    "backToSchedule": "Back to Schedule",
     "companion": "Companion",
     "clinicalDetails": "Clinical Details",
     "billingPayment": "Billing & Payment",
@@ -278,5 +280,16 @@
     "rabbit": "Rabbit",
     "hamster": "Hamster",
     "other": "Other"
+  },
+  "outstandingPayments": {
+    "title": "Outstanding Payments",
+    "owes": "owes",
+    "viewProfile": "View Profile",
+    "empty": "No outstanding payments."
+  },
+  "atRisk": {
+    "title": "At-Risk Patient",
+    "missedVisits": "Missed last two appointments",
+    "contactWhatsapp": "Contact via WhatsApp"
   }
 }

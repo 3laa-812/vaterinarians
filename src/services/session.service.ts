@@ -13,6 +13,7 @@ export const sessionService = {
       where: {
         id: appointmentId,
         animal: { ...scope },
+        ...(userSession.user.role === 'DOCTOR' ? { doctorId: userSession.user.id } : {}),
       },
       include: {
         session: { include: { medications: true } },
@@ -35,6 +36,7 @@ export const sessionService = {
       where: {
         id: appointmentId,
         animal: { ...scope },
+        ...(userSession.user.role === 'DOCTOR' ? { doctorId: userSession.user.id } : {}),
       },
     })
 

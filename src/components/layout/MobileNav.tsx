@@ -6,7 +6,7 @@
 import Link from 'next/link'
 import { usePathname } from '@/lib/i18n-navigation'
 import { useLocale, useTranslations } from 'next-intl'
-import { Home, PawPrint, CalendarDays, User, Plus } from 'lucide-react'
+import { Home, PawPrint, CalendarDays, User, Plus, ClipboardList, Users } from 'lucide-react'
 
 export function MobileNav() {
   const t = useTranslations('nav')
@@ -16,8 +16,10 @@ export function MobileNav() {
   const navItems = [
     { href: `/${locale}/home`, Icon: Home, label: t('home'), id: 'mobile-nav-home' },
     { href: `/${locale}/animals`, Icon: PawPrint, label: t('animals'), id: 'mobile-nav-animals' },
+    { href: `/${locale}/owners`, Icon: Users, label: t('owners'), id: 'mobile-nav-owners' },
     { href: `/${locale}/session/new`, Icon: Plus, label: t('newSession'), id: 'mobile-nav-new-session', isFab: true },
     { href: `/${locale}/appointments`, Icon: CalendarDays, label: t('appointments'), id: 'mobile-nav-appointments' },
+    { href: `/${locale}/sessions`, Icon: ClipboardList, label: t('sessions'), id: 'mobile-nav-sessions' },
     { href: `/${locale}/profile`, Icon: User, label: t('profile'), id: 'mobile-nav-profile' },
   ]
 
@@ -50,8 +52,8 @@ export function MobileNav() {
                   : 'text-on-surface-variant'
               }`}
             >
-              <Icon size={22} />
-              <span className="text-[10px] font-medium">{label}</span>
+              <Icon size={22} className="shrink-0" />
+              <span className="text-[10px] font-medium truncate w-full text-center px-0.5">{label}</span>
             </Link>
           )
         )}
