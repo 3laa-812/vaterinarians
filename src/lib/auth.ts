@@ -41,5 +41,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       },
     }),
+    Credentials({
+      id: 'guardian-qr',
+      name: 'Guardian QR',
+      credentials: {
+        token: { label: 'QR Token', type: 'text' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.token) return null
+
+        try {
+          // Dynamic import because auth.ts might run in Edge (middleware)
+          // Actually next-auth/providers are usually fine, but crypto module isn't.
+          const { validateGuardianToken } = await import('./guardian-auth-qr')
+          
+          const owner = await validateGuardianToken(credentials.token as string)
+          
+          return {
+            id: owner.id,
+            name: owner.name,
+            email: owner.email || '',
+            role: 'GUARDIAN',
+            clinicId: owner.clinicId,
+            preferredLang: 'ar',
+          }
+        } catch (e) {
+          console.error("QR Auth Error:", e)
+          return null
+        }
+      },
+    }),
   ],
 })

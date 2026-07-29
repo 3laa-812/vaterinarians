@@ -17,16 +17,16 @@ enum Role {
 }
 
 enum AppointmentStatus {
-  SCHEDULED  // مجدول
-  COMPLETED  // اكتمل
-  ABSENT     // غاب
-  POSTPONED  // مؤجل
+  SCHEDULED // مجدول
+  COMPLETED // اكتمل
+  ABSENT // غاب
+  POSTPONED // مؤجل
 }
 
 enum PaymentStatus {
-  UNPAID   // لم يُدفع
-  PARTIAL  // دفع جزء
-  PAID     // مدفوع
+  UNPAID // لم يُدفع
+  PARTIAL // دفع جزء
+  PAID // مدفوع
 }
 
 enum AnimalGender {
@@ -51,6 +51,16 @@ model Clinic {
   users   User[]
   animals Animal[]
   owners  Owner[]
+
+  incomes        Income[]
+  expenses       Expense[]
+  staff          Staff[]
+  budgets        Budget[]
+  financialGoals FinancialGoal[]
+  products       Product[]
+  orders         Order[]
+  invoices       Invoice[]
+  vaccineCatalogs VaccineCatalog[]
 }
 
 // ─────────────────────────────────────────
@@ -58,19 +68,24 @@ model Clinic {
 // ─────────────────────────────────────────
 
 model User {
-  id               String   @id @default(cuid())
+  id               String  @id @default(cuid())
   name             String
-  email            String   @unique
+  email            String  @unique
   password         String // bcrypt hashed
-  role             Role     @default(DOCTOR)
+  role             Role    @default(DOCTOR)
   phone            String?
-  preferredLang    String   @default("ar") // "ar" | "en"
-  novuSubscriberId String?  @unique // for push notifications
+  preferredLang    String  @default("ar") // "ar" | "en"
+  novuSubscriberId String? @unique // for push notifications
 
   clinic   Clinic? @relation(fields: [clinicId], references: [id])
   clinicId String?
 
   appointments Appointment[]
+
+  recordedIncomes  Income[]
+  recordedExpenses Expense[]
+  paidSalaries     SalaryPayment[]
+  createdInvoices  Invoice[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -92,6 +107,9 @@ model Owner {
   clinicId String
 
   animals Animal[]
+  orders  Order[]
+  invoices Invoice[]
+  accessTokens GuardianAccessToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -100,12 +118,33 @@ model Owner {
   @@index([clinicId, phone])
 }
 
+model GuardianAccessToken {
+  id          String    @id @default(cuid())
+  ownerId     String
+  owner       Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  tokenHash   String    @unique
+  createdAt   DateTime  @default(now())
+  revokedAt   DateTime?
+  isActive    Boolean   @default(true)
+  
+  @@index([ownerId])
+}
+
+model GuardianAuthAuditLog {
+  id        String   @id @default(cuid())
+  ownerId   String?
+  timestamp DateTime @default(now())
+  success   Boolean
+  ipAddress String?
+  device    String?
+}
+
 // ─────────────────────────────────────────
 // ANIMAL (Patient / المريض)
 // ─────────────────────────────────────────
 
 model Animal {
-  id             String       @id @default(cuid())
+  id             String        @id @default(cuid())
   name           String
   species        String // e.g. "dog", "cat", "bird"
   breed          String?
@@ -114,16 +153,18 @@ model Animal {
   color          String?
   medicalHistory String? // free text — existing conditions, allergies, notes
   notes          String? // general vet notes
-  targetWeight   Float?   // الوزن المستهدف لبرامج التخسيس
+  targetWeight   Float? // الوزن المستهدف لبرامج التخسيس
 
-  owner    Owner  @relation(fields: [ownerId], references: [id])
-  ownerId  String
+  owner   Owner  @relation(fields: [ownerId], references: [id])
+  ownerId String
 
   clinic   Clinic @relation(fields: [clinicId], references: [id])
   clinicId String
 
   appointments  Appointment[]
   weightRecords WeightRecord[]
+  invoices      Invoice[]
+  vaccinations  PetVaccination[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -165,13 +206,13 @@ model Appointment {
 // ─────────────────────────────────────────
 
 model Session {
-  id              String    @id @default(cuid())
-  weight          Float?
-  chiefComplaint  String?   // الشكوى الرئيسية
-  diagnosis       String?   // التشخيص
-  clinicalNotes   String?
-  treatmentPlan   String?
-  nextVisitDate   DateTime?
+  id             String    @id @default(cuid())
+  weight         Float?
+  chiefComplaint String? // الشكوى الرئيسية
+  diagnosis      String? // التشخيص
+  clinicalNotes  String?
+  treatmentPlan  String?
+  nextVisitDate  DateTime?
 
   appointment   Appointment @relation(fields: [appointmentId], references: [id])
   appointmentId String      @unique
@@ -183,11 +224,11 @@ model Session {
 }
 
 model Medication {
-  id        String  @id @default(cuid())
-  name      String
-  dosage    String
-  duration  String
-  notes     String?
+  id       String  @id @default(cuid())
+  name     String
+  dosage   String
+  duration String
+  notes    String?
 
   session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   sessionId String
@@ -209,8 +250,48 @@ model Payment {
   appointment   Appointment @relation(fields: [appointmentId], references: [id])
   appointmentId String      @unique
 
+  invoice       Invoice?    @relation(fields: [invoiceId], references: [id])
+  invoiceId     String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────
+// INVOICE
+// ─────────────────────────────────────────
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  status        PaymentStatus @default(UNPAID)
+  paymentMethod String?
+  subtotal      Float
+  discount      Float         @default(0)
+  tax           Float         @default(0)
+  total         Float
+  paidAmount    Float         @default(0)
+
+  clinic        Clinic        @relation(fields: [clinicId], references: [id])
+  clinicId      String
+
+  owner         Owner         @relation(fields: [ownerId], references: [id])
+  ownerId       String
+
+  animal        Animal?       @relation(fields: [animalId], references: [id])
+  animalId      String?
+
+  createdBy     User?         @relation(fields: [createdById], references: [id])
+  createdById   String?
+
+  payments      Payment[]
+  orders        Order[]
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([clinicId, status])
+  @@index([ownerId])
 }
 
 // ─────────────────────────────────────────
@@ -226,4 +307,342 @@ model WeightRecord {
   animalId String
 
   @@index([animalId, recordedAt])
+}
+
+// ─────────────────────────────────────────
+// FINANCE MODULE
+// ─────────────────────────────────────────
+
+enum IncomeCategory {
+  SESSION_PAYMENT
+  STORE_ORDER
+  CONSULTATION_FEE
+  HOME_VISIT
+  GROOMING
+  BOARDING
+  VACCINATION
+  LAB_TEST
+  OTHER
+}
+
+enum ExpenseCategory {
+  RENT
+  SALARIES
+  MEDICAL_SUPPLIES
+  MEDICATIONS_STOCK
+  UTILITIES
+  EQUIPMENT
+  MAINTENANCE
+  MARKETING
+  INSURANCE
+  CLEANING
+  STORE_PURCHASE
+  TAX
+  BANK_FEES
+  OTHER
+}
+
+enum ExpenseFrequency {
+  ONE_TIME
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  ANNUALLY
+}
+
+model Income {
+  id          String         @id @default(cuid())
+  amount      Float
+  category    IncomeCategory
+  description String
+  date        DateTime
+  notes       String?
+
+  clinic       Clinic @relation(fields: [clinicId], references: [id])
+  clinicId     String
+  recordedBy   User   @relation(fields: [recordedById], references: [id])
+  recordedById String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clinicId, date])
+}
+
+model Expense {
+  id          String          @id @default(cuid())
+  amount      Float
+  category    ExpenseCategory
+  description String
+  date        DateTime
+  notes       String?
+
+  // Recurring support
+  isRecurring      Boolean           @default(false)
+  frequency        ExpenseFrequency?
+  recurringDay     Int? // Day of month (for monthly)
+  recurringEndDate DateTime? // Recurrence end date
+  parentExpenseId  String? // If a copy of a recurring one
+  parentExpense    Expense?          @relation("RecurringExpenses", fields: [parentExpenseId], references: [id])
+  childExpenses    Expense[]         @relation("RecurringExpenses")
+
+  clinic       Clinic @relation(fields: [clinicId], references: [id])
+  clinicId     String
+  recordedBy   User   @relation(fields: [recordedById], references: [id])
+  recordedById String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clinicId, date])
+  @@index([clinicId, category])
+  @@index([isRecurring])
+}
+
+model Staff {
+  id         String   @id @default(cuid())
+  name       String
+  role       String
+  phone      String?
+  baseSalary Float
+  startDate  DateTime
+  isActive   Boolean  @default(true)
+  notes      String?
+
+  clinic   Clinic          @relation(fields: [clinicId], references: [id])
+  clinicId String
+  salaries SalaryPayment[]
+  advances SalaryAdvance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clinicId, isActive])
+}
+
+model SalaryPayment {
+  id         String   @id @default(cuid())
+  amount     Float
+  baseSalary Float
+  bonus      Float    @default(0)
+  deductions Float    @default(0)
+  month      Int
+  year       Int
+  paidAt     DateTime
+  notes      String?
+
+  staff    Staff  @relation(fields: [staffId], references: [id])
+  staffId  String
+  paidBy   User   @relation(fields: [paidById], references: [id])
+  paidById String
+
+  createdAt DateTime @default(now())
+
+  @@unique([staffId, month, year])
+  @@index([staffId, year])
+}
+
+model SalaryAdvance {
+  id       String    @id @default(cuid())
+  amount   Float
+  date     DateTime
+  reason   String?
+  repaid   Boolean   @default(false)
+  repaidAt DateTime?
+  notes    String?
+
+  staff   Staff  @relation(fields: [staffId], references: [id])
+  staffId String
+
+  createdAt DateTime @default(now())
+}
+
+model Budget {
+  id       String          @id @default(cuid())
+  month    Int
+  year     Int
+  category ExpenseCategory
+  planned  Float
+
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+  clinicId String
+
+  @@unique([clinicId, month, year, category])
+}
+
+model FinancialGoal {
+  id           String   @id @default(cuid())
+  title        String
+  targetAmount Float
+  targetDate   DateTime
+  type         String
+  isAchieved   Boolean  @default(false)
+
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+  clinicId String
+
+  createdAt DateTime @default(now())
+}
+
+// ─────────────────────────────────────────
+// STORE MODULE
+// ─────────────────────────────────────────
+
+enum ProductCategory {
+  MEDICINE
+  FOOD
+  ACCESSORY
+  OTHER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum OrderPaymentStatus {
+  UNPAID
+  PAID
+  CASH
+}
+
+model Product {
+  id                   String          @id @default(cuid())
+  name                 String
+  nameAr               String?
+  description          String?
+  category             ProductCategory
+  price                Float
+  imageUrl             String?
+  imageKey             String?
+  stock                Int             @default(0)
+  minStock             Int             @default(5)
+  unit                 String          @default("piece")
+  isActive             Boolean         @default(true)
+  requiresPrescription Boolean         @default(false)
+
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+  clinicId String
+
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clinicId, category])
+  @@index([clinicId, isActive])
+}
+
+model Order {
+  id             String             @id @default(cuid())
+  orderNumber    String             @unique
+  status         OrderStatus        @default(PENDING)
+  paymentStatus  OrderPaymentStatus @default(UNPAID)
+  subtotal       Float
+  deliveryFee    Float              @default(0)
+  total          Float
+  notes          String?
+  deliveryMethod String             @default("pickup")
+
+  owner   Owner  @relation(fields: [ownerId], references: [id])
+  ownerId String
+
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+  clinicId String
+
+  items    OrderItem[]
+  messages OrderMessage[]
+
+  invoice   Invoice? @relation(fields: [invoiceId], references: [id])
+  invoiceId String?
+
+  confirmedAt DateTime?
+  readyAt     DateTime?
+  deliveredAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clinicId, status])
+  @@index([ownerId])
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  quantity  Int
+  unitPrice Float
+  total     Float
+
+  order   Order  @relation(fields: [orderId], references: [id])
+  orderId String
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+}
+
+model OrderMessage {
+  id        String    @id @default(cuid())
+  content   String
+  fromOwner Boolean   @default(false)
+  readAt    DateTime?
+
+  order   Order  @relation(fields: [orderId], references: [id])
+  orderId String
+
+  createdAt DateTime @default(now())
+}
+
+// ─────────────────────────────────────────
+// VACCINATION MODULE
+// ─────────────────────────────────────────
+
+model VaccineCatalog {
+  id                  String    @id @default(cuid())
+  name                String
+  species             String    // e.g. "dog", "cat", "both"
+  isCore              Boolean   @default(false)
+  defaultIntervalDays Int?
+  description         String?
+  isActive            Boolean   @default(true)
+  
+  clinicId            String
+  clinic              Clinic    @relation(fields: [clinicId], references: [id])
+  
+  vaccinations        PetVaccination[]
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([clinicId, species, isActive])
+}
+
+model PetVaccination {
+  id                     String    @id @default(cuid())
+  dateAdministered       DateTime  @default(now())
+  nextDueDate            DateTime?
+  administeredBy         String?   // Free text or User ID
+  clinicName             String?   // For external vaccines
+  manufacturer           String?
+  lotNumber              String?
+  productExpirationDate  DateTime?
+  doseNumber             String?
+  notes                  String?
+  certificateFileUrl     String?
+  reminderSent           Boolean   @default(false)
+
+  petId                  String
+  pet                    Animal    @relation(fields: [petId], references: [id])
+  
+  vaccineId              String
+  vaccine                VaccineCatalog @relation(fields: [vaccineId], references: [id])
+
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@index([petId])
+  @@index([lotNumber])
 }

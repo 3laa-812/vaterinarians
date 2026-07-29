@@ -11,6 +11,8 @@ import { SpeciesTag } from '@/components/shared/SpeciesTag'
 import { PaymentStatusBadge } from '@/components/shared/PaymentStatusBadge'
 import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
+import { Modal } from '@/components/shared/Modal'
+import { QRDisplay } from '@/components/guardian/QRDisplay'
 import { calculateRemaining } from '@/domain/payment'
 
 export default function SessionDetailPage() {
@@ -27,9 +29,14 @@ export default function SessionDetailPage() {
   const { data: appointment, isLoading, error, refetch } = useSession(id)
   const saveMutation = useSaveSession(id)
 
+  const [qrToken, setQrToken] = useState<string | null>(null)
+
   async function handleSubmit(data: any) {
-    await saveMutation.mutateAsync(data)
+    const result = await saveMutation.mutateAsync(data)
     setIsEditing(false)
+    if (result.qrToken) {
+      setQrToken(result.qrToken)
+    }
     refetch()
   }
 
@@ -244,6 +251,12 @@ export default function SessionDetailPage() {
             )}
           </Card>
         </div>
+      )}
+
+      {qrToken && (
+        <Modal isOpen={!!qrToken} onClose={() => setQrToken(null)} title={t('qrCodeTitle') || 'Owner QR Code'}>
+          <QRDisplay token={qrToken} />
+        </Modal>
       )}
     </div>
   )

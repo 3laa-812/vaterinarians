@@ -7,6 +7,11 @@ import { SpeciesTag } from '@/components/shared/SpeciesTag'
 import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
 import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon'
+import { Modal } from '@/components/shared/Modal'
+import { QRDisplay } from '@/components/guardian/QRDisplay'
+import { useRegenerateQRToken } from '@/hooks/useOwners'
+import { QrCode } from 'lucide-react'
+import { useState } from 'react'
 
 interface OwnerBlockProps {
   owner: OwnerListItem
@@ -16,8 +21,26 @@ interface OwnerBlockProps {
 export function OwnerBlock({ owner, className = '' }: OwnerBlockProps) {
   const t = useTranslations('owner')
   const tAnimal = useTranslations('animal')
+  
+  const [showQRModal, setShowQRModal] = useState(false)
+  const [qrToken, setQrToken] = useState<string | null>(null)
+  
+  const regenerateMutation = useRegenerateQRToken(owner.id)
+
+  const handleShowQR = async () => {
+    try {
+      const data = await regenerateMutation.mutateAsync()
+      if (data.qrToken) {
+        setQrToken(data.qrToken)
+        setShowQRModal(true)
+      }
+    } catch (error) {
+      console.error('Failed to regenerate QR', error)
+    }
+  }
 
   return (
+    <>
     <Card className={`p-6 ${className}`}>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline-variant pb-6 mb-6">
         <div>
@@ -42,6 +65,16 @@ export function OwnerBlock({ owner, className = '' }: OwnerBlockProps) {
               </Button>
             </a>
           )}
+          
+          <Button 
+            variant="secondary" 
+            className="px-4 py-2 text-sm flex items-center gap-2"
+            onClick={handleShowQR}
+            disabled={regenerateMutation.isPending}
+          >
+            <QrCode className="w-4 h-4" />
+            {t('showQR')}
+          </Button>
         </div>
       </div>
 
@@ -95,5 +128,10 @@ export function OwnerBlock({ owner, className = '' }: OwnerBlockProps) {
         </div>
       </div>
     </Card>
+    
+    <Modal isOpen={showQRModal} onClose={() => setShowQRModal(false)} title={t('guardianQR')}>
+      {qrToken && <QRDisplay token={qrToken} />}
+    </Modal>
+    </>
   )
 }

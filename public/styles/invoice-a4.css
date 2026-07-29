@@ -1,0 +1,27 @@
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  /* Hide common UI elements that shouldn't be printed */
+  body * {
+    visibility: hidden;
+  }
+
+  #printable-invoice, #printable-invoice * {
+    visibility: visible;
+  }
+
+  #printable-invoice {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  /* Hide scrollbars, buttons, etc. within the printable area */
+  .no-print, .no-print * {
+    display: none !important;
+  }
+}

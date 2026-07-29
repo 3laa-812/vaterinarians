@@ -16,6 +16,6 @@ export const GET = withAuth(async (req, { session }) => {
 export const POST = withAuth(async (req, { session }) => {
   const body = await req.json()
   const parsed = ownerSchema.parse(body)
-  const owner = await ownerService.create(session, parsed)
-  return apiSuccess({ owner }, 201)
+  const result = await ownerService.create(session, parsed)
+  return apiSuccess(result, 201)
 })

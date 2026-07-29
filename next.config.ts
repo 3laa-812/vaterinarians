@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
   // next-pwa is applied via withPWA wrapper in the CommonJS build step
   // PWA config is kept in next.config.cjs for production builds
   skipProxyUrlNormalize: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+    ],
+  },
   async headers() {
     return [
       {

@@ -3,6 +3,7 @@ import { clinicScope } from '@/lib/scope'
 import { AppError, NotFoundError, ClinicMismatchError } from '@/lib/api/errors'
 import type { Session } from 'next-auth'
 import type { OwnerInput } from '@/lib/validations/owner.schema'
+import { createGuardianAccessToken } from '@/lib/guardian-auth-qr'
 
 export const ownerService = {
   async list(session: Session, { search = '', page = 1, limit = 20 }: { search?: string; page?: number; limit?: number }) {
@@ -52,13 +53,8 @@ export const ownerService = {
 
     if (!owner) throw new NotFoundError({ ar: 'المرافق', en: 'Owner' })
 
-    if (session.user.role !== 'SUPER_ADMIN' && owner.animals.length === 0) {
-      const hasAnimalsInClinic = await prisma.animal.findFirst({
-        where: { ownerId: id, clinicId: session.user.clinicId! },
-      })
-      if (!hasAnimalsInClinic) {
-        throw new ClinicMismatchError()
-      }
+    if (session.user.role !== 'SUPER_ADMIN' && owner.clinicId !== session.user.clinicId) {
+      throw new ClinicMismatchError()
     }
 
     return owner
@@ -73,9 +69,11 @@ export const ownerService = {
       where: { phone: input.phone, clinicId },
     })
 
-    if (existing) return existing
+    if (existing) {
+      return { owner: existing, qrToken: null };
+    }
 
-    return prisma.owner.create({
+    const owner = await prisma.owner.create({
       data: {
         name: input.name,
         phone: input.phone,
@@ -85,14 +83,25 @@ export const ownerService = {
         clinicId,
       },
     })
+
+    const qrToken = await createGuardianAccessToken(owner.id);
+
+    return { owner, qrToken };
+  },
+
+  async regenerateQr(session: Session, id: string) {
+    if (session.user.role !== 'SUPER_ADMIN') {
+      const owner = await prisma.owner.findUnique({ where: { id } })
+      if (!owner || owner.clinicId !== session.user.clinicId) throw new ClinicMismatchError()
+    }
+    const qrToken = await createGuardianAccessToken(id);
+    return { qrToken };
   },
 
   async update(session: Session, id: string, input: OwnerInput) {
     if (session.user.role !== 'SUPER_ADMIN') {
-      const hasAnimalsInClinic = await prisma.animal.findFirst({
-        where: { ownerId: id, clinicId: session.user.clinicId! },
-      })
-      if (!hasAnimalsInClinic) throw new ClinicMismatchError()
+      const owner = await prisma.owner.findUnique({ where: { id } })
+      if (!owner || owner.clinicId !== session.user.clinicId) throw new ClinicMismatchError()
     }
 
     return prisma.owner.update({
@@ -109,24 +118,9 @@ export const ownerService = {
 
   async delete(session: Session, id: string) {
     if (session.user.role !== 'SUPER_ADMIN') {
-      const hasAnimalsInClinic = await prisma.animal.findFirst({
-        where: { ownerId: id, clinicId: session.user.clinicId! },
-      })
-      if (!hasAnimalsInClinic) throw new ClinicMismatchError()
-
-      await prisma.animal.deleteMany({
-        where: { ownerId: id, clinicId: session.user.clinicId! },
-      })
-
-      const remainingAnimals = await prisma.animal.count({
-        where: { ownerId: id },
-      })
-
-      if (remainingAnimals === 0) {
-        await prisma.owner.delete({ where: { id } })
-      }
-    } else {
-      await prisma.owner.delete({ where: { id } })
+      const owner = await prisma.owner.findUnique({ where: { id } })
+      if (!owner || owner.clinicId !== session.user.clinicId) throw new ClinicMismatchError()
     }
+    await prisma.owner.delete({ where: { id } })
   },
 }

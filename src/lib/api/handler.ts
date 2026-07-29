@@ -36,3 +36,4 @@ export function withAuth<TParams = Record<string, string>>(
     }
   }
 }
+

@@ -1,7 +1,7 @@
 import { apiSuccess, apiError } from '@/lib/api/response'
 import { prisma } from '@/lib/db'
-import { triggerAppointmentReminder } from '@/lib/novu'
-import { addHours } from 'date-fns'
+import { triggerAppointmentReminder, triggerVaccinationReminder } from '@/lib/novu'
+import { addHours, addDays, startOfDay, endOfDay } from 'date-fns'
 
 export async function GET(req: Request) {
   const authHeader = req.headers.get('authorization')
@@ -106,6 +106,51 @@ export async function GET(req: Request) {
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : 'Unknown error'
         results.push({ id: app.id, type: '1h', success: false, error: message })
+      }
+    }
+    // ── VACCINATION REMINDERS (14 days advance) ────────────
+    const range14dStart = startOfDay(addDays(now, 14))
+    const range14dEnd = endOfDay(addDays(now, 14))
+
+    const vaccinations14d = await prisma.petVaccination.findMany({
+      where: {
+        nextDueDate: {
+          gte: range14dStart,
+          lte: range14dEnd,
+        },
+        reminderSent: false,
+      },
+      include: {
+        pet: {
+          include: {
+            owner: true,
+            clinic: true,
+          },
+        },
+        vaccine: true,
+      },
+    })
+
+    for (const vax of vaccinations14d) {
+      try {
+        await triggerVaccinationReminder({
+          subscriberId: vax.pet.owner.id,
+          patientName: vax.pet.name,
+          ownerName: vax.pet.owner.name,
+          vaccineName: vax.vaccine.name,
+          dueDate: vax.nextDueDate!.toISOString(),
+          clinicName: vax.pet.clinic.nameAr || vax.pet.clinic.name,
+        })
+
+        await prisma.petVaccination.update({
+          where: { id: vax.id },
+          data: { reminderSent: true },
+        })
+
+        results.push({ id: vax.id, type: 'vax-14d', success: true })
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Unknown error'
+        results.push({ id: vax.id, type: 'vax-14d', success: false, error: message })
       }
     }
 

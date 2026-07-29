@@ -36,7 +36,7 @@ export function useOwnerDetails(id: string) {
 export function useCreateOwner() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: OwnerInput) => apiClient.post<{ owner: OwnerListItem }>('/api/owners', data),
+    mutationFn: (data: OwnerInput) => apiClient.post<{ owner: OwnerListItem, qrToken: string | null }>('/api/owners', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['owners'] })
     },
@@ -61,5 +61,11 @@ export function useDeleteOwner() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['owners'] })
     },
+  })
+}
+
+export function useRegenerateQRToken(id: string) {
+  return useMutation({
+    mutationFn: () => apiClient.post<{ qrToken: string }>(`/api/owners/${id}/qr`, {}),
   })
 }

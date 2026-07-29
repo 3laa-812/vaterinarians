@@ -17,7 +17,7 @@ export const authConfig = {
     },
     session({ session, token }) {
       session.user.id = token.id as string
-      session.user.role = token.role as 'SUPER_ADMIN' | 'CLINIC_ADMIN' | 'DOCTOR'
+      session.user.role = token.role as 'SUPER_ADMIN' | 'CLINIC_ADMIN' | 'DOCTOR' | 'GUARDIAN'
       session.user.clinicId = token.clinicId as string | null
       session.user.preferredLang = token.preferredLang as 'ar' | 'en'
       return session

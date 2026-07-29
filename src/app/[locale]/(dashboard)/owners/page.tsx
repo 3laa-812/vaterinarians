@@ -10,6 +10,8 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
+import { QRDisplay } from '@/components/guardian/QRDisplay'
+import { Modal } from '@/components/shared/Modal'
 
 export default function OwnersPage() {
   const t = useTranslations('owner')
@@ -23,11 +25,15 @@ export default function OwnersPage() {
   const total = data?.total ?? 0
   const totalPages = Math.max(1, Math.ceil(total / limit))
   const createMutation = useCreateOwner()
+  const [createdQrToken, setCreatedQrToken] = useState<string | null>(null)
 
   const handleCreateOwner = async (data: Parameters<typeof createMutation.mutateAsync>[0]) => {
     try {
-      await createMutation.mutateAsync(data)
+      const res = await createMutation.mutateAsync(data)
       setShowAddForm(false)
+      if (res.qrToken) {
+        setCreatedQrToken(res.qrToken)
+      }
       refetch()
     } catch (err) {
       console.error(err)
@@ -110,6 +116,12 @@ export default function OwnersPage() {
             </div>
           )}
         </>
+      )}
+
+      {createdQrToken && (
+        <Modal isOpen={!!createdQrToken} onClose={() => setCreatedQrToken(null)} title="Owner QR Code">
+          <QRDisplay token={createdQrToken} />
+        </Modal>
       )}
     </div>
   )

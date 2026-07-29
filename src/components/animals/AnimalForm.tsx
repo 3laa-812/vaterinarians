@@ -8,6 +8,8 @@ import { ZodError } from 'zod'
 import { useSession } from 'next-auth/react'
 import { useEffect } from 'react'
 import { Button } from '@/components/shared/Button'
+import { Modal } from '@/components/shared/Modal'
+import { QRDisplay } from '@/components/guardian/QRDisplay'
 
 interface AnimalFormProps {
   initialData?: Partial<AnimalInput> & { owner?: { id: string; name: string } }
@@ -34,6 +36,7 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
   const { data: session } = useSession()
   const isSuperAdmin = session?.user?.role === 'SUPER_ADMIN'
   const [clinics, setClinics] = useState<{id: string, name: string}[]>([])
+  const [createdQrToken, setCreatedQrToken] = useState<string | null>(null)
 
   useEffect(() => {
     if (isSuperAdmin) {
@@ -119,6 +122,9 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
           notes: newOwnerData.notes,
         })
 
+        if (res.qrToken) {
+          setCreatedQrToken(res.qrToken)
+        }
         setSelectedOwner({ id: res.owner.id, name: res.owner.name, phone: res.owner.phone })
         setStep(2)
       } catch (err: any) {
@@ -478,6 +484,12 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
             </Button>
           </div>
         </form>
+      )}
+
+      {createdQrToken && (
+        <Modal isOpen={!!createdQrToken} onClose={() => setCreatedQrToken(null)} title="Owner QR Code">
+          <QRDisplay token={createdQrToken} />
+        </Modal>
       )}
     </div>
   )

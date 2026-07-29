@@ -38,6 +38,9 @@ export const sessionService = {
         animal: { ...scope },
         ...(userSession.user.role === 'DOCTOR' ? { doctorId: userSession.user.id } : {}),
       },
+      include: {
+        animal: true,
+      },
     })
 
     if (!appointment) throw new NotFoundError({ ar: 'الموعد', en: 'Appointment' })
@@ -82,7 +85,40 @@ export const sessionService = {
         })
       }
 
-      // 3. Upsert payment
+      // 3. Upsert payment & invoice
+      const existingPayment = await tx.payment.findUnique({
+        where: { appointmentId },
+      })
+
+      let invoiceId = existingPayment?.invoiceId
+
+      if (invoiceId) {
+        await tx.invoice.update({
+          where: { id: invoiceId },
+          data: {
+            subtotal: input.totalAmount,
+            total: input.totalAmount,
+            paidAmount: input.paidAmount,
+            status: paymentStatus,
+          },
+        })
+      } else {
+        const invoice = await tx.invoice.create({
+          data: {
+            invoiceNumber: `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+            subtotal: input.totalAmount,
+            total: input.totalAmount,
+            paidAmount: input.paidAmount,
+            status: paymentStatus,
+            clinicId: appointment.animal.clinicId,
+            ownerId: appointment.animal.ownerId,
+            animalId: appointment.animalId,
+            createdById: userSession.user.id,
+          },
+        })
+        invoiceId = invoice.id
+      }
+
       const payment = await tx.payment.upsert({
         where: { appointmentId },
         create: {
@@ -91,12 +127,14 @@ export const sessionService = {
           paidAmount:  input.paidAmount,
           status:      paymentStatus,
           notes:       input.notes || null,
+          invoiceId,
         },
         update: {
           totalAmount: input.totalAmount,
           paidAmount:  input.paidAmount,
           status:      paymentStatus,
           notes:       input.notes || null,
+          invoiceId,
         },
       })
 
@@ -134,7 +172,11 @@ export const sessionService = {
         })
       }
 
-      return { session: examSession, payment, nextAppointment }
+      // 7. Generate a new QR token for the owner
+      const { createGuardianAccessToken } = await import('@/lib/guardian-auth-qr')
+      const qrToken = await createGuardianAccessToken(appointment.animal.ownerId)
+
+      return { session: examSession, payment, nextAppointment, qrToken }
     })
   },
 }

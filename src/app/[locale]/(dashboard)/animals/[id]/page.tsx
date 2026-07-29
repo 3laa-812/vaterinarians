@@ -15,6 +15,7 @@ import { Button } from '@/components/shared/Button'
 import { Input } from '@/components/shared/Input'
 import { WeightChart } from '@/components/animals/WeightChart'
 import { AtRiskBanner } from '@/components/animals/AtRiskBanner'
+import { VaccinationsList } from '@/components/animals/VaccinationsList'
 
 export default function AnimalProfilePage() {
   const params = useParams<{ id: string }>()
@@ -278,6 +279,8 @@ export default function AnimalProfilePage() {
               )}
             </div>
           </Card>
+
+          <VaccinationsList petId={id} species={profile.species} />
         </div>
       </div>
     </div>

@@ -29,6 +29,30 @@ export async function triggerAppointmentReminder(payload: {
   })
 }
 
+// ── triggerVaccinationReminder ────────────────────────────────────────────────
+// Sends a reminder to the owner regarding an upcoming or overdue vaccination
+
+export async function triggerVaccinationReminder(payload: {
+  subscriberId: string
+  patientName: string
+  ownerName: string
+  vaccineName: string
+  dueDate: string
+  clinicName?: string
+}) {
+  return novu.trigger({
+    workflowId: 'vaccination-reminder',
+    to: { subscriberId: payload.subscriberId },
+    payload: {
+      patientName: payload.patientName,
+      ownerName: payload.ownerName,
+      vaccineName: payload.vaccineName,
+      dueDate: payload.dueDate,
+      clinicName: payload.clinicName ?? '',
+    },
+  })
+}
+
 // ── createNovuSubscriber ───────────────────────────────────────────────────────
 // Called when a new doctor is created. Creates their Novu subscriber profile.
 

@@ -21,9 +21,11 @@ export default auth((req) => {
   const isPublicFile = /\.(png|svg|ico|json|js|css|woff2?)$/.test(pathname)
   const isAuthApi = pathname.startsWith('/api/auth')
   const isCronApi = pathname.startsWith('/api/cron')
+  const isGuardianApi = pathname.startsWith('/api/guardian')
+  const isGuardianPage = pathname.includes('/guardian')
   const isLoginPage = pathname.includes('/login')
 
-  if (isPublicFile || isAuthApi || isCronApi) return NextResponse.next()
+  if (isPublicFile || isAuthApi || isCronApi || isGuardianApi) return NextResponse.next()
 
   if (pathname.startsWith('/api/')) {
     if (!session) {
@@ -41,7 +43,7 @@ export default auth((req) => {
     return NextResponse.next()
   }
 
-  if (!session && !isLoginPage) {
+  if (!session && !isLoginPage && !isGuardianPage) {
     const locale = pathname.startsWith('/en') ? 'en' : 'ar'
     return NextResponse.redirect(new URL(`/${locale}/login`, req.url))
   }

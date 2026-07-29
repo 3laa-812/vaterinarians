@@ -8,7 +8,7 @@ declare module 'next-auth' {
       id: string
       name: string
       email: string
-      role: 'SUPER_ADMIN' | 'CLINIC_ADMIN' | 'DOCTOR'
+      role: 'SUPER_ADMIN' | 'CLINIC_ADMIN' | 'DOCTOR' | 'GUARDIAN'
       clinicId: string | null
       preferredLang: 'ar' | 'en'
     }

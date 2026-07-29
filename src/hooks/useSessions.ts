@@ -7,6 +7,7 @@ type SaveSessionResult = {
   session: unknown
   payment: unknown
   nextAppointment: Appointment | null
+  qrToken?: string
 }
 
 export function useSession(appointmentId: string) {

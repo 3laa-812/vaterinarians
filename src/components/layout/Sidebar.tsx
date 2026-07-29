@@ -22,6 +22,9 @@ import {
   Plus,
   LineChart,
   ClipboardList,
+  DollarSign,
+  FileText,
+  Store,
 } from 'lucide-react'
 
 export function Sidebar() {
@@ -48,9 +51,11 @@ export function Sidebar() {
     { href: `/${locale}/appointments`, Icon: CalendarDays, label: t('appointments'), id: 'nav-appointments' },
     { href: `/${locale}/sessions`, Icon: ClipboardList, label: t('sessions', { fallback: 'Sessions' }), id: 'nav-sessions' },
     { href: `/${locale}/owners`, Icon: Users, label: t('owners'), id: 'nav-owners' },
+    { href: `/${locale}/store`, Icon: Store, label: t('store', { fallback: 'Store' }), id: 'nav-store' },
     ...(isAdmin
       ? [
-          { href: `/${locale}/reports`, Icon: LineChart, label: t('reports'), id: 'nav-reports' },
+          { href: `/${locale}/finance`, Icon: DollarSign, label: t('finance', { fallback: 'Finance' }), id: 'nav-finance' },
+          { href: `/${locale}/invoices`, Icon: FileText, label: tSidebar('invoices', { fallback: 'Invoices' }), id: 'nav-invoices' },
           { href: `/${locale}/admin/doctors`, Icon: Settings, label: t('doctors', { fallback: 'Doctors' }), id: 'nav-admin-doctors' },
           ...(isSuperAdmin ? [{ href: `/${locale}/admin/clinics`, Icon: Settings, label: t('admin'), id: 'nav-admin' }] : [])
         ]
