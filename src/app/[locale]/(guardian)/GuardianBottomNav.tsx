@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from '@/lib/i18n-navigation'
 import { useTranslations } from 'next-intl'
-import { PawPrint, ShoppingBag, ShoppingCart } from 'lucide-react'
+import { PawPrint, ShoppingBag, ShoppingCart, User, ClipboardList } from 'lucide-react'
 import { useGuardianCartStore } from '@/store/useGuardianCartStore'
 import { useEffect, useState } from 'react'
 
@@ -23,6 +23,8 @@ export function GuardianBottomNav() {
     { icon: PawPrint, label: t('pets'), path: '/guardian' },
     { icon: ShoppingBag, label: t('store'), path: '/guardian/store' },
     { icon: ShoppingCart, label: t('cart'), path: '/guardian/cart', badge: cartCount },
+    { icon: ClipboardList, label: t('orders'), path: '/guardian/orders' },
+    { icon: User, label: t('account'), path: '/guardian/account' },
   ]
 
   return (

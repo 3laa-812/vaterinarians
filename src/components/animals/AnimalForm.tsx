@@ -9,7 +9,7 @@ import { useSession } from 'next-auth/react'
 import { useEffect } from 'react'
 import { Button } from '@/components/shared/Button'
 import { Modal } from '@/components/shared/Modal'
-import { QRDisplay } from '@/components/guardian/QRDisplay'
+import { GuardianQRModal } from '@/components/guardian/GuardianQRModal'
 
 interface AnimalFormProps {
   initialData?: Partial<AnimalInput> & { owner?: { id: string; name: string } }
@@ -487,9 +487,11 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
       )}
 
       {createdQrToken && (
-        <Modal isOpen={!!createdQrToken} onClose={() => setCreatedQrToken(null)} title="Owner QR Code">
-          <QRDisplay token={createdQrToken} />
-        </Modal>
+        <GuardianQRModal 
+          isOpen={!!createdQrToken} 
+          onClose={() => setCreatedQrToken(null)} 
+          initialToken={createdQrToken} 
+        />
       )}
     </div>
   )

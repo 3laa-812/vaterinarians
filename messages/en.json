@@ -265,6 +265,7 @@
     "newOwner": "New Owner",
     "searchByPhone": "Search by phone to find an existing owner",
     "showQR": "Show QR Code",
+    "regenerateQR": "Regenerate QR",
     "guardianQR": "Guardian QR Access"
   },
   "form": {

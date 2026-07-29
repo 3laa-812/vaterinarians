@@ -93,4 +93,43 @@ export class GuardianService {
       orderBy: { createdAt: "desc" },
     });
   }
+
+  /**
+   * Creates an appointment for an animal owned by this guardian.
+   */
+  async createAppointment(data: { animalId: string; scheduledAt: Date; notes?: string }) {
+    // Verify the animal belongs to this guardian and clinic
+    const animal = await prisma.animal.findFirst({
+      where: {
+        id: data.animalId,
+        ownerId: this.ownerId,
+        clinicId: this.clinicId,
+      },
+    });
+
+    if (!animal) {
+      throw new Error("Animal not found or does not belong to you");
+    }
+
+    // Find any available doctor in the clinic (or a specific one if implemented)
+    const doctor = await prisma.user.findFirst({
+      where: {
+        clinicId: this.clinicId,
+        role: { in: ["DOCTOR", "CLINIC_ADMIN"] },
+      },
+    });
+
+    if (!doctor) {
+      throw new Error("No doctor available to take appointments");
+    }
+
+    return prisma.appointment.create({
+      data: {
+        scheduledAt: data.scheduledAt,
+        notes: data.notes || null,
+        animalId: data.animalId,
+        doctorId: doctor.id,
+      },
+    });
+  }
 }

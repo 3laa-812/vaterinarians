@@ -21,7 +21,7 @@ export function QRDisplay({ token }: QRDisplayProps) {
       
       <div className="p-4 bg-white border-2 border-gray-100 rounded-xl mb-4 print:border-none print:shadow-none">
         <QRCodeCanvas 
-          value={token}
+          value={`${process.env.NEXT_PUBLIC_APP_URL}/guardian/login?token=${token}`}
           size={200}
           level="H" // High error correction
           includeMargin={true}

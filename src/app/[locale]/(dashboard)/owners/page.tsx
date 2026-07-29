@@ -10,7 +10,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
-import { QRDisplay } from '@/components/guardian/QRDisplay'
+import { GuardianQRModal } from '@/components/guardian/GuardianQRModal'
 import { Modal } from '@/components/shared/Modal'
 
 export default function OwnersPage() {
@@ -119,9 +119,11 @@ export default function OwnersPage() {
       )}
 
       {createdQrToken && (
-        <Modal isOpen={!!createdQrToken} onClose={() => setCreatedQrToken(null)} title="Owner QR Code">
-          <QRDisplay token={createdQrToken} />
-        </Modal>
+        <GuardianQRModal 
+          isOpen={!!createdQrToken} 
+          onClose={() => setCreatedQrToken(null)} 
+          initialToken={createdQrToken} 
+        />
       )}
     </div>
   )

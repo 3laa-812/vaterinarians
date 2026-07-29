@@ -12,7 +12,7 @@ import { PaymentStatusBadge } from '@/components/shared/PaymentStatusBadge'
 import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
 import { Modal } from '@/components/shared/Modal'
-import { QRDisplay } from '@/components/guardian/QRDisplay'
+import { GuardianQRModal } from '@/components/guardian/GuardianQRModal'
 import { calculateRemaining } from '@/domain/payment'
 
 export default function SessionDetailPage() {
@@ -254,9 +254,11 @@ export default function SessionDetailPage() {
       )}
 
       {qrToken && (
-        <Modal isOpen={!!qrToken} onClose={() => setQrToken(null)} title={t('qrCodeTitle') || 'Owner QR Code'}>
-          <QRDisplay token={qrToken} />
-        </Modal>
+        <GuardianQRModal 
+          isOpen={!!qrToken} 
+          onClose={() => setQrToken(null)} 
+          initialToken={qrToken} 
+        />
       )}
     </div>
   )

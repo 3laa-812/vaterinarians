@@ -44,11 +44,14 @@ export default function GuardianHomePage() {
 
         {/* Action Cards */}
         <div className="grid grid-cols-2 gap-4">
-          <button className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-6 flex flex-col items-center justify-center gap-3 transition-transform hover:scale-[1.02] active:scale-95 border border-stone-100">
-            <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-white">
-              <MessageSquare size={24} />
+          <button 
+            onClick={() => router.push('/guardian/appointments/new')}
+            className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-6 flex flex-col items-center justify-center gap-3 transition-transform hover:scale-[1.02] active:scale-95 border border-stone-100"
+          >
+            <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-white shadow-[0_4px_12px_rgba(245,158,11,0.3)]">
+              <Calendar size={24} />
             </div>
-            <span className="font-semibold text-sm">{t('contactClinic') || 'Contact Clinic'}</span>
+            <span className="font-semibold text-sm">Book Appointment</span>
           </button>
 
           <button 
@@ -137,7 +140,7 @@ export default function GuardianHomePage() {
                 </div>
               </div>
               <button 
-                onClick={() => router.push(`/guardian/orders/${recentOrder.id}`)}
+                onClick={() => router.push(`/guardian/orders`)}
                 className="w-full py-3 border border-stone-200 rounded-xl text-primary font-bold text-sm transition-colors hover:bg-stone-50"
               >
                 View All Orders
