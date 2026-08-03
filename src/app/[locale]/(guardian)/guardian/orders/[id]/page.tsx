@@ -37,11 +37,11 @@ export default function OrderTrackingPage() {
     )
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status.toUpperCase()) {
-      case 'PENDING': return 'text-amber-500 bg-amber-50 border-amber-200'
-      case 'PROCESSING': return 'text-blue-500 bg-blue-50 border-blue-200'
-      case 'READY': return 'text-indigo-500 bg-indigo-50 border-indigo-200'
+    const getStatusColor = (status: string) => {
+      switch (status.toUpperCase()) {
+        case 'PENDING': return 'text-guardian-secondary bg-guardian-secondary/10 border-guardian-secondary/20'
+        case 'PROCESSING': return 'text-blue-500 bg-blue-50 border-blue-200'
+        case 'READY': return 'text-indigo-500 bg-indigo-50 border-indigo-200 ring-pulse'
       case 'COMPLETED': return 'text-emerald-600 bg-emerald-50 border-emerald-200'
       case 'CANCELLED': return 'text-red-500 bg-red-50 border-red-200'
       default: return 'text-stone-500 bg-stone-50 border-stone-200'
@@ -92,7 +92,7 @@ export default function OrderTrackingPage() {
             Order Items
           </h3>
           
-          <div className="space-y-4">
+          <div className="space-y-4 stagger-children animate-slide-up">
             {order.items?.map((item: any) => (
               <div key={item.id} className="flex items-center justify-between pb-4 border-b border-stone-100 last:border-0 last:pb-0">
                 <div className="flex-1">

@@ -25,6 +25,8 @@ import {
   DollarSign,
   FileText,
   Store,
+  UserCog,
+  Syringe,
 } from 'lucide-react'
 
 export function Sidebar() {
@@ -54,13 +56,17 @@ export function Sidebar() {
     { href: `/${locale}/store`, Icon: Store, label: t('store', { fallback: 'Store' }), id: 'nav-store' },
     ...(isAdmin
       ? [
-          { href: `/${locale}/finance`, Icon: DollarSign, label: t('finance', { fallback: 'Finance' }), id: 'nav-finance' },
-          { href: `/${locale}/invoices`, Icon: FileText, label: tSidebar('invoices', { fallback: 'Invoices' }), id: 'nav-invoices' },
-          { href: `/${locale}/admin/doctors`, Icon: Settings, label: t('doctors', { fallback: 'Doctors' }), id: 'nav-admin-doctors' },
-          ...(isSuperAdmin ? [{ href: `/${locale}/admin/clinics`, Icon: Settings, label: t('admin'), id: 'nav-admin' }] : [])
+          { href: `/${locale}/finance`, Icon: DollarSign, label: t('finance', { fallback: 'Finance' }), id: 'nav-finance', isManagement: true },
+          { href: `/${locale}/invoices`, Icon: FileText, label: tSidebar('invoices', { fallback: 'Invoices' }), id: 'nav-invoices', isManagement: true },
+          { href: `/${locale}/admin/doctors`, Icon: UserCog, label: t('doctors', { fallback: 'Doctors' }), id: 'nav-admin-doctors', isManagement: true },
+          { href: `/${locale}/settings/vaccines`, Icon: Syringe, label: t('vaccines', { fallback: 'Vaccines Catalog' }), id: 'nav-admin-vaccines', isManagement: true },
+          ...(isSuperAdmin ? [{ href: `/${locale}/admin/clinics`, Icon: Settings, label: t('admin'), id: 'nav-admin', isManagement: true }] : [])
         ]
       : []),
   ]
+
+  const mainNavItems = navItems.filter((item) => !('isManagement' in item))
+  const managementNavItems = navItems.filter((item) => 'isManagement' in item)
 
   const ToggleIcon = sidebarExpanded
     ? isRTL
@@ -76,13 +82,13 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`hidden md:flex flex-col h-screen sticky top-0 border-e border-outline-variant bg-surface-container-low transition-all duration-300 ${
-        sidebarExpanded ? 'w-60' : 'w-[72px]'
+      className={`hidden md:flex flex-col shrink-0 h-screen sticky top-0 border-e border-outline-variant bg-surface-container-low transition-all duration-300 ${
+        sidebarExpanded ? 'w-[260px]' : 'w-[72px]'
       }`}
     >
       <div
-        className={`h-16 flex items-center border-b border-outline-variant ${
-          sidebarExpanded ? 'px-4 justify-between' : 'justify-center'
+        className={`h-16 shrink-0 flex items-center border-b border-outline-variant/50 ${
+          sidebarExpanded ? 'px-5 justify-between' : 'justify-center'
         }`}
       >
         <Link href={`/${locale}/home`} aria-label={tSidebar('home')}>
@@ -112,58 +118,121 @@ export function Sidebar() {
         </button>
       )}
 
-      <nav className="flex-1 py-2">
-        {navItems.map(({ href, Icon, label, id, isPrimaryAction }) => {
-          const active = isActive(href)
-          
-          if (isPrimaryAction) {
+      <nav className="flex-1 py-4 overflow-y-auto flex flex-col px-3">
+        <div className="space-y-1">
+          {mainNavItems.map(({ href, Icon, label, id, isPrimaryAction }) => {
+            const active = isActive(href)
+            
+            if (isPrimaryAction) {
+              return (
+                <div key={id} className="mb-6 mt-2">
+                  <Link
+                    id={id}
+                    href={href}
+                    title={!sidebarExpanded ? label : undefined}
+                    className={`flex items-center justify-center gap-2 rounded-2xl bg-primary text-on-primary font-bold transition-all active:scale-95 shadow-md shadow-primary/20 ${
+                      sidebarExpanded ? 'py-3' : 'py-3 aspect-square'
+                    }`}
+                  >
+                    <Icon size={sidebarExpanded ? 18 : 20} strokeWidth={sidebarExpanded ? 2.5 : 2} />
+                    {sidebarExpanded && <span>{label}</span>}
+                  </Link>
+                </div>
+              )
+            }
+
+            // Standard items
             return (
-              <div key={id} className="px-3 mb-6 mt-2">
+              <div key={id} className="mb-1">
                 <Link
                   id={id}
                   href={href}
                   title={!sidebarExpanded ? label : undefined}
-                  className={`flex items-center justify-center gap-2 rounded-2xl bg-primary text-on-primary font-bold transition-all active:scale-95 shadow-lg shadow-primary/40 ${
-                    sidebarExpanded ? 'py-3' : 'py-3 aspect-square'
+                  className={`group flex items-center gap-3 px-2 py-2 rounded-xl transition-all ${
+                    active
+                      ? 'bg-surface-container-high/60 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant'
+                      : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
                   }`}
                 >
-                  <Icon size={sidebarExpanded ? 18 : 20} strokeWidth={sidebarExpanded ? 2.5 : 2} />
-                  {sidebarExpanded && <span>{label}</span>}
+                  <div className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                    active 
+                      ? 'bg-primary text-on-primary shadow-sm' 
+                      : 'bg-surface-container-lowest border border-outline-variant/40 group-hover:border-outline-variant group-hover:text-primary'
+                  }`}>
+                    <Icon size={18} strokeWidth={1.5} />
+                  </div>
+                  {sidebarExpanded && (
+                    <span className="text-sm font-medium truncate">{label}</span>
+                  )}
                 </Link>
               </div>
             )
-          }
+          })}
+        </div>
 
-          // Standard items
-          return (
-            <div key={id} className="px-2 mb-1">
-              <Link
-                id={id}
-                href={href}
-                title={!sidebarExpanded ? label : undefined}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
-                  active
-                    ? 'bg-primary/10 text-primary font-semibold'
-                    : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-                }`}
-              >
-                <Icon size={20} className={active ? 'text-primary' : 'text-on-surface-variant'} />
-                {sidebarExpanded && (
-                  <span className="text-sm truncate">{label}</span>
-                )}
-              </Link>
-            </div>
-          )
-        })}
+        {managementNavItems.length > 0 && (
+          <div className="pt-6 pb-2 space-y-1">
+            {sidebarExpanded && (
+              <div className="px-2 pb-2 text-[10px] font-bold text-on-surface-variant/70 tracking-widest uppercase flex items-center gap-3">
+                <span>Management</span>
+                <div className="h-px flex-1 bg-outline-variant/50" />
+              </div>
+            )}
+            {!sidebarExpanded && (
+              <div className="w-8 mx-auto h-px bg-outline-variant/50 mb-4" />
+            )}
+            
+            {managementNavItems.map(({ href, Icon, label, id }) => {
+              const active = isActive(href)
+              return (
+                <div key={id} className="mb-1">
+                  <Link
+                    id={id}
+                    href={href}
+                    title={!sidebarExpanded ? label : undefined}
+                    className={`group flex items-center gap-3 px-2 py-2 rounded-xl transition-all ${
+                      active
+                        ? 'bg-surface-container-high/60 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant'
+                        : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                    }`}
+                  >
+                    <div className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                      active 
+                        ? 'bg-surface-container-highest text-on-surface border border-outline shadow-sm' 
+                        : 'bg-surface-container-lowest border border-outline-variant/40 group-hover:border-outline-variant group-hover:text-on-surface'
+                    }`}>
+                      <Icon size={18} strokeWidth={1.5} />
+                    </div>
+                    {sidebarExpanded && (
+                      <span className="text-sm font-medium truncate">{label}</span>
+                    )}
+                  </Link>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </nav>
 
-      {sidebarExpanded && session?.user && (
-        <div className="border-t border-outline-variant p-4">
-          <p className="text-xs text-on-surface-variant truncate">
-            {isSuperAdmin
-              ? `${clinics?.length || 0} عيادات نشطة`
-              : clinicSettings?.name || '...'}
-          </p>
+      {session?.user && (
+        <div className="shrink-0 border-t border-outline-variant/50 p-3 bg-surface-container-lowest/30">
+          <div className={`flex items-center gap-3 w-full ${!sidebarExpanded && 'justify-center'}`}>
+            <div className="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br from-primary/80 to-primary-container flex items-center justify-center text-on-primary font-bold shadow-sm border border-primary/20">
+              {session.user.name?.[0]?.toUpperCase() || 'U'}
+            </div>
+            {sidebarExpanded && (
+              <div className="flex-1 min-w-0 flex flex-col justify-center">
+                <span className="text-sm font-bold text-on-surface truncate">
+                  {session.user.name}
+                </span>
+                <span className="text-[11px] font-medium text-on-surface-variant truncate">
+                  {isSuperAdmin
+                    ? `${clinics?.length || 0} عيادات نشطة`
+                    : clinicSettings?.name || 'Veterinary Clinic'}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </aside>

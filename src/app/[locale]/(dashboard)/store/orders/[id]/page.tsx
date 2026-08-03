@@ -43,7 +43,8 @@ interface Order {
   messages: OrderMessage[];
 }
 
-export default function OrderDetailsPage({ params: { locale, id } }: { params: { locale: string; id: string } }) {
+export default function OrderDetailsPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
+  const { locale, id } = React.use(params);
   const t = useTranslations("store");
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);

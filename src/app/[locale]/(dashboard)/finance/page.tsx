@@ -32,7 +32,7 @@ export default async function FinancePage({
   );
 
   return (
-    <div className="min-h-screen pb-10 bg-surface">
+    <div className="min-h-screen pb-10 bg-mesh">
       <div className="bg-surface-container-lowest border-b border-outline-variant/30 px-6 py-8 md:px-10 lg:px-12 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 opacity-80" />
         <h1 className="text-3xl font-black tracking-tight text-on-surface">

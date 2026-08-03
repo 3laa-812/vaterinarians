@@ -49,7 +49,7 @@ export const adminService = {
   async listDoctorsBasic(session: Session) {
     return prisma.user.findMany({
       where: {
-        role: 'DOCTOR',
+        role: { in: ['DOCTOR', 'CLINIC_ADMIN'] },
         clinicId: session.user.role !== 'SUPER_ADMIN' ? session.user.clinicId : undefined,
       },
       select: {

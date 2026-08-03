@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Plus } from 'lucide-react'
 import { CalendarView } from '@/components/appointments/CalendarView'
 import { useCreateAppointment } from '@/hooks/useAppointments'
@@ -10,6 +10,7 @@ import { useDoctors } from '@/hooks/useDoctors'
 import { useClinicSettings } from '@/hooks/useClinicSettings'
 import { ZodError } from 'zod'
 import { appointmentSchema } from '@/lib/validations/appointment.schema'
+import { ApiRequestError } from '@/lib/api/client'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
@@ -21,6 +22,7 @@ import { Textarea } from '@/components/shared/Textarea'
 export default function AppointmentsPage() {
   const t = useTranslations('appointment')
   const tSession = useTranslations('session')
+  const locale = useLocale() as 'ar' | 'en'
   const [showAddForm, setShowAddForm] = useState(false)
 
   const [animalId, setAnimalId] = useState('')
@@ -51,7 +53,7 @@ export default function AppointmentsPage() {
     }
   }, [clinic, feeManuallyEdited])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent, force = false) => {
     e.preventDefault()
     setErrors({})
     setIsSubmitting(true)
@@ -65,6 +67,7 @@ export default function AppointmentsPage() {
         notes,
         fee,
         status: 'SCHEDULED' as const,
+        force,
       }
 
       const validated = appointmentSchema.parse(payload)
@@ -73,7 +76,7 @@ export default function AppointmentsPage() {
       setAnimalId('')
       setNotes('')
       setFeeManuallyEdited(false)
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof ZodError) {
         const fieldErrors: Record<string, string> = {}
         err.issues.forEach((zodErr) => {
@@ -81,6 +84,12 @@ export default function AppointmentsPage() {
           fieldErrors[path] = zodErr.message
         })
         setErrors(fieldErrors)
+      } else if (err instanceof ApiRequestError && err.localized.code === 'APPOINTMENT_CONFLICT') {
+        const confirmed = window.confirm(err.localized[locale])
+        if (confirmed) {
+          setIsSubmitting(false) // Reset before recursive call
+          return handleSubmit(e, true)
+        }
       } else {
         console.error(err)
       }

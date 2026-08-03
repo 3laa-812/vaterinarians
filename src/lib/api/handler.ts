@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth'
 import { ZodError } from 'zod'
+import { Prisma } from '@prisma/client'
 import type { Session } from 'next-auth'
 import { apiUnauthorized, apiForbidden, apiValidationError, apiServerError } from './response'
 import { AppError } from './errors'
@@ -30,6 +31,16 @@ export function withAuth<TParams = Record<string, string>>(
     } catch (error) {
       if (error instanceof ZodError) return apiValidationError(error)
       if (error instanceof AppError) return error.toResponse()
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2003') {
+          return new AppError(
+            'لا يمكن الحذف بسبب وجود بيانات مرتبطة. يرجى أرشفة السجل بدلاً من ذلك.',
+            'Cannot delete due to related records. Please archive instead.',
+            400,
+            'FOREIGN_KEY_VIOLATION'
+          ).toResponse()
+        }
+      }
 
       console.error('[API Error]', error)
       return apiServerError('unhandled')

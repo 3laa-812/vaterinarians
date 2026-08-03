@@ -6,7 +6,8 @@
   "roles": {
     "SUPER_ADMIN": "Super Admin",
     "CLINIC_ADMIN": "Clinic Admin",
-    "DOCTOR": "Doctor"
+    "DOCTOR": "Doctor",
+    "GUARDIAN": "Guardian"
   },
   "sidebar": {
     "home": "Home",
@@ -16,6 +17,14 @@
   },
   "store": {
     "title": "Store",
+    "orders": "Orders",
+    "manageOrders": "Manage Orders",
+    "filter": "Filter",
+    "orderNumber": "Order #",
+    "customer": "Customer",
+    "date": "Date",
+    "total": "Total",
+    "details": "Details",
     "products": "Products",
     "manageProducts": "Manage Products",
     "error": "Error",
@@ -84,7 +93,8 @@
     "doctors": "Doctors",
     "more": "More",
     "invoices": "Invoices",
-    "store": "Store"
+    "store": "Store",
+    "vaccines": "Vaccine Catalog"
   },
   "profile": {
     "pageTitle": "My Account",
@@ -116,7 +126,18 @@
     "viewSessionDetails": "View exam details",
     "addWalkIn": "Add a walk-in exam",
     "nowPlaceholder": "Now",
-    "noAppointmentsHint": "Use the New Session button to add a visit"
+    "noAppointmentsHint": "Use the New Session button to add a visit",
+    "quickActions": {
+      "newSession": "New Session",
+      "newAppointment": "New Appointment",
+      "newOwner": "New Owner"
+    },
+    "thisWeek": {
+      "appointments": "Appointments",
+      "newPatients": "New Patients",
+      "revenue": "Revenue"
+    },
+    "recentActivity": "Recent Activity"
   },
   "animal": {
     "currentWeight": "Current Weight",
@@ -201,8 +222,10 @@
     "medicationDuration": "Duration",
     "medicationDurationPlaceholder": "e.g. 7 days",
     "printReport": "Print Report",
+    "printInvoice": "Print Invoice",
     "sessionDetails": "Session Details",
-    "editSession": "Edit Session"
+    "editSession": "Edit Session",
+    "noSessions": "No sessions found"
   },
   "payment": {
     "title": "Payment Details",
@@ -422,7 +445,12 @@
     "noPets": "No registered pets found",
     "medicalHistory": "Medical History",
     "availableProducts": "Available Products",
-    "addToCart": "Add to Cart"
+    "addToCart": "Add to Cart",
+    "account": "My Account",
+    "shopFromStore": "Shop from Store",
+    "processing": "Processing...",
+    "orderPlaced": "Order placed successfully",
+    "orderFailed": "Failed to place order"
   },
   "printing": {
     "invoicesTitle": "Invoices",

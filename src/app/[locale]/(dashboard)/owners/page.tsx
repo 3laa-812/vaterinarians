@@ -26,11 +26,17 @@ export default function OwnersPage() {
   const totalPages = Math.max(1, Math.ceil(total / limit))
   const createMutation = useCreateOwner()
   const [createdQrToken, setCreatedQrToken] = useState<string | null>(null)
+  const [existingOwnerAlert, setExistingOwnerAlert] = useState<boolean>(false)
 
   const handleCreateOwner = async (data: Parameters<typeof createMutation.mutateAsync>[0]) => {
     try {
       const res = await createMutation.mutateAsync(data)
       setShowAddForm(false)
+      if (res.isExisting) {
+        setExistingOwnerAlert(true)
+      } else {
+        setExistingOwnerAlert(false)
+      }
       if (res.qrToken) {
         setCreatedQrToken(res.qrToken)
       }
@@ -52,6 +58,26 @@ export default function OwnersPage() {
           </Button>
         }
       />
+
+      {existingOwnerAlert && (
+        <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-200 flex items-start gap-3">
+          <div className="flex-1">
+            <h4 className="text-sm font-semibold text-amber-900">مرافق موجود مسبقاً / Existing Owner</h4>
+            <p className="text-xs text-amber-800 mt-1">
+              رقم الهاتف هذا مسجل بالفعل. لم يتم إنشاء ملف شخصي جديد.
+              <br />
+              This phone number is already registered. A new profile was not created.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setExistingOwnerAlert(false)}
+            className="text-amber-500 hover:text-amber-700"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {showAddForm && (
         <Card className="max-w-2xl">

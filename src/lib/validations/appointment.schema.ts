@@ -7,6 +7,7 @@ export const appointmentSchema = z.object({
   notes: z.string().optional().or(z.literal('')),
   fee: z.number().min(0).optional(),
   status: z.enum(['SCHEDULED', 'COMPLETED', 'ABSENT', 'POSTPONED']).default('SCHEDULED'),
+  force: z.boolean().optional(),
 })
 
 export type AppointmentInput = z.infer<typeof appointmentSchema>

@@ -103,6 +103,19 @@ export const appointmentService = {
       }
     }
 
+    if (!input.force) {
+      const conflict = await prisma.appointment.findFirst({
+        where: {
+          doctorId: input.doctorId,
+          scheduledAt: new Date(input.scheduledAt),
+          status: 'SCHEDULED',
+        },
+      })
+      if (conflict) {
+        throw new AppError('الطبيب لديه موعد آخر في نفس الوقت. هل تريد تأكيد الحجز على أي حال؟', 'Doctor already has an appointment at this time. Do you want to force book?', 409, 'APPOINTMENT_CONFLICT')
+      }
+    }
+
     return prisma.appointment.create({
       data: {
         scheduledAt: new Date(input.scheduledAt),
@@ -140,6 +153,20 @@ export const appointmentService = {
 
       if (!animal || !doctor) {
         throw new AppError('الحيوان أو الطبيب غير موجود في عيادتك', 'Animal or doctor not found in your clinic', 400, 'INVALID_REFERENCE')
+      }
+    }
+
+    if (!input.force) {
+      const conflict = await prisma.appointment.findFirst({
+        where: {
+          id: { not: id },
+          doctorId: input.doctorId,
+          scheduledAt: new Date(input.scheduledAt),
+          status: 'SCHEDULED',
+        },
+      })
+      if (conflict) {
+        throw new AppError('الطبيب لديه موعد آخر في نفس الوقت. هل تريد تأكيد الحجز على أي حال؟', 'Doctor already has an appointment at this time. Do you want to force book?', 409, 'APPOINTMENT_CONFLICT')
       }
     }
 

@@ -24,7 +24,6 @@ export const financeService = {
         where: { appointment: { animal: { clinicId } }, createdAt: { gte: startDate, lte: endDate } },
         select: { paidAmount: true }
       }),
-      // Assuming store orders will come in phase 2, pass empty for now.
       prisma.income.findMany({
         where: { clinicId, date: { gte: startDate, lte: endDate } },
         select: { amount: true, category: true }
@@ -64,12 +63,18 @@ export const financeService = {
     const prevTotalExpense = (prevExpenseSum._sum.amount || 0) + (prevSalarySum._sum.amount || 0)
     const prevNetProfit = prevTotalRevenue - prevTotalExpense
 
+    const storeOrders = otherIncome
+      .filter(i => i.category === 'STORE_ORDER')
+      .map(i => ({ total: i.amount, paymentStatus: 'PAID' }))
+
+    const nonStoreIncome = otherIncome.filter(i => i.category !== 'STORE_ORDER')
+
     const pl = calculatePL(
       { from: startDate, to: endDate },
       {
         sessionPayments,
-        storeOrders: [], // To be implemented in Store Module
-        otherIncome,
+        storeOrders,
+        otherIncome: nonStoreIncome,
         expenses,
         salaryPayments
       },

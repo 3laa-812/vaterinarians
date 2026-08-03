@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { auth } from '@/lib/auth'
 import { Link } from '@/lib/i18n-navigation'
 import { Card } from '@/components/shared/Card'
+import { formatCurrency } from '@/lib/format'
 import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { AnimalAvatar } from '@/components/shared/AnimalAvatar'
 import { clinicScope } from '@/lib/scope'
@@ -37,7 +38,7 @@ export async function OutstandingPaymentsWidget() {
   if (payments.length === 0) return null
 
   return (
-    <Card className="mt-6 border border-error/20 bg-error/5 overflow-hidden">
+    <Card className="border border-error/20 bg-error/5 overflow-hidden">
       <div className="p-4 border-b border-error/20 flex items-center gap-3">
         <div className="bg-error/10 text-error p-2 rounded-lg">
           <AlertCircle size={20} />
@@ -68,7 +69,7 @@ export async function OutstandingPaymentsWidget() {
               <div className="text-right">
                 <div className="text-sm text-error font-medium">{t('owes')}</div>
                 <div className="font-mono font-bold text-error">
-                  {remaining} EGP
+                  {formatCurrency(remaining)}
                 </div>
               </div>
 

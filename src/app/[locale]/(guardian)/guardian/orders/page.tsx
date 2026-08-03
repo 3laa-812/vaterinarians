@@ -20,9 +20,11 @@ export default function GuardianOrdersPage() {
 
       <div className="px-6 mt-4 space-y-4">
         {isLoading ? (
-          Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-32 bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl animate-pulse" />
-          ))
+          <div className="space-y-4 stagger-children animate-slide-up">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-32 bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl animate-pulse" />
+            ))}
+          </div>
         ) : orders.length === 0 ? (
           <div className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-10 text-center border border-stone-100 flex flex-col items-center">
             <Package className="text-stone-300 mb-4" size={48} />
@@ -35,18 +37,19 @@ export default function GuardianOrdersPage() {
             </button>
           </div>
         ) : (
-          orders.map((order: any) => (
-            <div 
-              key={order.id} 
-              onClick={() => router.push(`/guardian/orders/${order.id}`)}
-              className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-5 border border-stone-100 cursor-pointer transition-transform hover:scale-[1.01] active:scale-95"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${
-                  order.status === 'DELIVERED' || order.status === 'COMPLETED' 
-                    ? 'bg-emerald-100 text-emerald-700' 
-                    : 'bg-amber-100 text-amber-700'
-                }`}>
+          <div className="space-y-4 stagger-children animate-slide-up">
+            {orders.map((order: any) => (
+              <div 
+                key={order.id} 
+                onClick={() => router.push(`/guardian/orders/${order.id}`)}
+                className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-5 border border-stone-100 cursor-pointer transition-transform hover:scale-[1.01] active:scale-95"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${
+                    order.status === 'DELIVERED' || order.status === 'COMPLETED' || order.status === 'READY'
+                      ? 'bg-emerald-100 text-emerald-700 ring-pulse' 
+                      : 'bg-guardian-secondary/10 text-guardian-secondary'
+                  }`}>
                   {order.status === 'DELIVERED' || order.status === 'COMPLETED' ? (
                     <CheckCircle2 size={14} />
                   ) : (
@@ -70,8 +73,9 @@ export default function GuardianOrdersPage() {
                   <ChevronRight size={18} />
                 </div>
               </div>
-            </div>
-          ))
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>

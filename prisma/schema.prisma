@@ -110,6 +110,7 @@ model Owner {
   orders  Order[]
   invoices Invoice[]
   accessTokens GuardianAccessToken[]
+  isArchived   Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -165,6 +166,7 @@ model Animal {
   weightRecords WeightRecord[]
   invoices      Invoice[]
   vaccinations  PetVaccination[]
+  isArchived    Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

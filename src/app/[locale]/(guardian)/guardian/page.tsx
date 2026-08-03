@@ -2,10 +2,14 @@
 
 import { useGuardianPets, useGuardianOrders } from '@/hooks/useGuardian'
 import { useTranslations } from 'next-intl'
-import { Calendar, ChevronRight, MessageSquare, ShoppingBag, Bell, MapPin, Bone, CheckCircle2 } from 'lucide-react'
+import { Calendar, ChevronRight, MessageSquare, ShoppingBag, Bell, MapPin, Bone, CheckCircle2, Hand, Clock } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from '@/lib/i18n-navigation'
 import Image from 'next/image'
+import { Card } from '@/components/shared/Card'
+import { Button } from '@/components/shared/Button'
+import { EmptyState } from '@/components/shared/EmptyState'
+import { formatCurrency } from '@/lib/format'
 
 export default function GuardianHomePage() {
   const t = useTranslations('guardian')
@@ -33,7 +37,7 @@ export default function GuardianHomePage() {
         <div className="flex justify-between items-start pt-2">
           <div>
             <h2 className="text-3xl font-bold text-guardian-text flex items-center gap-2">
-              <span className="text-2xl">👋</span> {t('welcome')} {session?.user?.name || ''}
+              <Hand size={28} className="text-primary" /> {t('welcome')} {session?.user?.name || ''}
             </h2>
             <div className="flex items-center gap-1.5 mt-2 text-guardian-text-muted">
               <MapPin size={16} />
@@ -44,42 +48,39 @@ export default function GuardianHomePage() {
 
         {/* Action Cards */}
         <div className="grid grid-cols-2 gap-4">
-          <button 
+          <Card 
             onClick={() => router.push('/guardian/appointments/new')}
-            className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-6 flex flex-col items-center justify-center gap-3 transition-transform hover:scale-[1.02] active:scale-95 border border-stone-100"
+            className="flex flex-col items-center justify-center gap-3 text-center border-none !shadow-[0_4px_20px_rgba(28,25,23,0.05)]"
           >
-            <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-white shadow-[0_4px_12px_rgba(245,158,11,0.3)]">
+            <div className="w-12 h-12 bg-guardian-secondary rounded-full flex items-center justify-center text-white shadow-[0_4px_12px_rgba(251,146,60,0.3)]">
               <Calendar size={24} />
             </div>
-            <span className="font-semibold text-sm">Book Appointment</span>
-          </button>
+            <span className="font-semibold text-sm">{t('bookAppointment') || 'Book Appointment'}</span>
+          </Card>
 
-          <button 
+          <Card 
             onClick={() => router.push('/guardian/store')}
-            className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-6 flex flex-col items-center justify-center gap-3 transition-transform hover:scale-[1.02] active:scale-95 border border-stone-100"
+            className="flex flex-col items-center justify-center gap-3 text-center border-none !shadow-[0_4px_20px_rgba(28,25,23,0.05)]"
           >
             <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white">
               <ShoppingBag size={24} />
             </div>
             <span className="font-semibold text-sm">{t('shopFromStore') || 'Shop from Store'}</span>
-          </button>
+          </Card>
         </div>
 
         {/* My Animals */}
         <div>
-          <h3 className="text-xl font-bold mb-4 text-guardian-text">My Animals</h3>
+          <h3 className="text-xl font-bold mb-4 text-guardian-text">{t('myAnimals') || 'My Animals'}</h3>
           
           {petsLoading ? (
             <div className="h-40 bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl animate-pulse" />
           ) : animals.length === 0 ? (
-            <div className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-8 text-center border border-stone-100">
-              <Bone className="mx-auto text-guardian-text-muted mb-3" size={32} />
-              <p className="text-guardian-text-muted font-medium">{t('noPets')}</p>
-            </div>
+            <EmptyState icon={Bone} message={t('noPets')} />
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 stagger-children animate-slide-up">
               {animals.map((animal: any) => (
-                <div key={animal.id} className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-5 border border-stone-100 relative overflow-hidden">
+                <Card key={animal.id} className="relative overflow-hidden border-none !shadow-[0_4px_20px_rgba(28,25,23,0.05)]">
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-xl font-bold">{animal.name} — {animal.species}</h4>
                     <div className="w-14 h-14 rounded-full bg-stone-100 border-2 border-primary/20 flex items-center justify-center overflow-hidden shrink-0">
@@ -98,24 +99,25 @@ export default function GuardianHomePage() {
                           <span className="font-semibold text-sm">
                             {new Date(animal.appointments[0].date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })} • {new Date(animal.appointments[0].date).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
                           </span>
-                          <span className="text-base">⏰</span>
+                          <Clock size={16} />
                         </div>
                         <p className="text-xs text-primary/80 font-medium">Next Appointment</p>
                       </div>
-                      <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-primary">
+                      <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-primary ring-pulse">
                         <Calendar size={18} />
                       </button>
                     </div>
                   )}
 
-                  <button 
+                  <Button 
+                    variant="secondary"
                     onClick={() => router.push(`/guardian/animals/${animal.id}`)}
-                    className="w-full py-3 border border-stone-200 rounded-xl text-primary font-bold text-sm flex items-center justify-center gap-2 transition-colors hover:bg-stone-50"
+                    className="w-full flex items-center justify-center gap-2"
                   >
-                    <span>View Medical File</span>
+                    <span>{t('viewMedicalFile') || 'View Medical File'}</span>
                     <ChevronRight size={16} />
-                  </button>
-                </div>
+                  </Button>
+                </Card>
               ))}
             </div>
           )}
@@ -123,12 +125,12 @@ export default function GuardianHomePage() {
 
         {/* My Orders */}
         <div>
-          <h3 className="text-xl font-bold mb-4 text-guardian-text">My Orders</h3>
+          <h3 className="text-xl font-bold mb-4 text-guardian-text">{t('myOrders') || 'My Orders'}</h3>
           
           {ordersLoading ? (
             <div className="h-32 bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl animate-pulse" />
           ) : recentOrder ? (
-            <div className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-5 border border-stone-100">
+            <Card className="border-none !shadow-[0_4px_20px_rgba(28,25,23,0.05)]">
               <div className="flex items-center justify-between mb-4">
                 <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5">
                   <CheckCircle2 size={14} />
@@ -136,20 +138,19 @@ export default function GuardianHomePage() {
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-sm">{recentOrder.orderNumber}</p>
-                  <p className="text-xs text-guardian-text-muted mt-0.5">{recentOrder.totalAmount} EGP</p>
+                  <p className="text-xs text-guardian-text-muted mt-0.5">{formatCurrency(recentOrder.totalAmount)}</p>
                 </div>
               </div>
-              <button 
+              <Button 
+                variant="secondary"
                 onClick={() => router.push(`/guardian/orders`)}
-                className="w-full py-3 border border-stone-200 rounded-xl text-primary font-bold text-sm transition-colors hover:bg-stone-50"
+                className="w-full"
               >
-                View All Orders
-              </button>
-            </div>
+                {t('viewAllOrders') || 'View All Orders'}
+              </Button>
+            </Card>
           ) : (
-            <div className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-6 text-center border border-stone-100">
-              <p className="text-guardian-text-muted text-sm font-medium">No recent orders</p>
-            </div>
+            <EmptyState icon={ShoppingBag} message={t('noRecentOrders') || 'No recent orders'} />
           )}
         </div>
       </div>

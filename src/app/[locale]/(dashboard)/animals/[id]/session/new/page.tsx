@@ -20,7 +20,7 @@ export default function NewSessionPage() {
   const { data: authSession } = useSession()
   const { data: clinicSettings, isLoading: isLoadingSettings } = useClinicSettings()
 
-  async function handleSubmit(data: any) {
+  async function handleSubmit(data: any, force = false) {
     let finalApptId = appointmentId
     if (!finalApptId) {
       const apptRes = await fetch(`/api/appointments`, {
@@ -30,11 +30,20 @@ export default function NewSessionPage() {
           animalId: id,
           doctorId: authSession?.user?.id || '',
           scheduledAt: new Date().toISOString(),
-          status: 'SCHEDULED'
+          status: 'SCHEDULED',
+          force
         })
       })
       if (!apptRes.ok) {
         const errJson = await apptRes.json()
+        if (errJson.error?.code === 'APPOINTMENT_CONFLICT') {
+          const confirmed = window.confirm(locale === 'ar' ? errJson.error.ar : errJson.error.en)
+          if (confirmed) {
+            return handleSubmit(data, true)
+          } else {
+            throw new Error(locale === 'ar' ? 'تم الإلغاء' : 'Cancelled')
+          }
+        }
         throw new Error(locale === 'ar' ? errJson.error?.ar : errJson.error?.en)
       }
       const apptJson = await apptRes.json()

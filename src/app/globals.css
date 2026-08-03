@@ -59,6 +59,17 @@
   --color-guardian-text: #0F172A;
   --color-guardian-text-muted: #64748B;
   --color-guardian-accent: #6366F1;
+  --color-guardian-secondary: #FB923C;
+}
+
+/* ── Guardian Light Theme overrides for shared components ────────── */
+.guardian-theme {
+  --color-surface-container-low: var(--color-guardian-surface);
+  --color-surface-container: var(--color-guardian-bg);
+  --color-on-surface: var(--color-guardian-text);
+  --color-on-surface-variant: var(--color-guardian-text-muted);
+  --color-outline-variant: #e2e8f0;
+  --color-outline: #cbd5e1;
 }
 
 /* ── Base styles ──────────────────────────────────────────────────────────────── */

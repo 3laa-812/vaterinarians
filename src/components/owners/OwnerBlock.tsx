@@ -8,6 +8,7 @@ import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
 import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon'
 import { GuardianQRModal } from '@/components/guardian/GuardianQRModal'
+import { QrCode } from 'lucide-react'
 
 interface OwnerBlockProps {
   owner: OwnerListItem
@@ -26,12 +27,12 @@ export function OwnerBlock({ owner, className = '' }: OwnerBlockProps) {
           <h2 className="text-xl font-semibold text-on-surface">{owner.name}</h2>
           <p className="text-sm text-on-surface-variant mt-1 font-mono">{owner.phone}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <a
             href={`https://wa.me/${owner.phone.startsWith('0') ? `+20${owner.phone.substring(1)}` : owner.phone}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 text-sm rounded-xl font-bold hover:bg-[#20bd5a] transition-colors"
+            className="flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 text-sm rounded-xl font-bold hover:bg-[#20bd5a] transition-colors shadow-sm"
           >
             <WhatsAppIcon className="w-4 h-4" />
             WhatsApp
@@ -39,13 +40,23 @@ export function OwnerBlock({ owner, className = '' }: OwnerBlockProps) {
 
           {owner.email && (
             <a href={`mailto:${owner.email}`}>
-              <Button variant="secondary" className="px-4 py-2 text-sm">
+              <Button variant="ghost" className="px-4 py-2 text-sm">
                 {t('email')}
               </Button>
             </a>
           )}
           
-          <GuardianQRModal ownerId={owner.id} />
+          <div className="w-px h-6 bg-outline-variant/50 mx-2 hidden sm:block" />
+          
+          <GuardianQRModal 
+            ownerId={owner.id} 
+            trigger={
+              <button className="text-xs font-semibold text-on-surface-variant hover:text-error transition-colors flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-error/10">
+                <QrCode className="w-4 h-4" />
+                {t('regenerateQR')}
+              </button>
+            }
+          />
         </div>
       </div>
 

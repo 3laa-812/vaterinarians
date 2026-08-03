@@ -16,6 +16,9 @@ import { Input } from '@/components/shared/Input'
 import { WeightChart } from '@/components/animals/WeightChart'
 import { AtRiskBanner } from '@/components/animals/AtRiskBanner'
 import { VaccinationsList } from '@/components/animals/VaccinationsList'
+import { MetaRow } from '@/components/shared/layout/MetaRow'
+import { StatGrid } from '@/components/shared/layout/StatGrid'
+import { InfoBlock } from '@/components/shared/layout/InfoBlock'
 
 export default function AnimalProfilePage() {
   const params = useParams<{ id: string }>()
@@ -100,6 +103,10 @@ export default function AnimalProfilePage() {
       months += 12
     }
 
+    if (years < 0 || years > 50 || isNaN(years)) {
+      return '—'
+    }
+
     if (years === 0) {
       return `${months} ${t('months')}`
     }
@@ -134,9 +141,14 @@ export default function AnimalProfilePage() {
               <h1 className="text-2xl font-bold text-on-surface">{profile.name}</h1>
               <SpeciesTag species={profile.species} />
             </div>
-            <p className="text-sm text-on-surface-variant mt-1">
-              {profile.breed || ''} {profile.gender === 'FEMALE' ? t('female') : t('male')} • {calculateAge(profile.birthDate)}
-            </p>
+            <MetaRow 
+              className="mt-2"
+              items={[
+                profile.breed,
+                profile.gender === 'FEMALE' ? t('female') : profile.gender === 'MALE' ? t('male') : null,
+                calculateAge(profile.birthDate)
+              ]} 
+            />
           </div>
         </div>
 
@@ -151,7 +163,7 @@ export default function AnimalProfilePage() {
       </Card>
 
       {/* Stats and Calculations Panel */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <StatGrid>
         <Card className="p-4 text-center">
           <span className="text-xs text-on-surface-variant uppercase tracking-wider">{t('currentWeight')}</span>
           <span className="block text-2xl font-bold text-primary mt-2 font-mono">
@@ -181,7 +193,7 @@ export default function AnimalProfilePage() {
             </span>
           </Card>
         )}
-      </div>
+      </StatGrid>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Owner & Weight tracking */}
@@ -200,9 +212,9 @@ export default function AnimalProfilePage() {
           {/* Medical History */}
           <Card>
             <h3 className="text-lg font-semibold text-on-surface mb-4">{t('medicalHistory')}</h3>
-            <p className="text-sm text-on-surface whitespace-pre-line bg-surface-container p-4 rounded-xl">
+            <InfoBlock>
               {profile.medicalHistory || t('noMedicalHistory')}
-            </p>
+            </InfoBlock>
           </Card>
 
           <Card>
@@ -243,24 +255,29 @@ export default function AnimalProfilePage() {
           <Card>
             <h3 className="text-lg font-semibold text-on-surface mb-4">{t('weightHistory')}</h3>
 
-            <form onSubmit={handleAddWeight} className="flex gap-2 mb-6">
-              <Input
-                type="number"
-                step="0.01"
-                placeholder="0.0"
-                value={newWeight}
-                onChange={(e) => setNewWeight(e.target.value)}
-                className="flex-1 text-sm py-2"
-              />
-              <Button
-                type="submit"
-                disabled={isSubmittingWeight || !newWeight}
-                loading={isSubmittingWeight}
-                className="px-4 py-2 text-xs"
-              >
-                {tForm('save')}
-              </Button>
-            </form>
+            <div className="mb-6">
+              <h4 className="text-sm font-medium text-on-surface-variant mb-2">Log New Weight</h4>
+              <form onSubmit={handleAddWeight} className="flex gap-2">
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="0.0"
+                  value={newWeight}
+                  onChange={(e) => setNewWeight(e.target.value)}
+                  className="flex-1 text-sm py-2"
+                />
+                <Button
+                  type="submit"
+                  disabled={isSubmittingWeight || !newWeight}
+                  loading={isSubmittingWeight}
+                  className="px-4 py-2 text-xs"
+                >
+                  {tForm('save')}
+                </Button>
+              </form>
+            </div>
+            
+            <hr className="border-outline-variant/30 mb-6" />
 
             <div className="mb-6">
               <WeightChart records={profile.weightRecords} targetWeight={(profile as any).targetWeight} />

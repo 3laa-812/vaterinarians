@@ -7,6 +7,7 @@ import { useVaccineCatalog, useCreateVaccine, useUpdateVaccine, useDeleteVaccine
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
+import { Select } from '@/components/shared/Select'
 import { Lock, Syringe, AlertTriangle, Edit2, Trash2 } from 'lucide-react'
 
 export default function VaccinesSettingsPage() {
@@ -209,16 +210,15 @@ export default function VaccinesSettingsPage() {
 
               <div>
                 <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'الفصيلة' : 'Species'} *</label>
-                <select
+                <Select
                   required
                   value={form.species}
                   onChange={(e) => setForm({ ...form, species: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-outline/20 bg-surface text-primary focus:ring-2 focus:ring-primary outline-none"
                 >
                   <option value="dog">{locale === 'ar' ? 'كلب' : 'Dog'}</option>
                   <option value="cat">{locale === 'ar' ? 'قطة' : 'Cat'}</option>
                   <option value="both">{locale === 'ar' ? 'كلاهما' : 'Both'}</option>
-                </select>
+                </Select>
               </div>
 
               <div className="flex items-center gap-2">

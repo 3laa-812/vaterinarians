@@ -44,8 +44,9 @@ export default async function SessionsHistoryPage({
   })
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <PageHeader
+    <div className="bg-mesh min-h-full">
+      <div className="p-6 max-w-7xl mx-auto space-y-6">
+        <PageHeader
         title={tNav('sessions')}
       />
 
@@ -94,6 +95,7 @@ export default async function SessionsHistoryPage({
           </div>
         )}
       </div>
+    </div>
     </div>
   )
 }

@@ -94,17 +94,26 @@ export default function StoreDashboardPage() {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <PageHeader
+    <div className="bg-mesh min-h-full">
+      <div className="p-6 max-w-7xl mx-auto space-y-6">
+        <PageHeader
         title={t("products")}
         subtitle={t("manageProducts")}
         action={
-          <Link href={`/${locale}/store/new`}>
-            <Button className="inline-flex items-center gap-2">
-              <Plus size={18} />
-              {t("addProduct")}
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            <Link href={`/${locale}/store/orders`}>
+              <Button variant="secondary" className="inline-flex items-center gap-2">
+                <PackageSearch size={18} />
+                {t("orders")}
+              </Button>
+            </Link>
+            <Link href={`/${locale}/store/new`}>
+              <Button className="inline-flex items-center gap-2">
+                <Plus size={18} />
+                {t("addProduct")}
+              </Button>
+            </Link>
+          </div>
         }
       />
 
@@ -217,6 +226,7 @@ export default function StoreDashboardPage() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

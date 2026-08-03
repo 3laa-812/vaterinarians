@@ -32,7 +32,9 @@ export function VaccinationFormModal({
 
   // Filter catalog for the pet's species (or 'both')
   const availableVaccines = catalog.filter(
-    (v) => v.species === species || v.species === "both",
+    (v) =>
+      v.species?.toLowerCase() === species?.toLowerCase() ||
+      v.species?.toLowerCase() === "both",
   );
 
   const [form, setForm] = useState({

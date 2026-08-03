@@ -3,7 +3,7 @@
 import type { ButtonHTMLAttributes } from 'react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary'
+  variant?: 'primary' | 'secondary' | 'ghost'
   loading?: boolean
 }
 
@@ -22,6 +22,8 @@ export function Button({
     primary: 'bg-primary text-on-primary hover:bg-primary/90',
     secondary:
       'border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline',
+    ghost:
+      'text-on-surface-variant hover:text-on-surface hover:bg-surface-container',
   }
 
   return (

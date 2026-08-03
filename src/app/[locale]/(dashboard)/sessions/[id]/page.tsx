@@ -90,6 +90,13 @@ export default function SessionDetailPage() {
           <p className="text-sm text-on-surface-variant mt-1">{formatDate(appointment.scheduledAt)}</p>
         </div>
         <div className="flex items-center gap-2">
+          {paymentData?.invoiceId && (
+            <Link href={`/invoices/${paymentData.invoiceId}`} target="_blank" rel="noreferrer">
+              <Button variant="secondary" className="text-xs px-4 py-2">
+                {t('printInvoice')}
+              </Button>
+            </Link>
+          )}
           <a href={`/api/sessions/${id}/pdf?locale=${locale}`} target="_blank" rel="noreferrer">
             <Button variant="secondary" className="text-xs px-4 py-2">
               {t('printReport')}

@@ -94,13 +94,13 @@ export default function GuardianStorePage() {
 
         <div className="flex items-center justify-between mt-6 mb-4">
           <h2 className="text-xl font-bold flex items-center gap-2">
-            Recommended <span className="text-amber-500">🐾</span>
+            Recommended <span className="text-guardian-secondary">🐾</span>
           </h2>
           <button className="text-primary text-sm font-semibold">View all</button>
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 stagger-children animate-slide-up">
           {filteredProducts.map((product) => (
             <div
               key={product.id}
@@ -115,7 +115,7 @@ export default function GuardianStorePage() {
                   </div>
                 )}
                 {product.category.includes('Food') && (
-                  <span className="absolute top-2 left-2 bg-amber-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                  <span className="absolute top-2 left-2 bg-guardian-secondary text-white text-[9px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 ring-pulse">
                     ★ Vet-approved
                   </span>
                 )}
@@ -159,7 +159,7 @@ export default function GuardianStorePage() {
       {items.length > 0 && !cartOpened && (
         <button 
           onClick={() => setCartOpened(true)}
-          className="fixed bottom-24 right-6 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform z-50"
+          className="fixed bottom-24 right-6 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform z-50 ring-pulse"
         >
           <ShoppingCart size={24} />
           <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-guardian-bg">

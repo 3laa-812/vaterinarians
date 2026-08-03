@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import { clinicScope } from '@/lib/scope'
 import { AppError, NotFoundError } from '@/lib/api/errors'
 import { calculateWeightDelta, calculateTotalOwed } from '@/domain/animal'
+import { paginate } from '@/lib/pagination'
 import type { Session } from 'next-auth'
 import type { AnimalInput } from '@/lib/validations/animal.schema'
 
@@ -9,22 +10,19 @@ export const animalService = {
   async list(session: Session, { page, limit }: { page: number; limit: number }) {
     const scope = clinicScope(session)
 
-    const animals = await prisma.animal.findMany({
-      where: scope,
+    const { data: animals, total } = await paginate(prisma.animal, {
+      where: { ...scope, isArchived: false },
       include: {
         owner: { select: { id: true, name: true, phone: true } },
         weightRecords: { orderBy: { recordedAt: 'desc' }, take: 1 },
       },
       orderBy: { name: 'asc' },
-      skip: (page - 1) * limit,
-      take: limit,
-    })
+    } as any, { page, limit })
 
     const animalIds = animals.map((a) => a.id)
-    const [lastVisits, nextAppointments, total] = await Promise.all([
+    const [lastVisits, nextAppointments] = await Promise.all([
       this.getLastVisits(animalIds),
       this.getNextAppointments(animalIds),
-      prisma.animal.count({ where: scope }),
     ])
 
     return {
@@ -37,7 +35,7 @@ export const animalService = {
 
   async getById(session: Session, id: string) {
     const animal = await prisma.animal.findFirst({
-      where: { id, ...clinicScope(session) },
+      where: { id, ...clinicScope(session), isArchived: false },
       include: {
         owner: {
           include: {
@@ -83,7 +81,7 @@ export const animalService = {
     const scope = clinicScope(session)
 
     const existing = await prisma.animal.findFirst({
-      where: { id, ...scope },
+      where: { id, ...scope, isArchived: false },
     })
 
     if (!existing) throw new NotFoundError({ ar: 'الحيوان', en: 'Animal' })
@@ -117,24 +115,15 @@ export const animalService = {
     const scope = clinicScope(session)
 
     const existing = await prisma.animal.findFirst({
-      where: { id, ...scope },
+      where: { id, ...scope, isArchived: false },
     })
 
     if (!existing) throw new NotFoundError({ ar: 'الحيوان', en: 'Animal' })
 
-    const appointments = await prisma.appointment.findMany({ 
-      where: { animalId: id }, 
-      select: { id: true } 
+    await prisma.animal.update({
+      where: { id },
+      data: { isArchived: true }
     })
-    const apptIds = appointments.map(a => a.id)
-
-    await prisma.$transaction([
-      prisma.weightRecord.deleteMany({ where: { animalId: id } }),
-      prisma.session.deleteMany({ where: { appointmentId: { in: apptIds } } }),
-      prisma.payment.deleteMany({ where: { appointmentId: { in: apptIds } } }),
-      prisma.appointment.deleteMany({ where: { animalId: id } }),
-      prisma.animal.delete({ where: { id } }),
-    ])
   },
 
   // Private helpers — not exported, only used within this service

@@ -8,6 +8,7 @@ import { Link } from '@/lib/i18n-navigation'
 import { Plus, CalendarDays } from 'lucide-react'
 import { StatsStrip } from '../home/StatsStrip'
 import { displayOwnerName } from '@/lib/format'
+import { EmptyState } from '@/components/shared/EmptyState'
 
 export function TodaySchedule() {
   const t = useTranslations('home')
@@ -26,12 +27,19 @@ export function TodaySchedule() {
 
   if (!appointments || appointments.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center px-8">
-        <div className="w-14 h-14 rounded-2xl bg-surface-container border border-outline-variant flex items-center justify-center mb-4">
-          <CalendarDays size={24} className="text-on-surface-variant" />
+      <div className="space-y-5 pb-5">
+        <div className="px-5">
+          <EmptyState icon={CalendarDays} message={`${t('noAppointments')} - ${t('noAppointmentsHint')}`} />
         </div>
-        <p className="font-semibold text-on-surface">{t('noAppointments')}</p>
-        <p className="text-sm text-on-surface-variant mt-1">{t('noAppointmentsHint')}</p>
+        <div className="pt-5 border-t border-outline-variant">
+          <Link
+            href="/session/new"
+            className="flex items-center justify-center gap-2 mx-5 mt-1 py-3 rounded-2xl border border-dashed border-primary/40 bg-primary/10 text-primary text-sm font-semibold hover:bg-primary/20 transition-colors"
+          >
+            <Plus size={16} />
+            {t('addWalkIn')}
+          </Link>
+        </div>
       </div>
     )
   }

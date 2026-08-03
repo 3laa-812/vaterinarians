@@ -6,7 +6,8 @@
   "roles": {
     "SUPER_ADMIN": "المدير العام",
     "CLINIC_ADMIN": "مدير العيادة",
-    "DOCTOR": "طبيب"
+    "DOCTOR": "طبيب",
+    "GUARDIAN": "مرافق"
   },
   "sidebar": {
     "home": "الرئيسية",
@@ -16,6 +17,14 @@
   },
   "store": {
     "title": "المتجر",
+    "orders": "الطلبات",
+    "manageOrders": "إدارة الطلبات",
+    "filter": "تصفية",
+    "orderNumber": "رقم الطلب",
+    "customer": "العميل",
+    "date": "التاريخ",
+    "total": "الإجمالي",
+    "details": "التفاصيل",
     "products": "المنتجات",
     "manageProducts": "إدارة المنتجات",
     "error": "خطأ",
@@ -84,7 +93,8 @@
     "doctors": "الأطباء",
     "more": "المزيد",
     "invoices": "الفواتير",
-    "store": "المتجر"
+    "store": "المتجر",
+    "vaccines": "قائمة التطعيمات"
   },
   "profile": {
     "pageTitle": "حسابي",
@@ -116,7 +126,18 @@
     "viewSessionDetails": "عرض تفاصيل الكشف",
     "addWalkIn": "إضافة كشف لحالة بدون موعد مسبق",
     "nowPlaceholder": "الآن",
-    "noAppointmentsHint": "استخدم زر كشف جديد لإضافة زيارة"
+    "noAppointmentsHint": "استخدم زر كشف جديد لإضافة زيارة",
+    "quickActions": {
+      "newSession": "كشف جديد",
+      "newAppointment": "موعد جديد",
+      "newOwner": "عميل جديد"
+    },
+    "thisWeek": {
+      "appointments": "المواعيد",
+      "newPatients": "مرضى جدد",
+      "revenue": "الإيرادات"
+    },
+    "recentActivity": "أحدث النشاطات"
   },
   "animal": {
     "currentWeight": "الوزن الحالي",
@@ -201,8 +222,10 @@
     "medicationDuration": "المدة",
     "medicationDurationPlaceholder": "مثال: 7 أيام",
     "printReport": "طباعة التقرير",
+    "printInvoice": "طباعة الفاتورة",
     "sessionDetails": "تفاصيل الكشف",
-    "editSession": "تعديل الكشف"
+    "editSession": "تعديل الكشف",
+    "noSessions": "لا توجد كشوفات مسجلة"
   },
   "payment": {
     "title": "تفاصيل الدفع",
@@ -422,7 +445,12 @@
     "noPets": "لا يوجد حيوانات مسجلة",
     "medicalHistory": "السجل الطبي",
     "availableProducts": "المنتجات المتاحة",
-    "addToCart": "إضافة للسلة"
+    "addToCart": "إضافة للسلة",
+    "account": "حسابي",
+    "shopFromStore": "تسوق من المتجر",
+    "processing": "جاري المعالجة...",
+    "orderPlaced": "تم إرسال الطلب بنجاح",
+    "orderFailed": "فشل في إرسال الطلب"
   },
   "printing": {
     "invoicesTitle": "الفواتير",

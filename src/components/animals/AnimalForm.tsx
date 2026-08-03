@@ -37,6 +37,7 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
   const isSuperAdmin = session?.user?.role === 'SUPER_ADMIN'
   const [clinics, setClinics] = useState<{id: string, name: string}[]>([])
   const [createdQrToken, setCreatedQrToken] = useState<string | null>(null)
+  const [existingOwnerAlert, setExistingOwnerAlert] = useState<boolean>(false)
 
   useEffect(() => {
     if (isSuperAdmin) {
@@ -121,6 +122,12 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
           address: newOwnerData.address,
           notes: newOwnerData.notes,
         })
+
+        if (res.isExisting) {
+          setExistingOwnerAlert(true)
+        } else {
+          setExistingOwnerAlert(false)
+        }
 
         if (res.qrToken) {
           setCreatedQrToken(res.qrToken)
@@ -325,6 +332,25 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
 
       {step === 2 && (
         <form onSubmit={handleSubmit} className="space-y-6">
+          {existingOwnerAlert && (
+            <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-200 flex items-start gap-3">
+              <div className="flex-1">
+                <h4 className="text-sm font-semibold text-amber-900">مرافق موجود مسبقاً / Existing Owner</h4>
+                <p className="text-xs text-amber-800 mt-1">
+                  رقم الهاتف هذا مسجل بالفعل. تم تحديد الملف الشخصي الحالي.
+                  <br />
+                  This phone number is already registered. The existing profile has been selected.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setExistingOwnerAlert(false)}
+                className="text-amber-500 hover:text-amber-700"
+              >
+                ×
+              </button>
+            </div>
+          )}
           <div className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-primary mb-1">
@@ -416,10 +442,12 @@ export function AnimalForm({ initialData, onSubmit, onCancel, isLoading = false 
                 type="date"
                 id="birthDate"
                 name="birthDate"
+                max={new Date().toISOString().split('T')[0]}
                 value={animalData.birthDate || ''}
                 onChange={handleAnimalChange}
                 className="w-full px-4 py-3 rounded-xl border border-outline/20 bg-surface text-primary outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
               />
+              {errors.birthDate && <p className="text-xs text-error mt-1">{errors.birthDate}</p>}
             </div>
 
             <div>

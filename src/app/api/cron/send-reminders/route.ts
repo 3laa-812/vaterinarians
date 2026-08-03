@@ -74,6 +74,17 @@ export async function GET(req: Request) {
           clinicName: app.animal.clinic.nameAr || app.animal.clinic.name,
         })
 
+        if (app.animal.owner.id) {
+          await triggerAppointmentReminder({
+            subscriberId: app.animal.owner.id,
+            patientName: app.animal.name,
+            ownerName: app.animal.owner.name,
+            appointmentTime: app.scheduledAt.toISOString(),
+            hoursUntil: 24,
+            clinicName: app.animal.clinic.nameAr || app.animal.clinic.name,
+          })
+        }
+
         await prisma.appointment.update({
           where: { id: app.id },
           data: { reminderSent24h: true },
@@ -96,6 +107,17 @@ export async function GET(req: Request) {
           hoursUntil: 1,
           clinicName: app.animal.clinic.nameAr || app.animal.clinic.name,
         })
+
+        if (app.animal.owner.id) {
+          await triggerAppointmentReminder({
+            subscriberId: app.animal.owner.id,
+            patientName: app.animal.name,
+            ownerName: app.animal.owner.name,
+            appointmentTime: app.scheduledAt.toISOString(),
+            hoursUntil: 1,
+            clinicName: app.animal.clinic.nameAr || app.animal.clinic.name,
+          })
+        }
 
         await prisma.appointment.update({
           where: { id: app.id },

@@ -5,7 +5,15 @@ export const animalSchema = z.object({
   species: z.string().min(1, { message: 'Species is required' }),
   breed: z.string().optional().or(z.literal('')),
   gender: z.enum(['MALE', 'FEMALE']).optional().nullable(),
-  birthDate: z.string().optional().nullable().or(z.literal('')),
+  birthDate: z.string().optional().nullable().or(z.literal(''))
+    .refine((val) => {
+      if (!val) return true;
+      const date = new Date(val);
+      const now = new Date();
+      const fiftyYearsAgo = new Date();
+      fiftyYearsAgo.setFullYear(now.getFullYear() - 50);
+      return date <= now && date >= fiftyYearsAgo;
+    }, { message: 'Invalid birth date' }),
   color: z.string().optional().or(z.literal('')),
   medicalHistory: z.string().optional().or(z.literal('')),
   notes: z.string().optional().or(z.literal('')),

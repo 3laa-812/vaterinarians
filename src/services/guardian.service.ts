@@ -70,7 +70,7 @@ export class GuardianService {
     return StoreService.createOrder(this.clinicId, undefined, {
       ...data,
       ownerId: this.ownerId,
-      deliveryFee: 0, // Fallback for guardian placed orders
+      deliveryFee: data.deliveryMethod === 'delivery' ? 50 : 0, // Flat rate of 50 for delivery
     });
   }
 
