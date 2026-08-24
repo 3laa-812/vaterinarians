@@ -1,200 +1,198 @@
-'use client'
+"use client";
 
-import { useGuardianCartStore } from '@/store/useGuardianCartStore'
-import { useGuardianCreateOrder } from '@/hooks/useGuardian'
-import { useTranslations } from 'next-intl'
-import { ShoppingCart, Plus, Minus, X, Loader2, ArrowLeft, CreditCard, Clock, MapPin } from 'lucide-react'
-import { useRouter } from '@/lib/i18n-navigation'
-import { toast } from 'sonner'
-import { useState } from 'react'
+import { useGuardianCartStore } from "@/store/useGuardianCartStore";
+import { useGuardianCreateOrder } from "@/hooks/useGuardian";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/i18n-navigation";
+import { toast } from "sonner";
+import { useState } from "react";
+import { ShoppingBag, ShoppingCart, Truck, Store, X } from "lucide-react";
+import { GuardianCartSummary } from "@/components/guardian/GuardianCartSummary";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 export default function GuardianCartPage() {
-  const t = useTranslations('guardian')
-  const router = useRouter()
-  const createOrderMutation = useGuardianCreateOrder()
-  const { items, updateQuantity, removeItem, clearCart, getTotal } = useGuardianCartStore()
-  
-  const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'delivery'>('pickup')
-  const [address, setAddress] = useState('')
-  const [notes, setNotes] = useState('')
+  const t = useTranslations("guardian");
+  const router = useRouter();
+  const createOrderMutation = useGuardianCreateOrder();
+  const { items, updateQuantity, removeItem, clearCart, getTotal } =
+    useGuardianCartStore();
 
-  const cartTotal = getTotal()
-  const deliveryFee = deliveryMethod === 'delivery' ? 50 : 0
-  const finalTotal = cartTotal + deliveryFee
+  const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "delivery">("pickup");
+  const [address, setAddress] = useState("");
+  const [notes, setNotes] = useState("");
+
+  const cartTotal = getTotal();
+  const deliveryFee = deliveryMethod === "delivery" ? 35 : 0;
+  const finalTotal = cartTotal + deliveryFee;
 
   const handleCheckout = async () => {
-    if (items.length === 0) return
-    
-    if (deliveryMethod === 'delivery' && !address.trim()) {
-      toast.error('Please enter a delivery address')
-      return
+    if (items.length === 0) return;
+
+    if (deliveryMethod === "delivery" && !address.trim()) {
+      toast.error(t("enterAddressMsg"));
+      return;
     }
 
     try {
       await createOrderMutation.mutateAsync({
-        items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+        items: items.map((i) => ({
+          productId: i.productId,
+          quantity: i.quantity,
+        })),
         deliveryMethod,
-        notes: deliveryMethod === 'delivery' ? `Address: ${address}\nNotes: ${notes}` : notes,
-      })
-      clearCart()
-      toast.success(t('orderPlaced'))
-      router.push('/guardian')
-    } catch (err: any) {
-      toast.error(err?.response?.data?.error?.en || err.message || t('orderFailed'))
+        notes:
+          deliveryMethod === "delivery"
+            ? `Address: ${address}\nNotes: ${notes}`
+            : notes,
+      });
+      clearCart();
+      toast.success(t("orderPlaced"));
+      router.push("/guardian/orders");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : t("orderFailed");
+      toast.error(message);
     }
+  };
+
+  if (items.length === 0) {
+    return (
+      <EmptyState
+        variant="guardian"
+        icon={ShoppingCart}
+        title={t("emptyCart")}
+        message={t("emptyCartDesc")}
+        actionLabel={t("browseStore")}
+        onAction={() => router.push("/guardian/store")}
+      />
+    );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-guardian-bg text-guardian-text pb-24">
-      <div className="px-6 pt-6 pb-4 flex items-center justify-between sticky top-0 bg-guardian-bg/90 backdrop-blur-md z-10 border-b border-stone-100">
-        <button onClick={() => router.back()} className="text-guardian-text hover:bg-stone-200/50 p-2 rounded-full transition-colors">
-          <ArrowLeft size={24} strokeWidth={1.5} />
-        </button>
-        <h1 className="text-xl font-bold text-guardian-text">Checkout</h1>
-        <div className="w-10" />
-      </div>
-
-      <div className="px-6 mt-4">
-        {items.length === 0 ? (
-          <div className="py-20 text-center flex flex-col items-center justify-center">
-            <div className="w-20 h-20 bg-stone-100 rounded-full flex items-center justify-center mb-6 text-stone-400">
-              <ShoppingCart size={32} />
-            </div>
-            <h2 className="text-xl font-bold mb-2">Your cart is empty</h2>
-            <p className="text-guardian-text-muted mb-8">Add items from the store to proceed to checkout.</p>
-            <button onClick={() => router.push('/guardian/store')} className="bg-primary text-white font-bold py-3 px-8 rounded-xl hover:bg-primary/90 transition-colors">
-              Browse Store
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Order Items */}
-            <div>
-              <h2 className="text-lg font-bold mb-4">Order Summary</h2>
-              <div className="space-y-3">
-                {items.map((item) => (
-                  <div key={item.productId} className="bg-guardian-surface p-4 rounded-2xl border border-stone-100 shadow-[0_4px_20px_rgba(28,25,23,0.03)] flex justify-between items-center">
-                    <div className="flex-1 mr-4">
-                      <p className="font-bold text-sm text-guardian-text mb-1">{item.name}</p>
-                      <p className="text-sm font-extrabold text-primary">{item.price} EGP</p>
-                    </div>
-                    <div className="flex items-center gap-3 bg-stone-50 p-1.5 rounded-xl border border-stone-100">
-                      <button
-                        onClick={() => {
-                          if (item.quantity === 1) removeItem(item.productId)
-                          else updateQuantity(item.productId, item.quantity - 1)
-                        }}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-stone-100 text-guardian-text transition-colors shadow-sm"
-                      >
-                        {item.quantity === 1 ? <X size={16} className="text-red-500" /> : <Minus size={16} />}
-                      </button>
-                      <span className="font-bold text-sm w-4 text-center">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-stone-100 text-guardian-text transition-colors shadow-sm"
-                      >
-                        <Plus size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+    <div>
+      <div className="cart-grid">
+        <div className="card">
+          {items.map((item) => (
+            <div key={item.productId} className="list-row">
+              <div
+                className="list-thumb"
+                style={{ background: "var(--sage-soft)" }}
+              >
+                <ShoppingBag strokeWidth={2} />
               </div>
-            </div>
-
-            {/* Delivery Method */}
-            <div>
-              <h2 className="text-lg font-bold mb-4">Delivery Method</h2>
-              <div className="grid grid-cols-2 gap-3">
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: 13.5 }}>{item.name}</div>
+                <div className="muted num" style={{ fontSize: 12 }}>
+                  {item.price} {t("currency")}
+                </div>
+              </div>
+              <div className="qty">
                 <button
-                  onClick={() => setDeliveryMethod('pickup')}
-                  className={`p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${
-                    deliveryMethod === 'pickup' 
-                      ? 'border-primary bg-primary/5 text-primary' 
-                      : 'border-stone-100 bg-guardian-surface text-guardian-text-muted hover:border-primary/30'
-                  }`}
+                  type="button"
+                  onClick={() =>
+                    updateQuantity(item.productId, item.quantity - 1)
+                  }
                 >
-                  <Clock size={24} />
-                  <span className="font-bold text-sm">Clinic Pickup</span>
+                  −
                 </button>
+                <span className="num">{item.quantity}</span>
                 <button
-                  onClick={() => setDeliveryMethod('delivery')}
-                  className={`p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${
-                    deliveryMethod === 'delivery' 
-                      ? 'border-primary bg-primary/5 text-primary' 
-                      : 'border-stone-100 bg-guardian-surface text-guardian-text-muted hover:border-primary/30'
-                  }`}
+                  type="button"
+                  onClick={() =>
+                    updateQuantity(item.productId, item.quantity + 1)
+                  }
                 >
-                  <MapPin size={24} />
-                  <span className="font-bold text-sm">Home Delivery</span>
+                  +
                 </button>
               </div>
+              <button
+                type="button"
+                className="icon-btn btn-icon"
+                style={{ width: 34, height: 34 }}
+                onClick={() => removeItem(item.productId)}
+                aria-label={t("close")}
+              >
+                <X width={15} height={15} stroke="var(--danger)" strokeWidth={2} />
+              </button>
             </div>
+          ))}
+        </div>
 
-            {/* Delivery Details */}
-            {deliveryMethod === 'delivery' && (
-              <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-                <h2 className="text-lg font-bold mb-4">Delivery Details</h2>
-                <div className="space-y-3">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs font-semibold text-guardian-text-muted ml-1">Full Address *</label>
-                    <textarea 
-                      placeholder="Street, Building, Apartment..."
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      className="bg-guardian-surface border border-stone-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary min-h-[80px] text-sm resize-none shadow-[0_2px_10px_rgba(28,25,23,0.02)]"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs font-semibold text-guardian-text-muted ml-1">Additional Notes</label>
-                    <input 
-                      type="text"
-                      placeholder="Special instructions..."
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      className="bg-guardian-surface border border-stone-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-sm shadow-[0_2px_10px_rgba(28,25,23,0.02)]"
-                    />
+        <div className="flex flex-col gap-5">
+          <div className="card pad">
+            <h3
+              style={{
+                fontSize: 14,
+                fontWeight: 800,
+                color: "var(--olive)",
+                marginBottom: 14,
+              }}
+            >
+              {t("deliveryMethod")}
+            </h3>
+            <div className="grid2">
+              <button
+                type="button"
+                className={`select-card${deliveryMethod === "delivery" ? " picked" : ""}`}
+                onClick={() => setDeliveryMethod("delivery")}
+              >
+                <Truck strokeWidth={2} />
+                <div className="text-right">
+                  <div style={{ fontWeight: 700, fontSize: 13 }}>{t("delivery")}</div>
+                  <div className="muted" style={{ fontSize: 11.5 }}>
+                    {t("deliveryTime")}
                   </div>
                 </div>
+              </button>
+              <button
+                type="button"
+                className={`select-card${deliveryMethod === "pickup" ? " picked" : ""}`}
+                onClick={() => setDeliveryMethod("pickup")}
+              >
+                <Store strokeWidth={2} />
+                <div className="text-right">
+                  <div style={{ fontWeight: 700, fontSize: 13 }}>{t("pickup")}</div>
+                  <div className="muted" style={{ fontSize: 11.5 }}>
+                    {t("pickupTime")}
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            {deliveryMethod === "delivery" && (
+              <div style={{ marginTop: 16 }}>
+                <label className="field-label">{t("addressDetails")}</label>
+                <textarea
+                  className="input"
+                  rows={3}
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder={t("addressPlaceholder")}
+                  style={{ marginBottom: 12, resize: "none" }}
+                />
+                <label className="field-label">{t("additionalNotes")}</label>
+                <input
+                  className="input"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder={t("notesPlaceholder")}
+                />
               </div>
             )}
-
-            {/* Payment Summary */}
-            <div className="bg-stone-50 rounded-2xl p-5 border border-stone-100">
-              <h2 className="font-bold mb-4">Payment Details</h2>
-              <div className="space-y-3 mb-4 text-sm">
-                <div className="flex justify-between text-guardian-text-muted">
-                  <span>Subtotal</span>
-                  <span className="font-medium text-guardian-text">{cartTotal.toFixed(2)} EGP</span>
-                </div>
-                {deliveryMethod === 'delivery' && (
-                  <div className="flex justify-between text-guardian-text-muted">
-                    <span>Delivery Fee</span>
-                    <span className="font-medium text-guardian-text">{deliveryFee.toFixed(2)} EGP</span>
-                  </div>
-                )}
-                <div className="border-t border-stone-200 pt-3 flex justify-between font-bold text-lg">
-                  <span>Total</span>
-                  <span className="text-primary">{finalTotal.toFixed(2)} EGP</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-stone-100 text-sm font-medium text-guardian-text-muted">
-                <CreditCard size={18} className="text-stone-400" />
-                <span>Pay on {deliveryMethod === 'pickup' ? 'pickup' : 'delivery'}</span>
-              </div>
-            </div>
-
-            <button
-              onClick={handleCheckout}
-              disabled={createOrderMutation.isPending}
-              className="w-full bg-primary hover:opacity-90 text-white py-4 rounded-xl font-bold text-base transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-md shadow-primary/20 sticky bottom-[5.5rem] z-20"
-            >
-              {createOrderMutation.isPending && <Loader2 className="animate-spin" size={18} />}
-              {createOrderMutation.isPending ? t('processing') : 'Confirm Order'}
-            </button>
           </div>
-        )}
+
+          <GuardianCartSummary
+            itemCount={items.reduce((acc, i) => acc + i.quantity, 0)}
+            cartTotal={cartTotal}
+            deliveryFee={deliveryFee}
+            discount={0}
+            finalTotal={finalTotal}
+            deliveryMethod={deliveryMethod}
+            isPending={createOrderMutation.isPending}
+            onCheckout={handleCheckout}
+          />
+        </div>
       </div>
     </div>
-  )
+  );
 }

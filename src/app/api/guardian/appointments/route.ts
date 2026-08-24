@@ -23,6 +23,7 @@ export const POST = withAuth(async (req, { session }) => {
   const appointment = await guardianService.createAppointment({
     animalId: body.animalId,
     scheduledAt: new Date(body.scheduledAt),
+    doctorId: body.doctorId || undefined,
     notes: body.notes,
   })
 

@@ -3,7 +3,7 @@
 import type { ButtonHTMLAttributes } from 'react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'guardian-primary' | 'guardian-secondary' | 'guardian-outline'
   loading?: boolean
 }
 
@@ -24,6 +24,9 @@ export function Button({
       'border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline',
     ghost:
       'text-on-surface-variant hover:text-on-surface hover:bg-surface-container',
+    'guardian-primary': 'bg-guardian-accent text-white hover:bg-guardian-accent/90 shadow-[0_4px_20px_rgba(99,102,241,0.25)] border-none',
+    'guardian-secondary': 'bg-guardian-secondary text-white hover:bg-guardian-secondary/90 shadow-[0_4px_20px_rgba(251,146,60,0.25)] border-none',
+    'guardian-outline': 'bg-transparent border border-guardian-accent/20 text-guardian-accent hover:bg-guardian-accent/5',
   }
 
   return (

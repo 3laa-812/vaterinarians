@@ -53,23 +53,123 @@
   --font-family-arabic: 'Cairo', sans-serif;
   --font-family-sans: 'Inter', sans-serif;
 
-  /* Guardian Portal (Modern Youth) */
-  --color-guardian-bg: #F8FAFC;
-  --color-guardian-surface: #FFFFFF;
-  --color-guardian-text: #0F172A;
-  --color-guardian-text-muted: #64748B;
-  --color-guardian-accent: #6366F1;
-  --color-guardian-secondary: #FB923C;
-}
+  /* Guardian Portal (VetCare Minimalist-Organic) from Stitch */
+  --color-guardian-surface: #fbfaee;
+  --color-guardian-surface-dim: #dbdbcf;
+  --color-guardian-surface-bright: #fbfaee;
+  --color-guardian-surface-container-lowest: #ffffff;
+  --color-guardian-surface-container-low: #f5f4e8;
+  --color-guardian-surface-container: #efeee2;
+  --color-guardian-surface-container-high: #eae9dd;
+  --color-guardian-surface-container-highest: #e4e3d7;
+  
+  --color-guardian-on-surface: #1b1c15;
+  --color-guardian-on-surface-variant: #48473e;
+  
+  --color-guardian-inverse-surface: #303129;
+  --color-guardian-inverse-on-surface: #f2f1e5;
+  
+  --color-guardian-outline: #78776d;
+  --color-guardian-outline-variant: #c9c7bb;
+  --color-guardian-surface-tint: #5f6048;
+  
+  --color-guardian-primary: #282915;
+  --color-guardian-on-primary: #ffffff;
+  --color-guardian-primary-container: #3e3f29;
+  --color-guardian-on-primary-container: #aaaa8e;
+  --color-guardian-inverse-primary: #c8c8ab;
+  
+  --color-guardian-secondary: #52625b;
+  --color-guardian-on-secondary: #ffffff;
+  --color-guardian-secondary-container: #d3e4db;
+  --color-guardian-on-secondary-container: #576660;
+  
+  --color-guardian-tertiary: #322512;
+  --color-guardian-on-tertiary: #ffffff;
+  --color-guardian-tertiary-container: #493b26;
+  --color-guardian-on-tertiary-container: #b9a58a;
+  
+  --color-guardian-error: #ba1a1a;
+  --color-guardian-on-error: #ffffff;
+  --color-guardian-error-container: #ffdad6;
+  --color-guardian-on-error-container: #93000a;
+  
+  --color-guardian-primary-fixed: #e5e4c5;
+  --color-guardian-primary-fixed-dim: #c8c8ab;
+  --color-guardian-on-primary-fixed: #1c1d0a;
+  --color-guardian-on-primary-fixed-variant: #474832;
+  
+  --color-guardian-secondary-fixed: #d6e6de;
+  --color-guardian-secondary-fixed-dim: #bacac2;
+  --color-guardian-on-secondary-fixed: #101e19;
+  --color-guardian-on-secondary-fixed-variant: #3b4a44;
+  
+  --color-guardian-tertiary-fixed: #f6dfc2;
+  --color-guardian-tertiary-fixed-dim: #d9c3a7;
+  --color-guardian-on-tertiary-fixed: #251a08;
+  --color-guardian-on-tertiary-fixed-variant: #53442f;
+  
+  --color-guardian-background: #fbfaee;
+  --color-guardian-on-background: #1b1c15;
+  --color-guardian-surface-variant: #e4e3d7;
 
-/* ── Guardian Light Theme overrides for shared components ────────── */
-.guardian-theme {
-  --color-surface-container-low: var(--color-guardian-surface);
-  --color-surface-container: var(--color-guardian-bg);
-  --color-on-surface: var(--color-guardian-text);
-  --color-on-surface-variant: var(--color-guardian-text-muted);
-  --color-outline-variant: #e2e8f0;
-  --color-outline: #cbd5e1;
+  /* Vitality accent — used ONLY for the Recovery Ring / progress motif and
+     goal-related highlights. Deliberately not the tan/olive/sage triad so
+     progress always reads distinctly from structural UI. Warm ochre-bronze,
+     kept clear of the #D97757 terracotta zone. */
+  --color-guardian-vitality: #a8763e;
+  --color-guardian-vitality-soft: #eadcc4;
+  --color-guardian-vitality-track: #e4e3d7;
+
+  /* Stitch Typography (Guardian) */
+  --font-label-md: 'Inter', sans-serif;
+  --text-label-md: 14px;
+  --text-label-md--line-height: 20px;
+  --text-label-md--letter-spacing: 0.02em;
+  --text-label-md--font-weight: 500;
+
+  --font-headline-lg: 'Be Vietnam Pro', sans-serif;
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 40px;
+  --text-headline-lg--letter-spacing: -0.01em;
+  --text-headline-lg--font-weight: 600;
+
+  --font-body-lg: 'Be Vietnam Pro', sans-serif;
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-lg--font-weight: 400;
+
+  --font-display-lg: 'Be Vietnam Pro', sans-serif;
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 700;
+
+  --font-numeric-data: 'Inter', sans-serif;
+  --text-numeric-data: 20px;
+  --text-numeric-data--line-height: 24px;
+  --text-numeric-data--font-weight: 600;
+
+  --font-body-md: 'Be Vietnam Pro', sans-serif;
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--font-weight: 400;
+
+  --font-headline-lg-mobile: 'Be Vietnam Pro', sans-serif;
+  --text-headline-lg-mobile: 28px;
+  --text-headline-lg-mobile--line-height: 36px;
+  --text-headline-lg-mobile--font-weight: 600;
+
+  --font-headline-md: 'Be Vietnam Pro', sans-serif;
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 32px;
+  --text-headline-md--font-weight: 600;
+  
+  --spacing-container-margin: 24px;
+  --spacing-section-gap: 48px;
+  --spacing-touch-target: 48px;
+  --spacing-gutter: 16px;
+  --spacing-base: 8px;
 }
 
 /* ── Base styles ──────────────────────────────────────────────────────────────── */
@@ -172,3 +272,34 @@ select option {
   color: var(--color-on-surface);
   padding: 8px;
 }
+
+/* ── Guardian portal hero — VetCare Organic gradient ──────────── */
+.bg-guardian-hero {
+  background-color: var(--color-guardian-background);
+  background-image:
+    radial-gradient(ellipse 70% 50% at 15% 0%, rgba(62, 63, 41, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 45% at 100% 15%, rgba(125, 141, 134, 0.04) 0%, transparent 55%);
+}
+
+.bg-guardian-mesh {
+  background-image: radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.05) 1px, transparent 0);
+  background-size: 22px 22px;
+}
+
+/* ── Soft float entry for hero elements ────────────────────────────────── */
+@keyframes float-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-float-in { animation: float-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ── Focus rings ────────────────────────────────────────────────────────── */
+@utility focus-ring-guardian {
+  outline: none;
+}
+.focus-ring-guardian:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-guardian-background), 0 0 0 4px var(--color-guardian-primary);
+}
+
+@import "../styles/guardian-portal.css";

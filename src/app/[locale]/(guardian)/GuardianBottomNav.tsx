@@ -1,60 +1,100 @@
-'use client'
+"use client";
 
-import { usePathname, useRouter } from '@/lib/i18n-navigation'
-import { useTranslations } from 'next-intl'
-import { PawPrint, ShoppingBag, ShoppingCart, User, ClipboardList } from 'lucide-react'
-import { useGuardianCartStore } from '@/store/useGuardianCartStore'
-import { useEffect, useState } from 'react'
+import { usePathname, useRouter } from "@/lib/i18n-navigation";
+import { useTranslations } from "next-intl";
+import { useGuardianCartStore } from "@/store/useGuardianCartStore";
+import { useState, useEffect } from "react";
+import { Home, Store, ShoppingCart, User, Plus } from "lucide-react";
+import { motion } from "motion/react";
+import { guardianTransitions } from "@/lib/guardian/motion";
+import { isGuardianNavActive } from "@/lib/guardian/nav";
 
 export function GuardianBottomNav() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const t = useTranslations('guardian')
-  const cartCount = useGuardianCartStore((s) => s.getItemCount())
-  const [isMounted, setIsMounted] = useState(false)
+  const router = useRouter();
+  const pathname = usePathname();
+  const t = useTranslations("guardian");
+  const cartCount = useGuardianCartStore((s) => s.getItemCount());
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
+    setIsMounted(true);
+  }, []);
 
-  if (pathname.includes('/guardian/login')) return null
+  if (pathname.includes("/guardian/login")) return null;
 
   const links = [
-    { icon: PawPrint, label: t('pets'), path: '/guardian' },
-    { icon: ShoppingBag, label: t('store'), path: '/guardian/store' },
-    { icon: ShoppingCart, label: t('cart'), path: '/guardian/cart', badge: cartCount },
-    { icon: ClipboardList, label: t('orders'), path: '/guardian/orders' },
-    { icon: User, label: t('account'), path: '/guardian/account' },
-  ]
+    { key: "home", icon: Home, label: t("myDashboard"), path: "/guardian" },
+    { key: "store", icon: Store, label: t("store"), path: "/guardian/store" },
+    { key: "fab", isFab: true, path: "/guardian/appointments/new" },
+    {
+      key: "cart",
+      icon: ShoppingCart,
+      label: t("cart"),
+      path: "/guardian/cart",
+      badge: cartCount,
+    },
+    {
+      key: "account",
+      icon: User,
+      label: t("account"),
+      path: "/guardian/account",
+    },
+  ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] bg-guardian-surface shadow-[0_-4px_20px_rgba(28,25,23,0.05)] pb-[env(safe-area-inset-bottom)]">
-      <div className="flex h-16 w-full items-center justify-around max-w-[480px] mx-auto">
-        {links.map((link) => {
-          const isActive = pathname === link.path || (link.path !== '/guardian' && pathname.startsWith(link.path))
+    <nav className="mnav">
+      {links.map((link) => {
+        if (link.isFab) {
           return (
             <button
-              key={link.path}
+              key={link.key}
+              type="button"
               onClick={() => router.push(link.path)}
-              className={`relative flex flex-col items-center justify-center h-full flex-1 transition-colors duration-200 ${
-                isActive ? 'text-primary' : 'text-on-surface-variant'
-              }`}
+              className="mnav-fab"
+              aria-label={t("book_appointment")}
             >
-              <div className="relative">
-                <link.icon size={24} strokeWidth={isActive ? 2.5 : 1.5} />
-                {isMounted && !!link.badge && link.badge > 0 && (
-                  <span className="absolute -top-1.5 -right-2.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white px-1">
-                    {link.badge}
-                  </span>
-                )}
-              </div>
-              <span className={`text-xs mt-1 ${isActive ? 'font-semibold' : 'font-normal'}`}>
-                {link.label}
-              </span>
+              <Plus strokeWidth={2.4} />
             </button>
-          )
-        })}
-      </div>
-    </div>
-  )
+          );
+        }
+
+        const isActive =
+          link.path === "/guardian"
+            ? pathname === "/guardian" || pathname.endsWith("/guardian")
+            : isGuardianNavActive(pathname, {
+                key: link.key,
+                path: link.path!,
+                labelKey: link.key,
+                icon: link.icon!,
+              });
+
+        return (
+          <button
+            key={link.key}
+            type="button"
+            onClick={() => router.push(link.path!)}
+            className={`mnav-item${isActive ? " active" : ""}`}
+          >
+            {isActive && (
+              <motion.div
+                layoutId="guardian-mnav-highlight"
+                className="absolute inset-0 rounded-[14px] bg-[var(--sage-soft)]"
+                style={{ zIndex: 0 }}
+                transition={guardianTransitions.spring}
+              />
+            )}
+            <div className="relative">
+              {link.icon && <link.icon strokeWidth={isActive ? 2 : 1.8} />}
+              {isMounted && !!link.badge && link.badge > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-3 min-w-[12px] items-center justify-center rounded-full bg-[var(--vitality)] text-[8px] font-bold text-white px-1">
+                  {link.badge}
+                </span>
+              )}
+            </div>
+            <span>{link.label}</span>
+          </button>
+        );
+      })}
+    </nav>
+  );
 }

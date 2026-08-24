@@ -48,6 +48,18 @@ export type AnimalListItem = {
   nextAppointment: string | null
 }
 
+// Shape returned by GuardianService.getAnimals()/getAnimal() — the guardian portal's
+// own animal + appointment (with assigned doctor) view, distinct from the staff-side
+// AnimalListItem above.
+export type GuardianAnimal = Animal & {
+  appointments: (Appointment & {
+    doctor: { id: string; name: string }
+  })[]
+  // Most recent point only — see GuardianService.getAnimals(). Used to derive
+  // Recovery Ring progress against `targetWeight` on the pet list/home views.
+  weightRecords: { id: string; weight: number; recordedAt: string | Date }[]
+}
+
 export type AnimalProfile = Animal & {
   owner: Owner & {
     animals: { id: string; name: string; species: string }[]

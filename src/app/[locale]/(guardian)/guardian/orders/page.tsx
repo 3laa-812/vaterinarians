@@ -1,83 +1,125 @@
-'use client'
+"use client";
 
-import { useGuardianOrders } from '@/hooks/useGuardian'
-import { useTranslations } from 'next-intl'
-import { useRouter } from '@/lib/i18n-navigation'
-import { CheckCircle2, Package, Clock, ChevronRight } from 'lucide-react'
+import { useGuardianOrders } from "@/hooks/useGuardian";
+import { useTranslations, useLocale } from "next-intl";
+import { useRouter } from "@/lib/i18n-navigation";
+import { CheckCircle2, Package, Clock, ChevronLeft } from "lucide-react";
+import { motion } from "motion/react";
 
 export default function GuardianOrdersPage() {
-  const t = useTranslations('guardian')
-  const router = useRouter()
-  const { data, isLoading } = useGuardianOrders()
+  const t = useTranslations("guardian");
+  const locale = useLocale();
+  const router = useRouter();
+  const { data, isLoading } = useGuardianOrders();
 
-  const orders = data?.orders || []
+  const orders = data?.orders || [];
 
   return (
-    <div className="flex flex-col min-h-screen bg-guardian-bg text-guardian-text pb-24">
-      <div className="px-6 pt-6 pb-4 flex items-center justify-between sticky top-0 bg-guardian-bg/80 backdrop-blur-md z-10">
-        <h1 className="text-2xl font-bold text-guardian-text">My Orders</h1>
+    <div className="font-body-md antialiased">
+      <div className="mb-6 text-right">
+        <p className="text-[13px] text-[var(--ink-soft)]">{t("myOrdersDesc")}</p>
       </div>
 
-      <div className="px-6 mt-4 space-y-4">
-        {isLoading ? (
-          <div className="space-y-4 stagger-children animate-slide-up">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-32 bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl animate-pulse" />
-            ))}
+      {isLoading ? (
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="guardian-card h-32 animate-pulse bg-[var(--cream)]"
+            />
+          ))}
+        </div>
+      ) : orders.length === 0 ? (
+        <div className="flex flex-col items-center py-20 text-center">
+          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[var(--sage-soft)] text-[var(--sage)]">
+            <Package className="h-8 w-8" />
           </div>
-        ) : orders.length === 0 ? (
-          <div className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-10 text-center border border-stone-100 flex flex-col items-center">
-            <Package className="text-stone-300 mb-4" size={48} />
-            <p className="text-stone-500 font-medium">You have no orders yet.</p>
-            <button 
-              onClick={() => router.push('/guardian/store')}
-              className="mt-6 px-6 py-2 bg-primary text-white rounded-full font-bold shadow-sm"
+          <h3 className="mb-2 text-lg font-extrabold text-[var(--olive)]">
+            {t("emptyOrders")}
+          </h3>
+          <p className="mb-6 text-[13.5px] text-[var(--ink-soft)]">
+            {t("emptyOrdersDesc")}
+          </p>
+          <button
+            type="button"
+            onClick={() => router.push("/guardian/store")}
+            className="rounded-full bg-gradient-to-br from-[var(--olive-2)] to-[var(--olive)] px-6 py-3 text-sm font-bold text-[var(--cream)]"
+          >
+            {t("browseStore")}
+          </button>
+        </div>
+      ) : (
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.1 },
+            },
+          }}
+          className="guardian-grid-2"
+        >
+          {orders.map((order) => (
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { type: "spring", stiffness: 300, damping: 24 },
+                },
+              }}
+              key={order.id}
+              onClick={() => router.push(`/guardian/orders/${order.id}`)}
+              className="guardian-card flex cursor-pointer flex-col p-[22px] transition-shadow hover:shadow-[var(--shadow-lg)]"
             >
-              Go to Store
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-4 stagger-children animate-slide-up">
-            {orders.map((order: any) => (
-              <div 
-                key={order.id} 
-                onClick={() => router.push(`/guardian/orders/${order.id}`)}
-                className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-5 border border-stone-100 cursor-pointer transition-transform hover:scale-[1.01] active:scale-95"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${
-                    order.status === 'DELIVERED' || order.status === 'COMPLETED' || order.status === 'READY'
-                      ? 'bg-emerald-100 text-emerald-700 ring-pulse' 
-                      : 'bg-guardian-secondary/10 text-guardian-secondary'
-                  }`}>
-                  {order.status === 'DELIVERED' || order.status === 'COMPLETED' ? (
-                    <CheckCircle2 size={14} />
+              <div className="mb-4 flex flex-row-reverse items-center justify-between">
+                <div
+                  className={`flex flex-row-reverse items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${
+                    order.status === "DELIVERED" ||
+                    order.status === "COMPLETED" ||
+                    order.status === "READY"
+                      ? "bg-[var(--good-soft)] text-[var(--good)]"
+                      : "bg-[var(--sage-soft)] text-[var(--olive)]"
+                  }`}
+                >
+                  {order.status === "DELIVERED" ||
+                  order.status === "COMPLETED" ? (
+                    <CheckCircle2 size={16} />
                   ) : (
-                    <Clock size={14} />
+                    <Clock size={16} />
                   )}
                   <span>{order.status}</span>
                 </div>
+                <p className="guardian-num text-sm text-[var(--ink-soft)]">
+                  #{order.orderNumber}
+                </p>
+              </div>
+
+              <div className="mt-auto flex flex-row-reverse items-end justify-between border-t border-[var(--line)] pt-4">
                 <div className="text-right">
-                  <p className="font-bold text-sm">#{order.orderNumber}</p>
-                </div>
-              </div>
-              
-              <div className="flex justify-between items-end border-t border-stone-100 pt-4">
-                <div>
-                  <p className="text-xs text-stone-500 mb-1">
-                    {new Date(order.createdAt).toLocaleDateString()}
+                  <p className="mb-1 text-xs text-[var(--ink-soft)]">
+                    {new Date(order.createdAt).toLocaleDateString(locale, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
                   </p>
-                  <p className="font-bold text-lg text-primary">{order.totalAmount} EGP</p>
+                  <p className="guardian-num text-lg font-extrabold text-[var(--olive)]">
+                    {order.totalAmount}{" "}
+                    <span className="text-sm font-medium">{t("currency")}</span>
+                  </p>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center text-stone-400">
-                  <ChevronRight size={18} />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--cream)] text-[var(--olive)] transition-colors group-hover:bg-[var(--sage-soft)]">
+                  <ChevronLeft size={20} />
                 </div>
               </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
     </div>
-  )
+  );
 }

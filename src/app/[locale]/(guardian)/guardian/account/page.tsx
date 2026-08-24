@@ -1,77 +1,214 @@
-'use client'
+"use client";
 
-import { useTranslations } from 'next-intl'
-import { useRouter } from '@/lib/i18n-navigation'
-import { signOut, useSession } from 'next-auth/react'
-import { User, LogOut, Settings, Bell, CreditCard, ChevronRight } from 'lucide-react'
+import { useEffect, useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
+import { useRouter } from "@/lib/i18n-navigation";
+import { signOut } from "next-auth/react";
+import { toast } from "sonner";
+import {
+  useGuardianAccount,
+  useUpdateGuardianAccount,
+} from "@/hooks/useGuardian";
+import { Bell, Package, Activity, LogOut, Loader2 } from "lucide-react";
+
+function PreferenceToggle({
+  icon: Icon,
+  title,
+  description,
+  enabled,
+  onToggle,
+}: {
+  icon: React.ComponentType<{ strokeWidth?: number }>;
+  title: string;
+  description: string;
+  enabled: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="set-row">
+      <div className="set-icon">
+        <Icon strokeWidth={2} />
+      </div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontWeight: 700, fontSize: 13 }}>{title}</div>
+        <div className="muted" style={{ fontSize: 11.5 }}>
+          {description}
+        </div>
+      </div>
+      <button
+        type="button"
+        className={`toggle${enabled ? " on" : ""}`}
+        onClick={onToggle}
+        aria-pressed={enabled}
+        aria-label={title}
+      />
+    </div>
+  );
+}
 
 export default function GuardianAccountPage() {
-  const t = useTranslations('guardian')
-  const router = useRouter()
-  const { data: session } = useSession()
+  const t = useTranslations("guardian");
+  const locale = useLocale();
+  const router = useRouter();
+  const { data, isLoading } = useGuardianAccount();
+  const updateAccount = useUpdateGuardianAccount();
+
+  const [name, setName] = useState("");
+  const [prefs, setPrefs] = useState({
+    apptReminder: true,
+    orderUpdate: true,
+    vaccineReminder: true,
+  });
+
+  useEffect(() => {
+    if (data?.account) {
+      setName(data.account.name);
+      setPrefs({
+        apptReminder: data.account.apptReminder,
+        orderUpdate: data.account.orderUpdate,
+        vaccineReminder: data.account.vaccineReminder,
+      });
+    }
+  }, [data?.account]);
+
+  const handleSave = async () => {
+    try {
+      await updateAccount.mutateAsync({ name, ...prefs });
+      toast.success(t("saveChanges"));
+    } catch {
+      toast.error(t("failedToSave"));
+    }
+  };
+
+  const handlePrefToggle = (key: keyof typeof prefs) => {
+    const next = { ...prefs, [key]: !prefs[key] };
+    setPrefs(next);
+    updateAccount.mutate({ name, ...next });
+  };
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/guardian/login' })
+    await signOut({ callbackUrl: "/guardian/login" });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-20">
+        <Loader2 className="animate-spin text-[var(--olive)]" />
+      </div>
+    );
   }
 
+  const phone = data?.account?.phone ?? "—";
+
   return (
-    <div className="flex flex-col min-h-screen bg-guardian-bg text-guardian-text pb-24">
-      <div className="px-6 pt-6 pb-4 flex items-center justify-between sticky top-0 bg-guardian-bg/80 backdrop-blur-md z-10">
-        <h1 className="text-2xl font-bold text-guardian-text">My Account</h1>
-      </div>
+    <div>
+      <div className="grid2" style={{ alignItems: "start" }}>
+        <div className="card pad">
+          <h4
+            style={{
+              fontWeight: 800,
+              color: "var(--olive)",
+              fontSize: 13.5,
+              marginBottom: 14,
+            }}
+          >
+            {t("personalInfo")}
+          </h4>
 
-      <div className="px-6 mt-4 space-y-6">
-        {/* Profile Info */}
-        <div className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl p-6 border border-stone-100 flex items-center gap-4">
-          <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold text-2xl shrink-0">
-            {session?.user?.name?.charAt(0) || <User size={28} />}
+          <div style={{ marginBottom: 12 }}>
+            <label className="field-label">{t("name")}</label>
+            <input
+              className="input"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
-          <div>
-            <h2 className="font-bold text-lg">{session?.user?.name || 'Guardian'}</h2>
-            <p className="text-sm text-stone-500">{session?.user?.email || 'No email provided'}</p>
+
+          <div style={{ marginBottom: 12 }}>
+            <label className="field-label">{t("phone")}</label>
+            <input
+              className="input num"
+              style={{ direction: "ltr", textAlign: "right" }}
+              value={phone}
+              readOnly
+            />
           </div>
+
+          <div style={{ marginBottom: 18 }}>
+            <label className="field-label">{t("preferredLanguage")}</label>
+            <select
+              className="input"
+              value={locale}
+              onChange={(e) =>
+                router.push(window.location.pathname, {
+                  locale: e.target.value,
+                })
+              }
+            >
+              <option value="ar">العربية</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handleSave}
+            disabled={updateAccount.isPending}
+          >
+            {updateAccount.isPending ? (
+              <Loader2 className="animate-spin" width={16} height={16} />
+            ) : null}
+            {t("saveChanges")}
+          </button>
         </div>
 
-        {/* Settings Links */}
-        <div className="bg-guardian-surface shadow-[0_4px_20px_rgba(28,25,23,0.05)] rounded-2xl border border-stone-100 overflow-hidden">
-          <div className="p-4 flex items-center justify-between border-b border-stone-100 cursor-pointer hover:bg-stone-50 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center">
-                <Settings size={20} />
-              </div>
-              <span className="font-semibold">Profile Settings</span>
-            </div>
-            <ChevronRight className="text-stone-400" size={20} />
-          </div>
-          <div className="p-4 flex items-center justify-between border-b border-stone-100 cursor-pointer hover:bg-stone-50 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center">
-                <Bell size={20} />
-              </div>
-              <span className="font-semibold">Notifications</span>
-            </div>
-            <ChevronRight className="text-stone-400" size={20} />
-          </div>
-          <div className="p-4 flex items-center justify-between cursor-pointer hover:bg-stone-50 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center">
-                <CreditCard size={20} />
-              </div>
-              <span className="font-semibold">Payment Methods</span>
-            </div>
-            <ChevronRight className="text-stone-400" size={20} />
-          </div>
-        </div>
+        <div className="card pad">
+          <h4
+            style={{
+              fontWeight: 800,
+              color: "var(--olive)",
+              fontSize: 13.5,
+              marginBottom: 6,
+            }}
+          >
+            {t("preferences")}
+          </h4>
 
-        {/* Logout Button */}
-        <button 
-          onClick={handleLogout}
-          className="w-full py-4 bg-red-50 text-red-600 font-bold rounded-2xl flex items-center justify-center gap-2 transition-colors hover:bg-red-100 active:bg-red-200"
-        >
-          <LogOut size={20} />
-          <span>Log Out</span>
-        </button>
+          <PreferenceToggle
+            icon={Bell}
+            title={t("apptReminder")}
+            description={t("apptReminderDesc")}
+            enabled={prefs.apptReminder}
+            onToggle={() => handlePrefToggle("apptReminder")}
+          />
+          <PreferenceToggle
+            icon={Package}
+            title={t("orderUpdates")}
+            description={t("orderUpdatesDesc")}
+            enabled={prefs.orderUpdate}
+            onToggle={() => handlePrefToggle("orderUpdate")}
+          />
+          <PreferenceToggle
+            icon={Activity}
+            title={t("vaccineReminder")}
+            description={t("vaccineReminderDesc")}
+            enabled={prefs.vaccineReminder}
+            onToggle={() => handlePrefToggle("vaccineReminder")}
+          />
+
+          <div className="divider" />
+
+          <button
+            type="button"
+            className="btn btn-danger-soft btn-block"
+            onClick={handleLogout}
+          >
+            <LogOut width={15} height={15} strokeWidth={2} />
+            {t("logout")}
+          </button>
+        </div>
       </div>
     </div>
-  )
+  );
 }

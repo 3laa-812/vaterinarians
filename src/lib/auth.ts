@@ -6,6 +6,21 @@ import bcrypt from 'bcryptjs'
 import { prisma } from './db'
 import { authConfig } from './auth.config'
 
+const attemptMap = new Map<string, { count: number, resetAt: number }>()
+
+function checkRateLimit(key: string): boolean {
+  const now = Date.now()
+  const record = attemptMap.get(key)
+  if (!record || record.resetAt < now) {
+    attemptMap.set(key, { count: 1, resetAt: now + 15 * 60 * 1000 }) // 15 min window
+    return true
+  }
+  if (record.count >= 5) return false // 5 attempts per window
+  
+  record.count++
+  return true
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
@@ -16,6 +31,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
+
+        const key = `login:${credentials.email}`
+        if (!checkRateLimit(key)) {
+          console.warn(`Rate limit exceeded for ${key}`)
+          return null
+        }
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
@@ -49,6 +70,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.token) return null
+
+        const key = `qr:${credentials.token}`
+        if (!checkRateLimit(key)) {
+          console.warn(`Rate limit exceeded for ${key}`)
+          return null
+        }
 
         try {
           // Dynamic import because auth.ts might run in Edge (middleware)
