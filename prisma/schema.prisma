@@ -52,14 +52,14 @@ model Clinic {
   animals Animal[]
   owners  Owner[]
 
-  incomes        Income[]
-  expenses       Expense[]
-  staff          Staff[]
-  budgets        Budget[]
-  financialGoals FinancialGoal[]
-  products       Product[]
-  orders         Order[]
-  invoices       Invoice[]
+  incomes         Income[]
+  expenses        Expense[]
+  staff           Staff[]
+  budgets         Budget[]
+  financialGoals  FinancialGoal[]
+  products        Product[]
+  orders          Order[]
+  invoices        Invoice[]
   vaccineCatalogs VaccineCatalog[]
 }
 
@@ -106,11 +106,11 @@ model Owner {
   clinic   Clinic @relation(fields: [clinicId], references: [id])
   clinicId String
 
-  animals Animal[]
-  orders  Order[]
-  invoices Invoice[]
+  animals      Animal[]
+  orders       Order[]
+  invoices     Invoice[]
   accessTokens GuardianAccessToken[]
-  isArchived   Boolean @default(false)
+  isArchived   Boolean               @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -120,14 +120,14 @@ model Owner {
 }
 
 model GuardianAccessToken {
-  id          String    @id @default(cuid())
-  ownerId     String
-  owner       Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  tokenHash   String    @unique
-  createdAt   DateTime  @default(now())
-  revokedAt   DateTime?
-  isActive    Boolean   @default(true)
-  
+  id        String    @id @default(cuid())
+  ownerId   String
+  owner     Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+  isActive  Boolean   @default(true)
+
   @@index([ownerId])
 }
 
@@ -166,7 +166,7 @@ model Animal {
   weightRecords WeightRecord[]
   invoices      Invoice[]
   vaccinations  PetVaccination[]
-  isArchived    Boolean @default(false)
+  isArchived    Boolean          @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -220,9 +220,25 @@ model Session {
   appointmentId String      @unique
 
   medications Medication[]
+  messages    SessionMessage[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model SessionMessage {
+  id            String    @id @default(cuid())
+  content       String    @db.Text
+  fromOwner     Boolean   @default(false)
+  attachmentUrl String? // For Cloudinary images
+  readAt        DateTime?
+
+  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+
+  createdAt DateTime @default(now())
+
+  @@index([sessionId])
 }
 
 model Medication {
@@ -252,8 +268,8 @@ model Payment {
   appointment   Appointment @relation(fields: [appointmentId], references: [id])
   appointmentId String      @unique
 
-  invoice       Invoice?    @relation(fields: [invoiceId], references: [id])
-  invoiceId     String?
+  invoice   Invoice? @relation(fields: [invoiceId], references: [id])
+  invoiceId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -274,23 +290,23 @@ model Invoice {
   total         Float
   paidAmount    Float         @default(0)
 
-  clinic        Clinic        @relation(fields: [clinicId], references: [id])
-  clinicId      String
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+  clinicId String
 
-  owner         Owner         @relation(fields: [ownerId], references: [id])
-  ownerId       String
+  owner   Owner  @relation(fields: [ownerId], references: [id])
+  ownerId String
 
-  animal        Animal?       @relation(fields: [animalId], references: [id])
-  animalId      String?
+  animal   Animal? @relation(fields: [animalId], references: [id])
+  animalId String?
 
-  createdBy     User?         @relation(fields: [createdById], references: [id])
-  createdById   String?
+  createdBy   User?   @relation(fields: [createdById], references: [id])
+  createdById String?
 
-  payments      Payment[]
-  orders        Order[]
+  payments Payment[]
+  orders   Order[]
 
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([clinicId, status])
   @@index([ownerId])
@@ -603,47 +619,47 @@ model OrderMessage {
 // ─────────────────────────────────────────
 
 model VaccineCatalog {
-  id                  String    @id @default(cuid())
+  id                  String  @id @default(cuid())
   name                String
-  species             String    // e.g. "dog", "cat", "both"
-  isCore              Boolean   @default(false)
+  species             String // e.g. "dog", "cat", "both"
+  isCore              Boolean @default(false)
   defaultIntervalDays Int?
   description         String?
-  isActive            Boolean   @default(true)
-  
-  clinicId            String
-  clinic              Clinic    @relation(fields: [clinicId], references: [id])
-  
-  vaccinations        PetVaccination[]
+  isActive            Boolean @default(true)
 
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  clinicId String
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+
+  vaccinations PetVaccination[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([clinicId, species, isActive])
 }
 
 model PetVaccination {
-  id                     String    @id @default(cuid())
-  dateAdministered       DateTime  @default(now())
-  nextDueDate            DateTime?
-  administeredBy         String?   // Free text or User ID
-  clinicName             String?   // For external vaccines
-  manufacturer           String?
-  lotNumber              String?
-  productExpirationDate  DateTime?
-  doseNumber             String?
-  notes                  String?
-  certificateFileUrl     String?
-  reminderSent           Boolean   @default(false)
+  id                    String    @id @default(cuid())
+  dateAdministered      DateTime  @default(now())
+  nextDueDate           DateTime?
+  administeredBy        String? // Free text or User ID
+  clinicName            String? // For external vaccines
+  manufacturer          String?
+  lotNumber             String?
+  productExpirationDate DateTime?
+  doseNumber            String?
+  notes                 String?
+  certificateFileUrl    String?
+  reminderSent          Boolean   @default(false)
 
-  petId                  String
-  pet                    Animal    @relation(fields: [petId], references: [id])
-  
-  vaccineId              String
-  vaccine                VaccineCatalog @relation(fields: [vaccineId], references: [id])
+  petId String
+  pet   Animal @relation(fields: [petId], references: [id])
 
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  vaccineId String
+  vaccine   VaccineCatalog @relation(fields: [vaccineId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([petId])
   @@index([lotNumber])

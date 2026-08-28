@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { guardianTransitions } from '@/lib/guardian/motion'
 import { ArrowRight, ArrowLeft, Pencil, TrendingDown, Target, CalendarDays, Syringe, Clock, CheckCircle2, AlertCircle } from 'lucide-react'
 import { getWeightProgress } from '@/lib/guardian/weightProgress'
+import { GuardianSessionChat } from '@/components/guardian/GuardianSessionChat'
 
 const EmptyState = ({ title, message }: { title: string, message: string }) => (
   <div className="flex flex-col items-center justify-center p-8 text-center bg-[var(--color-cream-2)] rounded-[18px]">
@@ -98,7 +99,7 @@ export default function AnimalProfilePage() {
             <div className="flex flex-wrap gap-2 mb-[14px]">
               <span className="inline-flex items-center gap-[5px] px-[9px] py-[4px] rounded-[8px] bg-[var(--color-vitality-soft)] text-[var(--color-vitality)] text-[11.5px] font-bold num">
                 <TrendingDown className="w-[14px] h-[14px]" />
-                {animal.weight ? `${t('currentWeight')} ${animal.weight} ${t('kg')}` : t('noWeight')}
+                {animal.weightRecords?.[0]?.weight ? `${t('currentWeight')} ${animal.weightRecords[0].weight} ${t('kg')}` : t('noWeight')}
               </span>
               {animal.targetWeight && (
                 <span className="inline-flex items-center px-[9px] py-[4px] rounded-[8px] bg-[var(--color-tan-soft)] text-[#7A5C36] text-[11.5px] font-bold num">
@@ -150,28 +151,47 @@ export default function AnimalProfilePage() {
           {activeTab === 'history' && (
             <motion.div key="history" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
               <div className="bg-[var(--color-white)] rounded-[24px] p-6 shadow-[0_12px_32px_rgba(62,63,41,0.04)] border border-[var(--color-line)]">
-                {animal.sessions && animal.sessions.length > 0 ? (
-                  <div className="relative pl-[10px] pr-[20px] md:pr-[24px] before:content-[''] before:absolute before:right-0 before:top-[10px] before:bottom-[10px] before:w-[2px] before:bg-[var(--color-line)] before:rounded-full">
-                    {animal.sessions.map((session: any, i: number) => (
-                      <div key={session.id} className={`relative mb-[24px] last:mb-0 ${i === 0 ? '' : 'opacity-70'}`}>
-                        <div className={`absolute -right-[25px] md:-right-[29px] top-[4px] w-[12px] h-[12px] rounded-full border-[3px] border-[var(--color-white)] shadow-sm ${i === 0 ? 'bg-[var(--color-olive)]' : 'bg-[var(--color-ink-soft)]'}`} />
-                        <h4 className={`text-[14.5px] font-bold leading-tight mb-1 ${i === 0 ? 'text-[var(--color-ink)]' : 'text-[var(--color-ink-soft)]'}`}>
-                          {session.type || t('generalCheckup')}
-                        </h4>
-                        <div className="text-[12px] font-bold text-[var(--color-ink-soft)] num mb-1">
-                          {new Date(session.createdAt).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
-                        </div>
-                        {session.notes && (
-                          <p className="text-[12.5px] font-medium text-[var(--color-ink-soft)] leading-relaxed mt-2 p-3 bg-[var(--color-cream-2)] rounded-[12px]">
-                            {session.notes}
-                          </p>
-                        )}
-                      </div>
-                    ))}
+                {animal.medicalHistory && (
+                  <div className="mb-6 pb-6 border-b border-[var(--color-line)]">
+                    <h3 className="text-[14px] font-bold text-[var(--color-ink)] mb-2">{t('medicalHistory')}</h3>
+                    <p className="text-[13px] font-medium text-[var(--color-ink-soft)] leading-relaxed">{animal.medicalHistory}</p>
                   </div>
-                ) : (
-                  <EmptyState title={t('noMedicalHistory')} message="" />
                 )}
+                
+                {(() => {
+                  const sessions = animal.appointments?.filter((apt: any) => apt.session).map((apt: any) => apt.session) || []
+                  if (sessions.length > 0) {
+                    return (
+                      <div className="relative pl-[10px] pr-[20px] md:pr-[24px] before:content-[''] before:absolute before:right-0 before:top-[10px] before:bottom-[10px] before:w-[2px] before:bg-[var(--color-line)] before:rounded-full">
+                        {sessions.map((session: any, i: number) => (
+                          <div key={session.id} className={`relative mb-[24px] last:mb-0 ${i === 0 ? '' : 'opacity-70'}`}>
+                            <div className={`absolute -right-[25px] md:-right-[29px] top-[4px] w-[12px] h-[12px] rounded-full border-[3px] border-[var(--color-white)] shadow-sm ${i === 0 ? 'bg-[var(--color-olive)]' : 'bg-[var(--color-ink-soft)]'}`} />
+                            <h4 className={`text-[14.5px] font-bold leading-tight mb-1 ${i === 0 ? 'text-[var(--color-ink)]' : 'text-[var(--color-ink-soft)]'}`}>
+                              {session.type || t('generalCheckup')}
+                            </h4>
+                            <div className="text-[12px] font-bold text-[var(--color-ink-soft)] num mb-1">
+                              {new Date(session.createdAt).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
+                            </div>
+                            {session.notes && (
+                              <p className="text-[12.5px] font-medium text-[var(--color-ink-soft)] leading-relaxed mt-2 p-3 bg-[var(--color-cream-2)] rounded-[12px]">
+                                {session.notes}
+                              </p>
+                            )}
+                            {session && (
+                              <GuardianSessionChat sessionData={session} />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  }
+                  
+                  if (!animal.medicalHistory) {
+                    return <EmptyState title={t('noMedicalHistory')} message="" />
+                  }
+                  
+                  return null
+                })()}
               </div>
             </motion.div>
           )}
@@ -182,7 +202,7 @@ export default function AnimalProfilePage() {
                 <div className="flex justify-between items-start mb-[18px]">
                   <div>
                     <p className="text-[12px] font-medium text-[var(--color-ink-soft)] mb-0.5">{t('currentWeight')}</p>
-                    <p className="text-[20px] font-black text-[var(--color-olive)] num">{animal.weight || '--'} {t('kg')}</p>
+                    <p className="text-[20px] font-black text-[var(--color-olive)] num">{animal.weightRecords?.[0]?.weight || '--'} {t('kg')}</p>
                   </div>
                   <div className="text-left">
                     <p className="text-[12px] font-medium text-[var(--color-ink-soft)] mb-0.5">{t('target')}</p>
@@ -249,9 +269,16 @@ export default function AnimalProfilePage() {
                             {new Date(apt.scheduledAt).toLocaleDateString(locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
-                        <span className={`inline-flex px-[8px] py-[3px] rounded-[6px] text-[10px] font-bold ${isUpcoming ? 'bg-[var(--color-vitality-soft)] text-[var(--color-vitality)]' : 'bg-[var(--color-good-soft)] text-[var(--color-good)]'}`}>
-                          {isUpcoming ? t('upcoming') : t('completed')}
-                        </span>
+                        <div className="flex flex-col items-end gap-1">
+                          <span className={`inline-flex px-[8px] py-[3px] rounded-[6px] text-[10px] font-bold ${isUpcoming ? 'bg-[var(--color-vitality-soft)] text-[var(--color-vitality)]' : 'bg-[var(--color-good-soft)] text-[var(--color-good)]'}`}>
+                            {isUpcoming ? t('upcoming') : t('completed')}
+                          </span>
+                          {!isUpcoming && apt.payment && (
+                            <span className={`inline-flex px-[8px] py-[3px] rounded-[6px] text-[10px] font-bold ${apt.payment.status === 'PAID' ? 'bg-[var(--color-good-soft)] text-[var(--color-good)]' : 'bg-[var(--color-danger-soft)] text-[var(--color-danger)]'}`}>
+                              {apt.payment.status === 'PAID' ? tSession('paid') : tSession('unpaid')}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     )
                   })

@@ -72,10 +72,20 @@ export class GuardianService {
         clinicId: this.clinicId,
       },
       include: {
+        weightRecords: {
+          orderBy: { recordedAt: "desc" }
+        },
         appointments: {
           orderBy: { scheduledAt: "desc" },
           include: {
-            session: true,
+            session: {
+              include: {
+                messages: {
+                  orderBy: { createdAt: "asc" }
+                }
+              }
+            },
+            payment: true,
             doctor: { select: DOCTOR_SELECT },
           },
         },

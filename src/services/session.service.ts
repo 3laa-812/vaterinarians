@@ -16,7 +16,14 @@ export const sessionService = {
         ...(userSession.user.role === 'DOCTOR' ? { doctorId: userSession.user.id } : {}),
       },
       include: {
-        session: { include: { medications: true } },
+        session: { 
+          include: { 
+            medications: true,
+            messages: {
+              orderBy: { createdAt: 'asc' }
+            }
+          } 
+        },
         payment: true,
         animal: {
           select: { id: true, name: true, species: true, breed: true },

@@ -218,7 +218,22 @@
     "printReport": "طباعة التقرير",
     "sessionDetails": "تفاصيل الكشف",
     "editSession": "تعديل الكشف",
-    "noSessions": "لا توجد كشوفات مسجلة"
+    "noSessions": "لا توجد كشوفات مسجلة",
+    "printInvoice": "طباعة الفاتورة",
+    "consultationFollowUp": "استشارة ومتابعة",
+    "bookExamination": "حجز فحص",
+    "noMessagesYet": "لا توجد رسائل حتى الآن. ابدأ المحادثة.",
+    "attachImage": "إرفاق صورة",
+    "typeMessage": "اكتب رسالة...",
+    "send": "إرسال",
+    "uploading": "جاري الرفع...",
+    "errorUploadingImage": "فشل رفع الصورة",
+    "paid": "مدفوع",
+    "unpaid": "غير مدفوع",
+    "bookFollowUp": "حجز موعد متابعة",
+    "dateAndTime": "التاريخ والوقت",
+    "book": "حجز",
+    "appointmentBookedSuccessfully": "تم حجز الموعد بنجاح"
   },
   "payment": {
     "title": "تفاصيل الدفع",

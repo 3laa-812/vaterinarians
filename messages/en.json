@@ -218,7 +218,22 @@
     "printReport": "Print Report",
     "sessionDetails": "Session Details",
     "editSession": "Edit Session",
-    "noSessions": "No sessions found"
+    "noSessions": "No sessions found",
+    "printInvoice": "Print Invoice",
+    "consultationFollowUp": "Consultation & Follow-up",
+    "bookExamination": "Book Examination",
+    "noMessagesYet": "No messages yet. Start the conversation.",
+    "attachImage": "Attach Image",
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "uploading": "Uploading...",
+    "errorUploadingImage": "Failed to upload image",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "bookFollowUp": "Book Follow-up Appointment",
+    "dateAndTime": "Date and Time",
+    "book": "Book",
+    "appointmentBookedSuccessfully": "Appointment booked successfully"
   },
   "payment": {
     "title": "Payment Details",

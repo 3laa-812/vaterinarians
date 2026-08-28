@@ -14,6 +14,7 @@ import { Button } from '@/components/shared/Button'
 import { Modal } from '@/components/shared/Modal'
 import { GuardianQRModal } from '@/components/guardian/GuardianQRModal'
 import { calculateRemaining } from '@/domain/payment'
+import { SessionChat } from '@/components/sessions/SessionChat'
 
 export default function SessionDetailPage() {
   const params  = useParams<{ id: string }>()
@@ -257,6 +258,11 @@ export default function SessionDetailPage() {
               </p>
             )}
           </Card>
+
+          {/* Consultation / Follow-up Chat */}
+          {sessionData && (
+            <SessionChat sessionData={sessionData} animalId={appointment.animalId} />
+          )}
         </div>
       )}
 
