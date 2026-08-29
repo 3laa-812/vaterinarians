@@ -5,19 +5,28 @@ import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { prisma } from './db'
 import { authConfig } from './auth.config'
+import { logger } from '@/lib/logger';
 
-const attemptMap = new Map<string, { count: number, resetAt: number }>()
-
-function checkRateLimit(key: string): boolean {
-  const now = Date.now()
-  const record = attemptMap.get(key)
+async function checkRateLimit(key: string): Promise<boolean> {
+  const now = new Date()
+  const record = await prisma.loginAttempt.findUnique({ where: { identifier: key } })
+  
   if (!record || record.resetAt < now) {
-    attemptMap.set(key, { count: 1, resetAt: now + 15 * 60 * 1000 }) // 15 min window
+    await prisma.loginAttempt.upsert({
+      where: { identifier: key },
+      update: { attempts: 1, resetAt: new Date(now.getTime() + 15 * 60 * 1000) },
+      create: { identifier: key, attempts: 1, resetAt: new Date(now.getTime() + 15 * 60 * 1000) }
+    })
     return true
   }
-  if (record.count >= 5) return false // 5 attempts per window
   
-  record.count++
+  if (record.attempts >= 5) return false
+  
+  await prisma.loginAttempt.update({
+    where: { identifier: key },
+    data: { attempts: record.attempts + 1 }
+  })
+  
   return true
 }
 
@@ -33,8 +42,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!credentials?.email || !credentials?.password) return null
 
         const key = `login:${credentials.email}`
-        if (!checkRateLimit(key)) {
-          console.warn(`Rate limit exceeded for ${key}`)
+        const isAllowed = await checkRateLimit(key)
+        if (!isAllowed) {
+          logger.warn(`Rate limit exceeded for ${key}`)
           return null
         }
 
@@ -72,8 +82,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!credentials?.token) return null
 
         const key = `qr:${credentials.token}`
-        if (!checkRateLimit(key)) {
-          console.warn(`Rate limit exceeded for ${key}`)
+        const isAllowed = await checkRateLimit(key)
+        if (!isAllowed) {
+          logger.warn(`Rate limit exceeded for ${key}`)
           return null
         }
 
@@ -93,7 +104,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             preferredLang: 'ar',
           }
         } catch (e) {
-          console.error("QR Auth Error:", e)
+          logger.error("QR Auth Error:", e)
           return null
         }
       },

@@ -60,18 +60,21 @@ export function useGuardianPetVaccinations(id: string) {
   })
 }
 
-export function useGuardianStoreProducts() {
-  return useQuery<{ products: GuardianProduct[] }>({
-    queryKey: ['guardian', 'store', 'products'],
-    queryFn: () => apiClient.get<{ products: GuardianProduct[] }>('/api/guardian/store/products'),
+import type { PaginatedResult } from '@/lib/pagination'
+
+export function useGuardianStoreProducts(page = 1, limit = 24) {
+  return useQuery<PaginatedResult<GuardianProduct>>({
+    queryKey: ['guardian', 'store', 'products', page, limit],
+    queryFn: () => apiClient.get<PaginatedResult<GuardianProduct>>(`/api/guardian/store/products?page=${page}&limit=${limit}`),
     staleTime: 1000 * 60 * 5,
   })
 }
 
-export function useGuardianOrders() {
-  return useQuery<{ orders: GuardianOrder[] }>({
-    queryKey: ['guardian', 'store', 'orders'],
-    queryFn: () => apiClient.get<{ orders: GuardianOrder[] }>('/api/guardian/store/orders'),
+export function useGuardianOrders(page = 1, limit = 24) {
+  return useQuery<PaginatedResult<GuardianOrder>>({
+    queryKey: ['guardian', 'store', 'orders', page, limit],
+    queryFn: () => apiClient.get<PaginatedResult<GuardianOrder>>(`/api/guardian/store/orders?page=${page}&limit=${limit}`),
+    staleTime: 1000 * 60 * 5,
   })
 }
 
@@ -110,6 +113,7 @@ export function useGuardianOrder(id: string) {
     queryKey: ['guardian', 'store', 'orders', id],
     queryFn: () => apiClient.get<{ order: GuardianOrder }>(`/api/guardian/orders/${id}`),
     enabled: !!id,
+    staleTime: 1000 * 60 * 2,
   })
 }
 
@@ -144,6 +148,7 @@ export function useGuardianAccount() {
   return useQuery<{ account: GuardianAccount }>({
     queryKey: ['guardian', 'account'],
     queryFn: () => apiClient.get<{ account: GuardianAccount }>('/api/guardian/account'),
+    staleTime: 1000 * 60 * 5,
   })
 }
 

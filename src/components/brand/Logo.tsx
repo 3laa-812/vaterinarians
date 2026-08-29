@@ -44,7 +44,7 @@ export function Logo({ size = 32, showWordmark = false, className = '' }: LogoPr
       {showWordmark && (
         <span className="font-bold text-xl text-on-surface tracking-tight leading-none whitespace-nowrap">
           {t('prefix')}
-          <span className="text-primary font-black ml-[1px]">{t('accent')}</span>
+          <span className="text-primary font-black ms-[1px]">{t('accent')}</span>
         </span>
       )}
     </div>

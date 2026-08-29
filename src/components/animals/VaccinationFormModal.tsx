@@ -25,6 +25,7 @@ export function VaccinationFormModal({
   onClose,
 }: VaccinationFormModalProps) {
   const tForm = useTranslations("form");
+  const t = useTranslations("common");
   const locale = useLocale();
 
   const { data: catalog = [] } = useVaccineCatalog();
@@ -123,9 +124,7 @@ export function VaccinationFormModal({
         // For simplicity, we'll implement create. If editing is needed, we'd add an edit hook.
         // The spec mainly talks about logging them. We'll handle edit via the API if needed later.
         alert(
-          locale === "ar"
-            ? "تعديل السجل غير مدعوم حالياً"
-            : "Editing records is not supported yet.",
+          t('editingRecordsIsNotSupportedYet'),
         );
         onClose();
         return;
@@ -159,12 +158,8 @@ export function VaccinationFormModal({
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold text-primary">
             {existingRecord
-              ? locale === "ar"
-                ? "تفاصيل التطعيم"
-                : "Vaccination Details"
-              : locale === "ar"
-                ? "إضافة تطعيم جديد"
-                : "Add New Vaccination"}
+              ? t('vaccinationDetails')
+              : t('addNewVaccination')}
           </h3>
           <button
             onClick={onClose}
@@ -176,7 +171,7 @@ export function VaccinationFormModal({
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-4 overflow-y-auto custom-scrollbar flex-1 pr-2"
+          className="space-y-4 overflow-y-auto custom-scrollbar flex-1 pe-2"
         >
           {error && (
             <div className="p-3 bg-error/10 text-error text-sm rounded-xl flex gap-2 items-center">
@@ -187,7 +182,7 @@ export function VaccinationFormModal({
 
           <div>
             <label className="block text-sm font-semibold text-primary mb-1">
-              {locale === "ar" ? "اللقاح" : "Vaccine"} *
+              {t('vaccine')} *
             </label>
             <Select
               required
@@ -197,12 +192,12 @@ export function VaccinationFormModal({
               className="w-full text-sm"
             >
               <option value="">
-                {locale === "ar" ? "اختر اللقاح..." : "Select vaccine..."}
+                {t('selectVaccine')}
               </option>
               {availableVaccines.map((v) => (
                 <option key={v.id} value={v.id}>
                   {v.name}{" "}
-                  {v.isCore ? (locale === "ar" ? "(أساسي)" : "(Core)") : ""}
+                  {v.isCore ? (t('core')) : ""}
                 </option>
               ))}
             </Select>
@@ -212,7 +207,7 @@ export function VaccinationFormModal({
             <div>
               <label className="block text-sm font-semibold text-primary mb-1 flex items-center gap-1">
                 <Calendar size={14} />{" "}
-                {locale === "ar" ? "تاريخ التطعيم" : "Date Administered"} *
+                {t('dateAdministered')} *
               </label>
               <input
                 type="date"
@@ -226,7 +221,7 @@ export function VaccinationFormModal({
             <div>
               <label className="block text-sm font-semibold text-primary mb-1 flex items-center gap-1">
                 <Calendar size={14} />{" "}
-                {locale === "ar" ? "الجرعة القادمة" : "Next Due Date"}
+                {t('nextDueDate')}
               </label>
               <input
                 type="date"
@@ -243,7 +238,7 @@ export function VaccinationFormModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-primary mb-1">
-                {locale === "ar" ? "الشركة المصنعة" : "Manufacturer"}
+                {t('manufacturer')}
               </label>
               <input
                 type="text"
@@ -258,7 +253,7 @@ export function VaccinationFormModal({
             </div>
             <div>
               <label className="block text-sm font-semibold text-primary mb-1">
-                {locale === "ar" ? "رقم التشغيلة (Lot)" : "Lot Number"}
+                {t('lotNumber')}
               </label>
               <input
                 type="text"
@@ -276,9 +271,7 @@ export function VaccinationFormModal({
             <div>
               <label className="block text-sm font-semibold text-primary mb-1 flex items-center gap-1">
                 <Calendar size={14} />{" "}
-                {locale === "ar"
-                  ? "تاريخ انتهاء الصلاحية"
-                  : "Product Expiration"}
+                {t('productExpiration')}
               </label>
               <input
                 type="date"
@@ -292,7 +285,7 @@ export function VaccinationFormModal({
             </div>
             <div>
               <label className="block text-sm font-semibold text-primary mb-1">
-                {locale === "ar" ? "رقم الجرعة" : "Dose Number"}
+                {t('doseNumber')}
               </label>
               <input
                 type="number"
@@ -310,7 +303,7 @@ export function VaccinationFormModal({
 
           <div>
             <label className="block text-sm font-semibold text-primary mb-1">
-              {locale === "ar" ? "ملاحظات" : "Notes"}
+              {t('notes')}
             </label>
             <textarea
               disabled={!!existingRecord}
@@ -318,9 +311,7 @@ export function VaccinationFormModal({
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
               className="w-full px-4 py-2.5 rounded-xl border border-outline/20 bg-surface text-primary focus:ring-2 focus:ring-primary outline-none disabled:opacity-50 resize-none h-20 text-sm"
               placeholder={
-                locale === "ar"
-                  ? "أعراض جانبية، إلخ..."
-                  : "Adverse reactions, etc..."
+                t('adverseReactionsEtc')
               }
             />
           </div>
@@ -346,7 +337,7 @@ export function VaccinationFormModal({
                 onClick={onClose}
                 className="px-6 py-2 text-sm"
               >
-                {locale === "ar" ? "إغلاق" : "Close"}
+                {t('close')}
               </Button>
             )}
           </div>

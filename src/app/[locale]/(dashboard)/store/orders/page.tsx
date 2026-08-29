@@ -42,7 +42,7 @@ export default function StoreOrdersPage() {
       const res = await fetch("/api/store/orders");
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.en || "Failed to fetch orders");
-      setOrders(json.data.orders);
+      setOrders(json.data.data);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -124,7 +124,7 @@ export default function StoreOrdersPage() {
 
       <div className="bg-surface-container-low border border-outline-variant rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm whitespace-nowrap">
+          <table className="w-full text-start text-sm whitespace-nowrap">
             <thead className="bg-surface-container-high text-on-surface-variant border-b border-outline-variant/50">
               <tr>
                 <th className="px-6 py-4 font-semibold">{t("orderNumber")}</th>
@@ -132,7 +132,7 @@ export default function StoreOrdersPage() {
                 <th className="px-6 py-4 font-semibold">{t("date")}</th>
                 <th className="px-6 py-4 font-semibold">{t("total")}</th>
                 <th className="px-6 py-4 font-semibold">{t("status")}</th>
-                <th className="px-6 py-4 font-semibold text-right">{t("actions")}</th>
+                <th className="px-6 py-4 font-semibold text-end">{t("actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/30">
@@ -166,7 +166,7 @@ export default function StoreOrdersPage() {
                     <td className="px-6 py-4">
                       {getStatusBadge(order.status)}
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-end">
                       <Link href={`/${locale}/store/orders/${order.id}`}>
                         <button className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors inline-flex items-center gap-1 group-hover:translate-x-1">
                           <span className="text-sm font-medium">{t("details")}</span>

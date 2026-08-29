@@ -66,7 +66,7 @@ export const VaccinationCertificateA4 = forwardRef<HTMLDivElement, Props>(
             {clinic.address && <p className="text-gray-600 mt-1">{clinic.address}</p>}
             {clinic.phone && <p className="text-gray-600">{clinic.phone}</p>}
           </div>
-          <div className="text-right">
+          <div className="text-end">
             <h2 className="text-2xl font-bold uppercase text-teal-600 tracking-wider">Vaccination Record</h2>
             <p className="text-gray-500 mt-2">Issued: {format(new Date(), "dd MMM yyyy")}</p>
           </div>
@@ -102,11 +102,11 @@ export const VaccinationCertificateA4 = forwardRef<HTMLDivElement, Props>(
           <table className="w-full mb-8">
             <thead>
               <tr className="bg-gray-100">
-                <th className="text-left py-3 px-4 font-semibold text-gray-700 rounded-l">Vaccine</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Date Given</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Next Due</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Manufacturer / Lot</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700 rounded-r">Administered By</th>
+                <th className="text-start py-3 px-4 font-semibold text-gray-700 rounded-l">Vaccine</th>
+                <th className="text-start py-3 px-4 font-semibold text-gray-700">Date Given</th>
+                <th className="text-start py-3 px-4 font-semibold text-gray-700">Next Due</th>
+                <th className="text-start py-3 px-4 font-semibold text-gray-700">Manufacturer / Lot</th>
+                <th className="text-start py-3 px-4 font-semibold text-gray-700 rounded-r">Administered By</th>
               </tr>
             </thead>
             <tbody>

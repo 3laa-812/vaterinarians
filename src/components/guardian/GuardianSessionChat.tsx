@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { sendGuardianSessionMessage, markGuardianMessagesAsReadAction } from '@/app/actions/guardian-session-messages.actions'
 import { useTranslations } from 'next-intl'
+import { logger } from '@/lib/logger';
 
 export function GuardianSessionChat({ sessionData }: { sessionData: any }) {
   const t = useTranslations('session')
@@ -79,7 +80,7 @@ export function GuardianSessionChat({ sessionData }: { sessionData: any }) {
         throw new Error(data.error?.message || 'Upload failed')
       }
     } catch (error) {
-      console.error('Error uploading file:', error)
+      logger.error('Error uploading file:', error)
       alert(t('errorUploadingImage') || 'Failed to upload image')
     } finally {
       setIsUploading(false)
@@ -99,7 +100,7 @@ export function GuardianSessionChat({ sessionData }: { sessionData: any }) {
           </p>
         ) : (
           messages.map((msg: any) => (
-            <div key={msg.id} className={`flex flex-col max-w-[80%] ${!msg.fromOwner ? 'self-start' : 'self-end items-end ml-auto'}`}>
+            <div key={msg.id} className={`flex flex-col max-w-[80%] ${!msg.fromOwner ? 'self-start' : 'self-end items-end ms-auto'}`}>
               <div className={`p-2.5 rounded-[12px] ${!msg.fromOwner ? 'bg-[var(--color-cream-2)] text-[var(--color-ink)]' : 'bg-[var(--color-olive)] text-[var(--color-white)]'}`}>
                 {msg.content && <p className="text-[13px] whitespace-pre-wrap leading-relaxed">{msg.content}</p>}
                 {msg.attachmentUrl && (
@@ -134,7 +135,7 @@ export function GuardianSessionChat({ sessionData }: { sessionData: any }) {
               <img src={attachmentUrl} alt="Attached" className="h-10 w-10 object-cover rounded-[8px] border border-[var(--color-line)]" />
               <button 
                 onClick={() => setAttachmentUrl('')} 
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center hover:bg-red-600"
+                className="absolute -top-2 -end-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center hover:bg-red-600"
               >
                 ×
               </button>

@@ -1,133 +1,63 @@
-import { NextResponse } from 'next/server';
 import { withAuth } from '@/lib/api/handler';
+import { apiSuccess } from '@/lib/api/response';
 import { StoreService } from '@/services/store.service';
 import { createProductSchema } from '@/lib/validations/store.schema';
 import { v2 as cloudinary } from 'cloudinary';
+import { NotFoundError } from '@/lib/api/errors';
+
+import { env } from '@/lib/env';
+import { logger } from '@/lib/logger';
 
 cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  api_secret: env.CLOUDINARY_API_SECRET,
 });
 
 export const GET = withAuth(async (req, { params, session }) => {
-  try {
-    if (!session || !session.user || !session.user.clinicId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const { id } = params;
+  const product = await StoreService.getProduct(session, id);
 
-    const { id } = params;
-    const product = await StoreService.getProduct(session.user.clinicId, id);
-
-    if (!product) {
-      return NextResponse.json(
-        { error: { en: 'Product not found', ar: 'المنتج غير موجود', code: 'NOT_FOUND' } },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      data: { product }
-    });
-  } catch (error) {
-    console.error('[PRODUCT_GET]', error);
-    return NextResponse.json(
-      {
-        error: {
-          en: 'Failed to fetch product',
-          ar: 'فشل في جلب المنتج',
-          code: 'INTERNAL_ERROR'
-        }
-      },
-      { status: 500 }
-    );
+  if (!product) {
+    throw new NotFoundError({ en: 'Product', ar: 'المنتج' });
   }
+
+  return apiSuccess({ product });
 });
 
-export const PUT = withAuth(async (req, { params, session }) => {
-  try {
-    if (!session || !session.user || !session.user.clinicId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
+export const PUT = withAuth(
+  async (req, { params, session }) => {
     const { id } = params;
     const body = await req.json();
-    const result = createProductSchema.safeParse(body);
-    
-    if (!result.success) {
-      return NextResponse.json(
-        {
-          error: {
-            en: 'Invalid product data',
-            ar: 'بيانات المنتج غير صالحة',
-            code: 'VALIDATION_ERROR',
-            details: result.error.flatten()
-          }
-        },
-        { status: 400 }
-      );
-    }
+    const data = createProductSchema.parse(body);
 
-    const product = await StoreService.updateProduct(session.user.clinicId, id, result.data);
+    const product = await StoreService.updateProduct(session, id, data);
 
-    return NextResponse.json({
-      data: { product }
-    });
-  } catch (error) {
-    console.error('[PRODUCT_PUT]', error);
-    return NextResponse.json(
-      {
-        error: {
-          en: 'Failed to update product',
-          ar: 'فشل في تحديث المنتج',
-          code: 'INTERNAL_ERROR'
-        }
-      },
-      { status: 500 }
-    );
-  }
-});
+    return apiSuccess({ product });
+  },
+  { roles: ['CLINIC_ADMIN', 'SUPER_ADMIN'] }
+);
 
-export const DELETE = withAuth(async (req, { params, session }) => {
-  try {
-    if (!session || !session.user || !session.user.clinicId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
+export const DELETE = withAuth(
+  async (req, { params, session }) => {
     const { id } = params;
-    
-    // Fetch product to get the imageUrl
-    const product = await StoreService.getProduct(session.user.clinicId, id);
+
+    const product = await StoreService.getProduct(session, id);
     if (product?.imageUrl) {
-      // Extract public_id from URL: e.g. https://res.cloudinary.com/.../upload/v1234567/public_id.jpg
       const matches = product.imageUrl.match(/\/v\d+\/(.+)\.[a-z]+$/i);
       if (matches && matches[1]) {
         const publicId = matches[1];
         try {
           await cloudinary.uploader.destroy(publicId);
         } catch (err) {
-          console.error('[CLOUDINARY_DELETE_ERROR]', err);
-          // Non-blocking error, we still want to delete the product
+          logger.error('[CLOUDINARY_DELETE_ERROR]', err);
         }
       }
     }
 
-    await StoreService.deleteProduct(session.user.clinicId, id);
+    await StoreService.deleteProduct(session, id);
 
-    return NextResponse.json({
-      data: { success: true }
-    });
-  } catch (error) {
-    console.error('[PRODUCT_DELETE]', error);
-    return NextResponse.json(
-      {
-        error: {
-          en: 'Failed to delete product',
-          ar: 'فشل في حذف المنتج',
-          code: 'INTERNAL_ERROR'
-        }
-      },
-      { status: 500 }
-    );
-  }
-});
+    return apiSuccess({ success: true });
+  },
+  { roles: ['CLINIC_ADMIN', 'SUPER_ADMIN'] }
+);

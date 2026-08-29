@@ -8,6 +8,7 @@ import { sendDoctorSessionMessage, markDoctorMessagesAsReadAction } from '@/app/
 import { useTranslations } from 'next-intl'
 import { bookFollowUpAppointment } from '@/app/actions/appointments.actions'
 import { Input } from '@/components/shared/Input'
+import { logger } from '@/lib/logger';
 
 export function SessionChat({ sessionData, animalId }: { sessionData: any, animalId: string }) {
   const t = useTranslations('session')
@@ -103,7 +104,7 @@ export function SessionChat({ sessionData, animalId }: { sessionData: any, anima
         throw new Error(data.error?.message || 'Upload failed')
       }
     } catch (error) {
-      console.error('Error uploading file:', error)
+      logger.error('Error uploading file:', error)
       alert(t('errorUploadingImage', { fallback: 'Failed to upload image' }))
     } finally {
       setIsUploading(false)
@@ -128,7 +129,7 @@ export function SessionChat({ sessionData, animalId }: { sessionData: any, anima
           </p>
         ) : (
           messages.map((msg: any) => (
-            <div key={msg.id} className={`flex flex-col max-w-[80%] ${msg.fromOwner ? 'self-start' : 'self-end items-end ml-auto'}`}>
+            <div key={msg.id} className={`flex flex-col max-w-[80%] ${msg.fromOwner ? 'self-start' : 'self-end items-end ms-auto'}`}>
               <div className={`p-3 rounded-xl ${msg.fromOwner ? 'bg-surface-container text-on-surface' : 'bg-primary text-on-primary'}`}>
                 {msg.content && <p className="text-sm whitespace-pre-wrap">{msg.content}</p>}
                 {msg.attachmentUrl && (
@@ -161,7 +162,7 @@ export function SessionChat({ sessionData, animalId }: { sessionData: any, anima
             <div className="relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={attachmentUrl} alt="Attached" className="h-10 w-10 object-cover rounded" />
-              <button onClick={() => setAttachmentUrl('')} className="absolute -top-2 -right-2 bg-error text-on-error rounded-full w-4 h-4 text-xs flex items-center justify-center">×</button>
+              <button onClick={() => setAttachmentUrl('')} className="absolute -top-2 -end-2 bg-error text-on-error rounded-full w-4 h-4 text-xs flex items-center justify-center">×</button>
             </div>
           )}
         </div>

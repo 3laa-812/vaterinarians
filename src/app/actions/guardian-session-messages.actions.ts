@@ -5,6 +5,7 @@ import { sessionMessageService } from '@/services/session-message.service'
 import { sendSessionMessageSchema } from '@/lib/validations/session-message.schema'
 import { ZodError } from 'zod'
 import { auth } from '@/lib/auth'
+import { logger } from '@/lib/logger';
 
 export async function sendGuardianSessionMessage(formData: FormData) {
   try {
@@ -35,7 +36,7 @@ export async function sendGuardianSessionMessage(formData: FormData) {
     if (error instanceof ZodError) {
       return { error: error.issues[0]?.message || 'Validation error' }
     }
-    console.error(error)
+    logger.error(error)
     return { error: 'Failed to send message' }
   }
 }
@@ -50,7 +51,7 @@ export async function markGuardianMessagesAsReadAction(sessionId: string) {
     revalidatePath(`/guardian/animals`)
     return { success: true }
   } catch (error) {
-    console.error(error)
+    logger.error(error)
     return { error: 'Failed to mark as read' }
   }
 }

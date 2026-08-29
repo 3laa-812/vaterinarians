@@ -19,6 +19,7 @@ import { VaccinationsList } from '@/components/animals/VaccinationsList'
 import { MetaRow } from '@/components/shared/layout/MetaRow'
 import { StatGrid } from '@/components/shared/layout/StatGrid'
 import { InfoBlock } from '@/components/shared/layout/InfoBlock'
+import { logger } from '@/lib/logger';
 
 export default function AnimalProfilePage() {
   const params = useParams<{ id: string }>()
@@ -42,7 +43,7 @@ export default function AnimalProfilePage() {
       await deleteMutation.mutateAsync(id)
       router.push('/animals')
     } catch (err) {
-      console.error(err)
+      logger.error(err)
     }
   }
 
@@ -61,7 +62,7 @@ export default function AnimalProfilePage() {
       setNewWeight('')
       refetch()
     } catch (err) {
-      console.error(err)
+      logger.error(err)
     } finally {
       setIsSubmittingWeight(false)
     }
@@ -152,33 +153,41 @@ export default function AnimalProfilePage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => window.print()}
+            className="px-4 py-2"
+          >
+            {t('print')}
+          </Button>
+          <Button
+            variant="ghost"
             onClick={handleDeleteAnimal}
-            className="px-4 py-2.5 rounded-xl border border-error/30 text-error hover:bg-error/10 text-sm font-semibold transition-colors"
+            className="text-error hover:text-error hover:bg-error/10 px-4 py-2"
           >
             {t('delete')}
-          </button>
+          </Button>
         </div>
       </Card>
 
       {/* Stats and Calculations Panel */}
       <StatGrid>
-        <Card className="p-4 text-center">
+        <Card className="p-4 text-center flex flex-col justify-center h-full min-h-[96px]">
           <span className="text-xs text-on-surface-variant uppercase tracking-wider">{t('currentWeight')}</span>
           <span className="block text-2xl font-bold text-primary mt-2 font-mono">
             {profile.latestWeight !== null ? `${profile.latestWeight} ${t('kg')}` : '—'}
           </span>
         </Card>
 
-        <Card className="p-4 text-center">
+        <Card className="p-4 text-center flex flex-col justify-center h-full min-h-[96px]">
           <span className="text-xs text-on-surface-variant uppercase tracking-wider">{t('weightChange')}</span>
           <span className={`block text-2xl font-bold mt-2 font-mono ${profile.weightDelta && profile.weightDelta > 0 ? 'text-secondary' : profile.weightDelta && profile.weightDelta < 0 ? 'text-primary' : 'text-on-surface-variant'}`}>
             {profile.weightDelta !== null ? `${profile.weightDelta > 0 ? '+' : ''}${profile.weightDelta} ${t('kg')}` : '—'}
           </span>
         </Card>
 
-        <Card className="p-4 text-center">
+        <Card className="p-4 text-center flex flex-col justify-center h-full min-h-[96px]">
           <span className="text-xs text-on-surface-variant uppercase tracking-wider">{t('sessions')}</span>
           <span className="block text-2xl font-bold text-on-surface mt-2 font-mono">
             {profile.sessionCount}
@@ -186,7 +195,7 @@ export default function AnimalProfilePage() {
         </Card>
 
         {profile.unpaidAmount > 0 && (
-          <Card className="p-4 text-center">
+          <Card className="p-4 text-center flex flex-col justify-center h-full min-h-[96px]">
             <span className="text-xs text-on-surface-variant uppercase tracking-wider">{t('totalOwed')}</span>
             <span className="block text-2xl font-bold text-secondary mt-2 font-mono">
               {profile.unpaidAmount.toFixed(2)} {tSession('currency')}

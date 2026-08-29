@@ -183,7 +183,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ locale:
             <h3 className="text-lg font-bold text-on-surface mb-6">{t("orderStatus")}</h3>
             {!isCancelled ? (
               <div className="flex justify-between items-center relative">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-surface-container rounded-full z-0 overflow-hidden">
+                <div className="absolute start-0 top-1/2 -translate-y-1/2 w-full h-1 bg-surface-container rounded-full z-0 overflow-hidden">
                   <div 
                     className="h-full bg-primary transition-all duration-500" 
                     style={{ width: `${(Math.max(0, currentStatusIndex) / (STATUS_STEPS.length - 1)) * 100}%` }}
@@ -252,7 +252,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ locale:
                     <h4 className="text-on-surface font-semibold truncate">{item.product.name}</h4>
                     <p className="text-on-surface-variant text-sm mt-1">{item.unitPrice.toFixed(2)} {t("currency")} x {item.quantity}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-end">
                     <span className="text-on-surface font-bold whitespace-nowrap">{item.total.toFixed(2)} {t("currency")}</span>
                   </div>
                 </li>
@@ -329,7 +329,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ locale:
                         : 'bg-primary text-on-primary rounded-tr-sm'
                     }`}>
                       <p className="text-sm">{msg.content}</p>
-                      <p className={`text-[10px] mt-1 ${msg.fromOwner ? 'text-on-surface-variant' : 'text-on-primary/70'} text-right`}>
+                      <p className={`text-[10px] mt-1 ${msg.fromOwner ? 'text-on-surface-variant' : 'text-on-primary/70'} text-end`}>
                         {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>

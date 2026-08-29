@@ -20,7 +20,7 @@ export const InvoiceA4 = forwardRef<HTMLDivElement, Props>(
             {invoice.clinic.address && <p>{invoice.clinic.address}</p>}
             {invoice.clinic.phone && <p>{invoice.clinic.phone}</p>}
           </div>
-          <div className="text-right">
+          <div className="text-end">
             <h2 className="text-2xl font-bold uppercase text-gray-400">{t("invoice")}</h2>
             <p className="font-medium mt-1">#{invoice.invoiceNumber}</p>
             <p className="text-gray-500">{format(new Date(invoice.createdAt), "dd MMM yyyy, HH:mm")}</p>
@@ -39,7 +39,7 @@ export const InvoiceA4 = forwardRef<HTMLDivElement, Props>(
               </p>
             )}
           </div>
-          <div className="text-right">
+          <div className="text-end">
             <h3 className="font-bold text-gray-500 uppercase text-xs mb-2">{t("paymentDetails")}</h3>
             <p><span className="font-medium">{t("method")}:</span> {invoice.paymentMethod || "N/A"}</p>
             <p><span className="font-medium">{t("status")}:</span> {t(invoice.status.toLowerCase())}</p>
@@ -51,11 +51,11 @@ export const InvoiceA4 = forwardRef<HTMLDivElement, Props>(
         <table className="w-full mb-8">
           <thead>
             <tr className="border-b-2 border-gray-300">
-              <th className="text-left py-2">{t("item")}</th>
-              <th className="text-left py-2">{t("category")}</th>
-              <th className="text-right py-2">{t("qty")}</th>
-              <th className="text-right py-2">{t("unitPrice")}</th>
-              <th className="text-right py-2">{t("total")}</th>
+              <th className="text-start py-2">{t("item")}</th>
+              <th className="text-start py-2">{t("category")}</th>
+              <th className="text-end py-2">{t("qty")}</th>
+              <th className="text-end py-2">{t("unitPrice")}</th>
+              <th className="text-end py-2">{t("total")}</th>
             </tr>
           </thead>
           <tbody>
@@ -69,9 +69,9 @@ export const InvoiceA4 = forwardRef<HTMLDivElement, Props>(
                   )}
                 </td>
                 <td className="py-3 text-gray-600">{t("service")}</td>
-                <td className="py-3 text-right">1</td>
-                <td className="py-3 text-right">{p.totalAmount.toFixed(2)}</td>
-                <td className="py-3 text-right">{p.totalAmount.toFixed(2)}</td>
+                <td className="py-3 text-end">1</td>
+                <td className="py-3 text-end">{p.totalAmount.toFixed(2)}</td>
+                <td className="py-3 text-end">{p.totalAmount.toFixed(2)}</td>
               </tr>
             ))}
             
@@ -81,9 +81,9 @@ export const InvoiceA4 = forwardRef<HTMLDivElement, Props>(
                 <tr key={item.id} className="border-b border-gray-100">
                   <td className="py-3 font-medium">{item.product.name}</td>
                   <td className="py-3 text-gray-600">{item.product.category}</td>
-                  <td className="py-3 text-right">{item.quantity}</td>
-                  <td className="py-3 text-right">{item.unitPrice.toFixed(2)}</td>
-                  <td className="py-3 text-right">{item.total.toFixed(2)}</td>
+                  <td className="py-3 text-end">{item.quantity}</td>
+                  <td className="py-3 text-end">{item.unitPrice.toFixed(2)}</td>
+                  <td className="py-3 text-end">{item.total.toFixed(2)}</td>
                 </tr>
               ))
             )}

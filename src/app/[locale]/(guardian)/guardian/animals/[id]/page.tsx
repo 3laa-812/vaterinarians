@@ -162,10 +162,10 @@ export default function AnimalProfilePage() {
                   const sessions = animal.appointments?.filter((apt: any) => apt.session).map((apt: any) => apt.session) || []
                   if (sessions.length > 0) {
                     return (
-                      <div className="relative pl-[10px] pr-[20px] md:pr-[24px] before:content-[''] before:absolute before:right-0 before:top-[10px] before:bottom-[10px] before:w-[2px] before:bg-[var(--color-line)] before:rounded-full">
+                      <div className="relative ps-[10px] pe-[20px] md:pe-[24px] before:content-[''] before:absolute before:end-0 before:top-[10px] before:bottom-[10px] before:w-[2px] before:bg-[var(--color-line)] before:rounded-full">
                         {sessions.map((session: any, i: number) => (
                           <div key={session.id} className={`relative mb-[24px] last:mb-0 ${i === 0 ? '' : 'opacity-70'}`}>
-                            <div className={`absolute -right-[25px] md:-right-[29px] top-[4px] w-[12px] h-[12px] rounded-full border-[3px] border-[var(--color-white)] shadow-sm ${i === 0 ? 'bg-[var(--color-olive)]' : 'bg-[var(--color-ink-soft)]'}`} />
+                            <div className={`absolute -end-[25px] md:-end-[29px] top-[4px] w-[12px] h-[12px] rounded-full border-[3px] border-[var(--color-white)] shadow-sm ${i === 0 ? 'bg-[var(--color-olive)]' : 'bg-[var(--color-ink-soft)]'}`} />
                             <h4 className={`text-[14.5px] font-bold leading-tight mb-1 ${i === 0 ? 'text-[var(--color-ink)]' : 'text-[var(--color-ink-soft)]'}`}>
                               {session.type || t('generalCheckup')}
                             </h4>
@@ -204,7 +204,7 @@ export default function AnimalProfilePage() {
                     <p className="text-[12px] font-medium text-[var(--color-ink-soft)] mb-0.5">{t('currentWeight')}</p>
                     <p className="text-[20px] font-black text-[var(--color-olive)] num">{animal.weightRecords?.[0]?.weight || '--'} {t('kg')}</p>
                   </div>
-                  <div className="text-left">
+                  <div className="text-start">
                     <p className="text-[12px] font-medium text-[var(--color-ink-soft)] mb-0.5">{t('target')}</p>
                     <p className="text-[20px] font-black text-[var(--color-olive)] num">{animal.targetWeight || '--'} {t('kg')}</p>
                   </div>

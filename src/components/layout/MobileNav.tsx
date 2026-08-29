@@ -116,7 +116,7 @@ export function MobileNav() {
             <div className="p-4 safe-bottom">
               <div className="flex justify-between items-center mb-6 px-2">
                 <h2 className="text-xl font-bold text-on-surface">{t('more', { fallback: 'More Menu' })}</h2>
-                <button onClick={() => setMenuOpen(false)} className="p-2 bg-surface-container rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                <button onClick={() => setMenuOpen(false)} aria-label={t('close', { fallback: 'Close' })} className="p-2 bg-surface-container rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
                   <X size={20} />
                 </button>
               </div>

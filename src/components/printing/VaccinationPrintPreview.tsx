@@ -40,8 +40,8 @@ export const VaccinationPrintPreview: React.FC<Props> = ({ data }) => {
     <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full">
       <div className="flex justify-between items-center bg-surface-container p-4 rounded-xl shadow-sm border border-outline-variant/30">
         <div>
-          <h2 className="text-xl font-bold text-on-surface">{locale === 'ar' ? 'معاينة الطباعة' : 'Print Preview'}</h2>
-          <p className="text-sm text-on-surface-variant">{locale === 'ar' ? 'شهادة تطعيم' : 'Vaccination Certificate'}</p>
+          <h2 className="text-xl font-bold text-on-surface">{t('printPreview')}</h2>
+          <p className="text-sm text-on-surface-variant">{t('vaccinationCertificate')}</p>
         </div>
         <div className="flex gap-4 items-center">
           <button 

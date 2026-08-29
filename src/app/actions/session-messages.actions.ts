@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth' // Assuming auth is available here
 import { sessionMessageService } from '@/services/session-message.service'
 import { sendSessionMessageSchema } from '@/lib/validations/session-message.schema'
 import { ZodError } from 'zod'
+import { logger } from '@/lib/logger';
 
 export async function sendDoctorSessionMessage(formData: FormData) {
   try {
@@ -35,7 +36,7 @@ export async function sendDoctorSessionMessage(formData: FormData) {
     if (error instanceof ZodError) {
       return { error: error.issues[0]?.message || 'Validation error' }
     }
-    console.error(error)
+    logger.error(error)
     return { error: 'Failed to send message' }
   }
 }
@@ -50,7 +51,7 @@ export async function markDoctorMessagesAsReadAction(sessionId: string) {
     revalidatePath(`/dashboard/sessions/${sessionId}`)
     return { success: true }
   } catch (error) {
-    console.error(error)
+    logger.error(error)
     return { error: 'Failed to mark as read' }
   }
 }

@@ -7,6 +7,7 @@ import { useCreateAnimal } from '@/hooks/useAnimals'
 import type { AnimalInput } from '@/lib/validations/animal.schema'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Card } from '@/components/shared/Card'
+import { logger } from '@/lib/logger';
 
 export default function NewAnimalPage() {
   const router = useRouter()
@@ -19,7 +20,7 @@ export default function NewAnimalPage() {
       const res = await createAnimalMutation.mutateAsync(data)
       router.push(`/animals/${res.animal.id}`)
     } catch (err) {
-      console.error('Failed to create animal', err)
+      logger.error('Failed to create animal', err)
     }
   }
 

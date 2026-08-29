@@ -73,7 +73,7 @@ export default function OrderTrackingPage() {
             <div className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-multiply bg-[var(--sage-soft)]" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&q=80&w=2000')" }}></div>
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--white)] via-[rgba(255,255,255,0.7)] to-transparent"></div>
             
-            <div className="absolute bottom-6 left-6 right-6 flex flex-col md:flex-row md:items-end justify-between z-10 gap-4">
+            <div className="absolute bottom-6 start-6 end-6 flex flex-col md:flex-row md:items-end justify-between z-10 gap-4">
               <div>
                 <span className={clsx(
                   "inline-block px-3 py-1.5 rounded-[8px] font-bold text-[12px] mb-2",
@@ -113,16 +113,16 @@ export default function OrderTrackingPage() {
                   <p className="text-[var(--ink-soft)] font-medium text-[14.5px]">تم إلغاء هذا الطلب ولن يتم تنفيذه.</p>
                 </div>
             ) : (
-                <div className="relative pr-4 rtl:pr-4 rtl:pl-0 pl-0">
+                <div className="relative pe-4 rtl:pe-4 rtl:ps-0 ps-0">
                   {/* Background Line */}
-                  <div className="absolute right-[19px] rtl:right-[19px] rtl:left-auto left-[19px] top-2 bottom-6 w-[2px] bg-[var(--line)] rounded-full"></div>
+                  <div className="absolute end-[19px] rtl:end-[19px] rtl:start-auto start-[19px] top-2 bottom-6 w-[2px] bg-[var(--line)] rounded-full"></div>
                   
                   {/* Animated Progress Line */}
                   <motion.div 
                     initial={{ height: 0 }}
                     animate={{ height: `${currentStatusIndex * 25}%` }}
                     transition={{ duration: 1, ease: "easeOut" }}
-                    className="absolute right-[19px] rtl:right-[19px] rtl:left-auto left-[19px] top-2 w-[2px] bg-[var(--vitality)] rounded-full origin-top shadow-[0_0_8px_rgba(255,107,0,0.4)]"
+                    className="absolute end-[19px] rtl:end-[19px] rtl:start-auto start-[19px] top-2 w-[2px] bg-[var(--vitality)] rounded-full origin-top shadow-[0_0_8px_rgba(255,107,0,0.4)]"
                   />
 
                   <motion.div
@@ -164,7 +164,7 @@ export default function OrderTrackingPage() {
                         </div>
                         <div className={clsx(
                           "pt-0.5 w-full",
-                          step.active && "bg-[var(--sage-soft)] p-4 rounded-[14px] -mt-3 -mr-2 rtl:-mr-2 rtl:-ml-0 -ml-2 border border-[var(--color-olive-soft)]"
+                          step.active && "bg-[var(--sage-soft)] p-4 rounded-[14px] -mt-3 -me-2 rtl:-me-2 rtl:-ms-0 -ms-2 border border-[var(--color-olive-soft)]"
                         )}>
                           <div className="flex justify-between items-center mb-1">
                             <h4 className={clsx(

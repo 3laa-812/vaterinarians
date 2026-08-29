@@ -119,3 +119,26 @@ export type ClinicWithDoctors = Clinic & {
 
 // Re-export Prisma enums for convenient use in components
 export { AppointmentStatus, PaymentStatus }
+
+// ── API Responses ─────────────────────────────────────────────────────────────
+
+export type OwnersResponse = {
+  owners: OwnerListItem[]
+  total: number
+  page: number
+  limit: number
+}
+
+export type AnimalsResponse = {
+  animals: AnimalListItem[]
+  total: number
+  page: number
+  limit: number
+}
+
+export type SaveSessionResult = {
+  session: unknown
+  payment: unknown
+  nextAppointment: Appointment | null
+  qrToken?: string
+}

@@ -22,6 +22,7 @@ export function useAppointment(id: string) {
     queryKey: ['appointments', id],
     queryFn: () => apiClient.get<{ appointment: AppointmentWithDetails }>(`/api/appointments/${id}`).then(res => res.appointment),
     enabled: !!id,
+    staleTime: 1000 * 60 * 2,
   })
 }
 

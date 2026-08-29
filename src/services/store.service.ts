@@ -1,76 +1,130 @@
 import { prisma } from "@/lib/db";
+import { paginate } from "@/lib/pagination";
 import { OrderStatus, OrderPaymentStatus, IncomeCategory } from "@prisma/client";
 import { calculateOrderSubtotal, calculateOrderTotal, generateOrderNumber, checkInsufficientStock } from "@/domain/store";
 import { z } from "zod";
-import { createOrderSchema } from "@/lib/validations/store.schema";
+import { createOrderSchema, createProductSchema } from "@/lib/validations/store.schema";
+import type { Session } from "next-auth";
+import { clinicScope } from "@/lib/scope";
+import { AppError, NotFoundError } from "@/lib/api/errors";
 
 export const StoreService = {
   // PRODUCTS
-  async listProducts(clinicId: string) {
-    return prisma.product.findMany({
-      where: { clinicId },
-      orderBy: { createdAt: "desc" },
-    });
+  async listProducts(session: Session, { page = 1, limit = 24, isActive }: { page?: number; limit?: number; isActive?: boolean } = {}) {
+    const where: any = { ...clinicScope(session) };
+    if (isActive !== undefined) {
+      where.isActive = isActive;
+    }
+    
+    return paginate(
+      prisma.product,
+      {
+        where,
+        orderBy: { createdAt: "desc" },
+      } as any,
+      { page, limit }
+    );
   },
 
-  async getProduct(clinicId: string, productId: string) {
+  async getProduct(session: Session, productId: string) {
     return prisma.product.findUnique({
-      where: { id: productId, clinicId },
+      where: { id: productId, ...clinicScope(session) },
     });
   },
 
-  async createProduct(clinicId: string, data: any) {
+  async createProduct(session: Session, data: z.infer<typeof createProductSchema>) {
+    // Note: SUPER_ADMIN might not have a clinicId. If they need to create, this requires logic to pass clinicId.
+    if (!session.user.clinicId) {
+       throw new AppError("عيادة غير صالحة", "Invalid clinic context", 400, "INVALID_CLINIC");
+    }
     return prisma.product.create({
       data: {
         ...data,
-        clinicId,
+        clinicId: session.user.clinicId,
       },
     });
   },
 
-  async updateProduct(clinicId: string, productId: string, data: any) {
+  async updateProduct(session: Session, productId: string, data: z.infer<typeof createProductSchema>) {
+    // We update using the clinic scope to ensure they have permission.
+    const product = await prisma.product.findUnique({
+      where: { id: productId, ...clinicScope(session) }
+    });
+    
+    if (!product) {
+      throw new NotFoundError({ ar: "المنتج", en: "Product" });
+    }
+
     return prisma.product.update({
-      where: { id: productId, clinicId },
+      where: { id: productId },
       data,
     });
   },
 
-  async deleteProduct(clinicId: string, productId: string) {
+  async deleteProduct(session: Session, productId: string) {
+    const product = await prisma.product.findUnique({
+      where: { id: productId, ...clinicScope(session) }
+    });
+    
+    if (!product) {
+      throw new NotFoundError({ ar: "المنتج", en: "Product" });
+    }
+
     return prisma.product.delete({
-      where: { id: productId, clinicId },
+      where: { id: productId },
     });
   },
 
   // ORDERS
-  async listOrders(clinicId: string) {
-    return prisma.order.findMany({
-      where: { clinicId },
-      include: {
-        owner: true,
-        items: {
-          include: { product: true },
+  async listOrders(session: Session, { page = 1, limit = 24 }: { page?: number; limit?: number } = {}) {
+    return paginate(
+      prisma.order,
+      {
+        where: { ...clinicScope(session) },
+        include: {
+          owner: true,
+          items: {
+            include: { product: true },
+          },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+      } as any,
+      { page, limit }
+    );
   },
 
-  async createOrder(clinicId: string, userId: string | undefined, data: z.infer<typeof createOrderSchema>) {
+  async createOrder(session: Session, userId: string | undefined, data: z.infer<typeof createOrderSchema>) {
+    if (!session.user.clinicId) {
+      throw new AppError("عيادة غير صالحة", "Invalid clinic context", 400, "INVALID_CLINIC");
+    }
+    const clinicId = session.user.clinicId;
+    const scope = clinicScope(session);
+
     return prisma.$transaction(async (tx) => {
       // 1. Fetch products to check stock and prices
       const productIds = data.items.map((i) => i.productId);
       const products = await tx.product.findMany({
-        where: { id: { in: productIds }, clinicId, isActive: true },
+        where: { id: { in: productIds }, ...scope, isActive: true },
       });
 
       if (products.length !== productIds.length) {
-        throw new Error("One or more products not found or inactive.");
+        throw new AppError(
+          "منتج واحد أو أكثر غير موجود أو غير نشط.", 
+          "One or more products not found or inactive.", 
+          400, 
+          "PRODUCTS_INVALID"
+        );
       }
 
       // 2. Check stock
       const insufficient = checkInsufficientStock(data.items, products);
       if (insufficient.length > 0) {
-        throw new Error(`Insufficient stock for products: ${insufficient.join(", ")}`);
+        throw new AppError(
+          `مخزون غير كافٍ للمنتجات: ${insufficient.join(", ")}`,
+          `Insufficient stock for products: ${insufficient.join(", ")}`,
+          400,
+          "INSUFFICIENT_STOCK"
+        );
       }
 
       // 3. Calculate totals
@@ -137,7 +191,12 @@ export const StoreService = {
         });
 
         if (result.count === 0) {
-          throw new Error(`Insufficient stock for product ${item.productId}`);
+          throw new AppError(
+            `مخزون غير كافٍ للمنتج ${item.productId}`, 
+            `Insufficient stock for product ${item.productId}`, 
+            400, 
+            "INSUFFICIENT_STOCK"
+          );
         }
       }
 
@@ -162,15 +221,17 @@ export const StoreService = {
     });
   },
 
-  async updateOrderStatus(clinicId: string, orderId: string, status: OrderStatus, userId: string) {
+  async updateOrderStatus(session: Session, orderId: string, status: OrderStatus) {
+    const scope = clinicScope(session);
+
     return prisma.$transaction(async (tx) => {
       const order = await tx.order.findUnique({
-        where: { id: orderId, clinicId },
+        where: { id: orderId, ...scope },
       });
 
-      if (!order) throw new Error("Order not found");
+      if (!order) throw new NotFoundError({ ar: "الطلب", en: "Order" });
 
-      const updateData: any = { status };
+      const updateData: Partial<{ status: OrderStatus; confirmedAt: Date; readyAt: Date; deliveredAt: Date }> = { status };
 
       if (status === OrderStatus.CONFIRMED && !order.confirmedAt) updateData.confirmedAt = new Date();
       if (status === OrderStatus.READY && !order.readyAt) updateData.readyAt = new Date();
@@ -185,13 +246,15 @@ export const StoreService = {
     });
   },
 
-  async updateOrderPaymentStatus(clinicId: string, orderId: string, paymentStatus: OrderPaymentStatus, userId: string) {
+  async updateOrderPaymentStatus(session: Session, orderId: string, paymentStatus: OrderPaymentStatus, userId: string) {
+    const scope = clinicScope(session);
+    
     return prisma.$transaction(async (tx) => {
       const order = await tx.order.findUnique({
-        where: { id: orderId, clinicId },
+        where: { id: orderId, ...scope },
       });
 
-      if (!order) throw new Error("Order not found");
+      if (!order) throw new NotFoundError({ ar: "الطلب", en: "Order" });
 
       const updatedOrder = await tx.order.update({
         where: { id: orderId },
@@ -210,7 +273,7 @@ export const StoreService = {
             category: IncomeCategory.STORE_ORDER,
             description: `Payment for Store Order #${order.orderNumber}`,
             date: new Date(),
-            clinicId,
+            clinicId: order.clinicId,
             recordedById: userId,
           },
         });
@@ -220,14 +283,11 @@ export const StoreService = {
     });
   },
 
-  async getLowStockAlerts(clinicId: string) {
+  async getLowStockAlerts(session: Session) {
     return prisma.product.findMany({
       where: {
-        clinicId,
+        ...clinicScope(session),
         isActive: true,
-        // Prisma doesn't support comparing two columns directly in where easily without raw query,
-        // so we fetch all and filter in memory, or use raw. For simplicity, we can fetch all or those < a high number.
-        // Let's use Prisma's raw query for efficiency.
       },
     }).then(products => products.filter(p => p.stock <= p.minStock));
   }

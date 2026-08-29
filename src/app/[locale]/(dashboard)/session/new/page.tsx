@@ -57,7 +57,7 @@ export default function PatientFinderPage() {
           placeholder={tAnimal('search')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-outline-variant bg-surface-container-low text-on-surface outline-none focus:border-primary transition-colors text-lg"
+          className="w-full ps-12 pe-4 py-4 rounded-2xl border-2 border-outline-variant bg-surface-container-low text-on-surface outline-none focus:border-primary transition-colors text-lg"
           autoFocus
         />
       </div>

@@ -1,14 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { OwnerInput } from '@/lib/validations/owner.schema'
-import type { OwnerListItem, OwnerProfile } from '@/types'
+import type { OwnerListItem, OwnerProfile, OwnersResponse } from '@/types'
 import { apiClient } from '@/lib/api/client'
-
-type OwnersResponse = {
-  owners: OwnerListItem[]
-  total: number
-  page: number
-  limit: number
-}
 
 export function useOwners(search: string = '', page = 1, limit = 20) {
   return useQuery<OwnersResponse>({
@@ -30,6 +23,7 @@ export function useOwnerDetails(id: string) {
     queryKey: ['owners', id],
     queryFn: () => apiClient.get<{ owner: OwnerProfile }>(`/api/owners/${id}`).then(res => res.owner),
     enabled: !!id,
+    staleTime: 1000 * 60 * 2,
   })
 }
 

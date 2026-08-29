@@ -35,28 +35,28 @@ export const Receipt80 = forwardRef<HTMLDivElement, Props>(
         </div>
 
         <div className="border-t border-dashed border-black py-2 mb-2">
-          <table className="w-full text-left">
+          <table className="w-full text-start">
             <thead>
               <tr className="border-b border-dashed border-black">
                 <th className="py-1">{t("item")}</th>
-                <th className="text-right py-1">{t("total")}</th>
+                <th className="text-end py-1">{t("total")}</th>
               </tr>
             </thead>
             <tbody>
               {invoice.payments.map((p) => (
                 <tr key={p.id}>
-                  <td className="pr-2 py-2 align-top">{t("consultation")}</td>
-                  <td className="text-right align-top py-2">{p.totalAmount.toFixed(2)}</td>
+                  <td className="pe-2 py-2 align-top">{t("consultation")}</td>
+                  <td className="text-end align-top py-2">{p.totalAmount.toFixed(2)}</td>
                 </tr>
               ))}
               {invoice.orders.map((o) =>
                 o.items.map((item) => (
                   <tr key={item.id}>
-                    <td className="pr-2 py-2 align-top">
+                    <td className="pe-2 py-2 align-top">
                       {item.product.name}
                       {item.quantity > 1 && <div className="text-xs text-gray-600 mt-1">{item.quantity} x {item.unitPrice}</div>}
                     </td>
-                    <td className="text-right align-top py-2">{item.total.toFixed(2)}</td>
+                    <td className="text-end align-top py-2">{item.total.toFixed(2)}</td>
                   </tr>
                 ))
               )}

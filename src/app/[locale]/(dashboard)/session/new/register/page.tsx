@@ -7,6 +7,7 @@ import { useCreateAnimal } from '@/hooks/useAnimals'
 import type { AnimalInput } from '@/lib/validations/animal.schema'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Card } from '@/components/shared/Card'
+import { logger } from '@/lib/logger';
 
 export default function QuickRegistrationPage() {
   const router = useRouter()
@@ -21,7 +22,7 @@ export default function QuickRegistrationPage() {
       // Redirect to start session immediately after quick registration
       router.push(`/animals/${res.animal.id}/session/new`)
     } catch (err) {
-      console.error('Failed to create animal', err)
+      logger.error('Failed to create animal', err)
     }
   }
 

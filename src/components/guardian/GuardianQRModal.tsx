@@ -5,6 +5,7 @@ import { QRDisplay } from '@/components/guardian/QRDisplay';
 import { Button } from '@/components/shared/Button';
 import { useRegenerateQRToken } from '@/hooks/useOwners';
 import { AlertCircle, QrCode } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface GuardianQRModalProps {
   ownerId?: string;
@@ -40,7 +41,7 @@ export function GuardianQRModal({ ownerId, trigger, isOpen: controlledIsOpen, on
         setInternalQrToken(data.qrToken);
       }
     } catch (error) {
-      console.error('Failed to regenerate QR', error);
+      logger.error('Failed to regenerate QR', error);
     }
   };
 

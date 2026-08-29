@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { clinicScope } from '@/lib/scope'
+import { logger } from '@/lib/logger';
 
 
 export async function bookFollowUpAppointment(params: { animalId: string, scheduledAt: Date, notes?: string, fee?: number }) {
@@ -44,7 +45,7 @@ export async function bookFollowUpAppointment(params: { animalId: string, schedu
     revalidatePath(`/dashboard/animals/${animalId}`)
     return { success: true, appointmentId: appointment.id }
   } catch (error) {
-    console.error(error)
+    logger.error(error)
     return { error: 'Failed to book appointment' }
   }
 }

@@ -19,6 +19,7 @@ export function useVaccineCatalog() {
       const json = await res.json()
       return json.data as VaccineCatalogEntry[]
     },
+    staleTime: 1000 * 60 * 5,
   })
 }
 
@@ -103,6 +104,7 @@ export function usePetVaccinations(petId: string) {
       return json.data as PetVaccination[]
     },
     enabled: !!petId,
+    staleTime: 1000 * 60 * 5,
   })
 }
 

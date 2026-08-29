@@ -8,6 +8,7 @@ export function useAdminClinics(enabled = false) {
     queryKey: ['admin-clinics'],
     queryFn: () => apiClient.get<{ clinics: Clinic[] }>('/api/admin/clinics').then(res => res.clinics),
     enabled,
+    staleTime: 1000 * 60 * 5,
   })
 }
 
@@ -26,6 +27,7 @@ export function useAdminDoctors() {
   return useQuery({
     queryKey: ['admin-doctors'],
     queryFn: () => apiClient.get<{ doctors: User[] }>('/api/admin/doctors').then(res => res.doctors),
+    staleTime: 1000 * 60 * 5,
   })
 }
 

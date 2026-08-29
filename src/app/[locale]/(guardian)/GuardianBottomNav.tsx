@@ -86,7 +86,7 @@ export function GuardianBottomNav() {
             <div className="relative">
               {link.icon && <link.icon strokeWidth={isActive ? 2 : 1.8} />}
               {isMounted && !!link.badge && link.badge > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-3 min-w-[12px] items-center justify-center rounded-full bg-[var(--vitality)] text-[8px] font-bold text-white px-1">
+                <span className="absolute -top-1 -end-1 flex h-3 min-w-[12px] items-center justify-center rounded-full bg-[var(--vitality)] text-[8px] font-bold text-white px-1">
                   {link.badge}
                 </span>
               )}

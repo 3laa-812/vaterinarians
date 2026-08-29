@@ -137,7 +137,7 @@ export default function GuardianCartPage() {
                 onClick={() => setDeliveryMethod("delivery")}
               >
                 <Truck strokeWidth={2} />
-                <div className="text-right">
+                <div className="text-end">
                   <div style={{ fontWeight: 700, fontSize: 13 }}>{t("delivery")}</div>
                   <div className="muted" style={{ fontSize: 11.5 }}>
                     {t("deliveryTime")}
@@ -150,7 +150,7 @@ export default function GuardianCartPage() {
                 onClick={() => setDeliveryMethod("pickup")}
               >
                 <Store strokeWidth={2} />
-                <div className="text-right">
+                <div className="text-end">
                   <div style={{ fontWeight: 700, fontSize: 13 }}>{t("pickup")}</div>
                   <div className="muted" style={{ fontSize: 11.5 }}>
                     {t("pickupTime")}

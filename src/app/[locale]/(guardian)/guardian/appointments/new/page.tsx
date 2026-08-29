@@ -127,13 +127,13 @@ export default function BookAppointmentPage() {
           <>
             {/* Stepper Header */}
             <div className="flex items-center justify-between relative mb-4">
-              <div className="absolute top-1/2 left-0 right-0 h-1 bg-guardian-surface-variant -translate-y-1/2 z-0 rounded-full" />
+              <div className="absolute top-1/2 start-0 end-0 h-1 bg-guardian-surface-variant -translate-y-1/2 z-0 rounded-full" />
               <motion.div 
-                className="absolute top-1/2 left-0 right-0 h-1 bg-guardian-primary -translate-y-1/2 z-0 rounded-full origin-left"
+                className="absolute top-1/2 start-0 end-0 h-1 bg-guardian-primary -translate-y-1/2 z-0 rounded-full origin-left"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: (step - 1) / 3 }}
                 transition={{ duration: 0.4, ease: "easeInOut" }}
-                style={{ transformOrigin: locale === 'ar' ? 'right' : 'left' }}
+                style={{ transformOrigin: t('left') }}
               />
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="relative z-10 flex flex-col items-center">
@@ -368,11 +368,11 @@ export default function BookAppointmentPage() {
 
             <div className="bg-guardian-surface-container-lowest rounded-xl p-6 soft-shadow space-y-4">
                <div className="relative">
-                  <Stethoscope className="w-5 h-5 absolute ltr:left-4 rtl:right-4 top-1/2 -translate-y-1/2 text-guardian-on-surface-variant pointer-events-none" />
+                  <Stethoscope className="w-5 h-5 absolute ltr:start-4 rtl:end-4 top-1/2 -translate-y-1/2 text-guardian-on-surface-variant pointer-events-none" />
                   <select
                     value={selectedDoctorId}
                     onChange={(e) => setSelectedDoctorId(e.target.value)}
-                    className="w-full ltr:pl-12 rtl:pr-12 ltr:pr-4 rtl:pl-4 py-4 bg-guardian-surface border border-guardian-outline-variant/30 rounded-xl focus:outline-none focus:border-guardian-secondary transition-all font-body-md text-body-md text-guardian-on-surface appearance-none"
+                    className="w-full ltr:ps-12 rtl:pe-12 ltr:pe-4 rtl:ps-4 py-4 bg-guardian-surface border border-guardian-outline-variant/30 rounded-xl focus:outline-none focus:border-guardian-secondary transition-all font-body-md text-body-md text-guardian-on-surface appearance-none"
                   >
                     <option value="">{t('anyAvailableDoctor')}</option>
                     {doctors.map((doctor) => (
@@ -381,7 +381,7 @@ export default function BookAppointmentPage() {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-5 h-5 absolute ltr:right-4 rtl:left-4 top-1/2 -translate-y-1/2 text-guardian-on-surface-variant pointer-events-none" />
+                  <ChevronDown className="w-5 h-5 absolute ltr:end-4 rtl:start-4 top-1/2 -translate-y-1/2 text-guardian-on-surface-variant pointer-events-none" />
                 </div>
 
                 <div className="relative">
@@ -394,7 +394,7 @@ export default function BookAppointmentPage() {
                       <option key={s.key} value={s.key}>{s.label}</option>
                     ))}
                   </select>
-                  <ChevronDown className="w-5 h-5 absolute ltr:right-4 rtl:left-4 top-1/2 -translate-y-1/2 text-guardian-on-surface-variant pointer-events-none" />
+                  <ChevronDown className="w-5 h-5 absolute ltr:end-4 rtl:start-4 top-1/2 -translate-y-1/2 text-guardian-on-surface-variant pointer-events-none" />
                 </div>
             </div>
           </motion.section>

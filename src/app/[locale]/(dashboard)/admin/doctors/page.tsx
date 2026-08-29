@@ -84,11 +84,11 @@ export default function DoctorsPage() {
             <span className="text-3xl font-bold text-on-surface mt-1">{doctors.length}</span>
           </Card>
           <Card className="stat-bar text-secondary relative overflow-hidden flex flex-col justify-center h-24 p-6">
-            <span className="text-sm font-semibold text-on-surface-variant">{locale === 'ar' ? 'أطباء' : 'Doctors'}</span>
+            <span className="text-sm font-semibold text-on-surface-variant">{t('doctors')}</span>
             <span className="text-3xl font-bold text-on-surface mt-1">{regularDoctorsCount}</span>
           </Card>
           <Card className="stat-bar text-tertiary relative overflow-hidden flex flex-col justify-center h-24 p-6">
-            <span className="text-sm font-semibold text-on-surface-variant">{locale === 'ar' ? 'مدراء عيادات' : 'Clinic Admins'}</span>
+            <span className="text-sm font-semibold text-on-surface-variant">{t('clinicAdmins')}</span>
             <span className="text-3xl font-bold text-on-surface mt-1">{clinicAdminsCount}</span>
           </Card>
         </div>
@@ -120,7 +120,7 @@ export default function DoctorsPage() {
                     <div className="flex items-start justify-between gap-2">
                       <h3 className="text-lg font-bold text-primary">{doc.name}</h3>
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${doc.role === 'CLINIC_ADMIN' ? 'bg-amber-100 text-amber-800' : 'bg-teal-100 text-teal-800'}`}>
-                        {doc.role === 'CLINIC_ADMIN' ? (locale === 'ar' ? 'مسؤول عيادة' : 'Clinic Admin') : (locale === 'ar' ? 'طبيب' : 'Doctor')}
+                        {doc.role === 'CLINIC_ADMIN' ? (t('clinicAdmin')) : (t('doctor'))}
                       </span>
                     </div>
                     <div className="mt-4 space-y-2 text-sm text-secondary">
@@ -153,14 +153,14 @@ export default function DoctorsPage() {
 
                 {isSuperAdmin && (
                   <div>
-                    <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'العيادة' : 'Clinic'} *</label>
+                    <label className="block text-sm font-semibold text-primary mb-1">{t('clinic')} *</label>
                     <select
                       required
                       value={doctorForm.clinicId}
                       onChange={(e) => setDoctorForm({ ...doctorForm, clinicId: e.target.value })}
                       className="w-full px-4 py-2.5 rounded-xl border border-outline/20 bg-surface text-primary focus:ring-2 focus:ring-teal-500 outline-none"
                     >
-                      <option value="">{locale === 'ar' ? 'اختر العيادة...' : 'Select clinic...'}</option>
+                      <option value="">{t('selectClinic')}</option>
                       {clinics.map((clinic: any) => (
                         <option key={clinic.id} value={clinic.id}>
                           {locale === 'ar' && clinic.nameAr ? clinic.nameAr : clinic.name}
@@ -172,7 +172,7 @@ export default function DoctorsPage() {
                 )}
 
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'الاسم' : 'Name'} *</label>
+                  <label className="block text-sm font-semibold text-primary mb-1">{t('name')} *</label>
                   <input
                     type="text"
                     required
@@ -184,7 +184,7 @@ export default function DoctorsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'البريد الإلكتروني' : 'Email'} *</label>
+                  <label className="block text-sm font-semibold text-primary mb-1">{t('email')} *</label>
                   <input
                     type="email"
                     required
@@ -196,7 +196,7 @@ export default function DoctorsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'كلمة المرور' : 'Password'} *</label>
+                  <label className="block text-sm font-semibold text-primary mb-1">{t('password')} *</label>
                   <input
                     type="password"
                     required
@@ -208,7 +208,7 @@ export default function DoctorsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'الهاتف' : 'Phone'}</label>
+                  <label className="block text-sm font-semibold text-primary mb-1">{t('phone')}</label>
                   <input
                     type="text"
                     value={doctorForm.phone}
@@ -218,21 +218,21 @@ export default function DoctorsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'الدور / الصلاحية' : 'Role'} *</label>
+                  <label className="block text-sm font-semibold text-primary mb-1">{t('role')} *</label>
                   <select
                     required
                     value={doctorForm.role}
                     onChange={(e) => setDoctorForm({ ...doctorForm, role: e.target.value as any })}
                     className="w-full px-4 py-2.5 rounded-xl border border-outline/20 bg-surface text-primary focus:ring-2 focus:ring-teal-500 outline-none"
                   >
-                    <option value="DOCTOR">{locale === 'ar' ? 'طبيب' : 'Doctor'}</option>
-                    <option value="CLINIC_ADMIN">{locale === 'ar' ? 'مسؤول عيادة' : 'Clinic Admin'}</option>
+                    <option value="DOCTOR">{t('doctor')}</option>
+                    <option value="CLINIC_ADMIN">{t('clinicAdmin')}</option>
                   </select>
                 </div>
 
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant">
                   <Button type="button" variant="secondary" onClick={() => setShowDoctorModal(false)}>
-                    {locale === 'ar' ? 'إلغاء' : 'Cancel'}
+                    {t('cancel')}
                   </Button>
                   <Button type="submit" loading={createDoctorMutation.isPending} className="px-4 py-2 text-sm">
                     {tForm('save')}

@@ -18,6 +18,12 @@ export default async function FinancePage({
 
   const session = await auth();
   if (!session) redirect(`/${locale}/login`);
+  if (
+    session.user.role !== "SUPER_ADMIN" &&
+    session.user.role !== "CLINIC_ADMIN"
+  ) {
+    redirect(`/${locale}/dashboard`);
+  }
 
   const t = await getTranslations("finance");
 
@@ -34,7 +40,7 @@ export default async function FinancePage({
   return (
     <div className="min-h-screen pb-10 bg-mesh">
       <div className="bg-surface-container-lowest border-b border-outline-variant/30 px-6 py-8 md:px-10 lg:px-12 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 opacity-80" />
+        <div className="absolute top-0 start-0 w-full h-1 opacity-80" />
         <h1 className="text-3xl font-black tracking-tight text-on-surface">
           {t("dashboard_title", { defaultMessage: "Finance Dashboard" })}
         </h1>

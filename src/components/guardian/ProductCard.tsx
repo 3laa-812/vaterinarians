@@ -38,7 +38,7 @@ export function GuardianProductCard({
         style={{ background: isRx ? 'var(--tan-soft)' : 'var(--sage-soft)' }}
       >
         {isRx && (
-          <span className="badge badge-sage absolute top-2.5 right-2.5 z-10">
+          <span className="badge badge-sage absolute top-2.5 end-2.5 z-10">
             <FileText strokeWidth={2.4} />
             {t('prescription')}
           </span>

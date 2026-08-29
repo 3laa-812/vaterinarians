@@ -41,7 +41,7 @@ export default function NewSessionPage() {
           if (confirmed) {
             return handleSubmit(data, true)
           } else {
-            throw new Error(locale === 'ar' ? 'تم الإلغاء' : 'Cancelled')
+            throw new Error(t('cancelled'))
           }
         }
         throw new Error(locale === 'ar' ? errJson.error?.ar : errJson.error?.en)

@@ -1,14 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import type { AnimalListItem, AnimalProfile } from '@/types'
+import type { AnimalListItem, AnimalProfile, AnimalsResponse } from '@/types'
 import type { AnimalInput } from '@/lib/validations/animal.schema'
 import { apiClient } from '@/lib/api/client'
-
-type AnimalsResponse = {
-  animals: AnimalListItem[]
-  total: number
-  page: number
-  limit: number
-}
 
 export function useAnimals(page = 1, limit = 20) {
   return useQuery<AnimalsResponse>({
@@ -23,6 +16,7 @@ export function useAnimalProfile(id: string) {
     queryKey: ['animals', id],
     queryFn: () => apiClient.get<{ animal: AnimalProfile }>(`/api/animals/${id}`).then(res => res.animal),
     enabled: !!id,
+    staleTime: 1000 * 60 * 2,
   })
 }
 

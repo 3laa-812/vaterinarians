@@ -4,6 +4,7 @@ import { createNovuSubscriber } from '@/lib/novu'
 import bcrypt from 'bcryptjs'
 import type { Session } from 'next-auth'
 import type { ClinicCreateInput, DoctorCreateInput } from '@/lib/validations/admin.schema'
+import { logger } from '@/lib/logger';
 
 export const adminService = {
   async listClinics() {
@@ -104,7 +105,7 @@ export const adminService = {
         data: { novuSubscriberId: newUser.id },
       })
     } catch (novuErr) {
-      console.error('Failed to register subscriber on Novu:', novuErr)
+      logger.error('Failed to register subscriber on Novu:', novuErr)
     }
 
     const { password, ...userResponse } = newUser

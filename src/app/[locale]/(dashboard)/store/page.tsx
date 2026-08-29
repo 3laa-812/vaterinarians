@@ -40,7 +40,7 @@ export default function StoreDashboardPage() {
       const res = await fetch("/api/store/products");
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.en || "Failed to fetch");
-      setProducts(json.data.products);
+      setProducts(json.data.data);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -129,7 +129,7 @@ export default function StoreDashboardPage() {
 
       <div className="bg-surface-container-low border border-outline-variant rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm whitespace-nowrap">
+          <table className="w-full text-start text-sm whitespace-nowrap">
             <thead className="bg-surface-container-high text-on-surface-variant border-b border-outline-variant/50">
               <tr>
                 <th className="px-6 py-4 font-semibold">{t("name")}</th>
@@ -137,7 +137,7 @@ export default function StoreDashboardPage() {
                 <th className="px-6 py-4 font-semibold">{t("price")}</th>
                 <th className="px-6 py-4 font-semibold">{t("stock")}</th>
                 <th className="px-6 py-4 font-semibold">{t("status")}</th>
-                <th className="px-6 py-4 font-semibold text-right">{t("actions")}</th>
+                <th className="px-6 py-4 font-semibold text-end">{t("actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/30">
@@ -175,7 +175,7 @@ export default function StoreDashboardPage() {
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-end">
                       <div className="flex justify-end gap-2">
                         <Link href={`/${locale}/store/${p.id}/edit`}>
                           <button className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors">

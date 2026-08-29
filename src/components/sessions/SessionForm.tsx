@@ -137,7 +137,7 @@ export function SessionForm({ initialData, onSubmit, onCancel, isLoading = false
                   onChange={handleChange}
                   placeholder="0.00"
                 />
-                <span className={`absolute top-1/2 -translate-y-1/2 text-on-surface-variant font-medium ${isRTL ? 'right-4' : 'left-4'}`}>
+                <span className={`absolute top-1/2 -translate-y-1/2 text-on-surface-variant font-medium ${isRTL ? 'end-4' : 'start-4'}`}>
                   {tAnimal('kg')}
                 </span>
               </div>

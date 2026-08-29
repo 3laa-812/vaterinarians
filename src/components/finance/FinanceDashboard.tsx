@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Card } from '@/components/shared/Card'
-import { TrendingUp, TrendingDown, DollarSign, AlertCircle, Plus, PieChart, Activity } from 'lucide-react'
+import { TrendingUp, TrendingDown, DollarSign, AlertCircle, Plus, PieChart, Activity, Wallet } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { RecordExpenseModal } from './RecordExpenseModal'
 import { useQuery } from '@tanstack/react-query'
@@ -86,7 +86,7 @@ export function FinanceDashboard({ data, month, year }: { data: any; month: numb
               <div className="flex flex-col mt-auto">
                 <p className="text-2xl md:text-3xl font-black text-on-surface tracking-tight mb-1">{pl.revenues.total.toLocaleString()} <span className="text-sm font-bold text-on-surface-variant uppercase">{t('currency')}</span></p>
                 {pl.revenueGrowth !== null && (
-                  <span className={`text-xs px-2.5 py-1 rounded-full font-bold shadow-sm inline-flex items-center self-start ${pl.revenueGrowth >= 0 ? 'bg-green-500/15 text-green-600 dark:text-green-400' : 'bg-red-500/15 text-red-600 dark:text-red-400'}`}>
+                  <span className={`text-xs px-2.5 py-1 rounded-full font-bold shadow-sm inline-flex items-center self-start ${pl.revenueGrowth >= 0 ? 'bg-green-500/15 text-green-600' : 'bg-red-500/15 text-red-600'}`}>
                     {pl.revenueGrowth >= 0 ? '+' : ''}{pl.revenueGrowth}%
                   </span>
                 )}
@@ -103,7 +103,7 @@ export function FinanceDashboard({ data, month, year }: { data: any; month: numb
               <div className="flex flex-col mt-auto">
                 <p className="text-2xl md:text-3xl font-black text-on-surface tracking-tight mb-1">{pl.expenses.total.toLocaleString()} <span className="text-sm font-bold text-on-surface-variant uppercase">{t('currency')}</span></p>
                 {pl.expenseGrowth !== null && (
-                  <span className={`text-xs px-2.5 py-1 rounded-full font-bold shadow-sm inline-flex items-center self-start ${pl.expenseGrowth <= 0 ? 'bg-green-500/15 text-green-600 dark:text-green-400' : 'bg-red-500/15 text-red-600 dark:text-red-400'}`}>
+                  <span className={`text-xs px-2.5 py-1 rounded-full font-bold shadow-sm inline-flex items-center self-start ${pl.expenseGrowth <= 0 ? 'bg-green-500/15 text-green-600' : 'bg-red-500/15 text-red-600'}`}>
                     {pl.expenseGrowth > 0 ? '+' : ''}{pl.expenseGrowth}%
                   </span>
                 )}
@@ -112,17 +112,16 @@ export function FinanceDashboard({ data, month, year }: { data: any; month: numb
 
             <Card className="flex flex-col p-5 md:p-6 rounded-[24px] shadow-sm hover:shadow-lg hover:shadow-secondary/5 hover:-translate-y-1 transition-all duration-300 border-outline-variant/30 bg-surface">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 rounded-2xl bg-secondary/10 text-secondary">
-                  <DollarSign size={22} />
+                <div className={`p-3 rounded-xl shrink-0 me-4 shadow-sm ring-1 ring-inset ${pl.netProfit >= 0 ? 'bg-green-500/15 ring-green-500/20' : 'bg-red-500/15 ring-red-500/20'}`}>
+                  <Wallet className={`h-6 w-6 ${pl.netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`} />
                 </div>
-                <p className="text-xs md:text-sm text-on-surface-variant uppercase tracking-wider font-bold">{t('netProfit')}</p>
               </div>
               <div className="flex flex-col mt-auto">
-                <p className={`text-2xl md:text-3xl font-black tracking-tight mb-1 ${pl.netProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-error'}`}>
-                  {pl.netProfit > 0 ? '+' : ''}{pl.netProfit.toLocaleString()} <span className="text-sm font-bold opacity-70 uppercase">{t('currency')}</span>
+                <p className={`text-2xl md:text-3xl font-black tracking-tight mb-1 ${pl.netProfit >= 0 ? 'text-green-600' : 'text-error'}`}>
+                  {pl.netProfit.toLocaleString()} <span className="text-sm font-bold text-on-surface-variant uppercase">{t('currency')}</span>
                 </p>
                 {pl.profitGrowth !== null && (
-                  <span className={`text-xs px-2.5 py-1 rounded-full font-bold shadow-sm inline-flex items-center self-start ${pl.profitGrowth >= 0 ? 'bg-green-500/15 text-green-600 dark:text-green-400' : 'bg-red-500/15 text-red-600 dark:text-red-400'}`}>
+                  <span className={`text-xs px-2.5 py-1 rounded-full font-bold shadow-sm inline-flex items-center self-start ${pl.profitGrowth >= 0 ? 'bg-green-500/15 text-green-600' : 'bg-red-500/15 text-red-600'}`}>
                     {pl.profitGrowth >= 0 ? '+' : ''}{pl.profitGrowth}%
                   </span>
                 )}
@@ -156,7 +155,7 @@ export function FinanceDashboard({ data, month, year }: { data: any; month: numb
                   <div key={i} className="flex items-center gap-3 bg-surface/50 p-4 rounded-xl border border-error/10">
                     <AlertCircle size={18} className="text-error" />
                     <span className="text-sm font-semibold text-on-surface">{alert.message}</span>
-                    {alert.amount && <span className="text-sm font-black text-on-surface ml-auto">{alert.amount.toLocaleString()} <span className="text-xs text-on-surface-variant">{t('currency')}</span></span>}
+                    {alert.amount && <span className="text-sm font-black text-on-surface ms-auto">{alert.amount.toLocaleString()} <span className="text-xs text-on-surface-variant">{t('currency')}</span></span>}
                   </div>
                 ))}
               </div>

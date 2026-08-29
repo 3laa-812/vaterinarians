@@ -18,6 +18,7 @@ import { FormField } from '@/components/shared/FormField'
 import { Input } from '@/components/shared/Input'
 import { Select } from '@/components/shared/Select'
 import { Textarea } from '@/components/shared/Textarea'
+import { logger } from '@/lib/logger';
 
 export default function AppointmentsPage() {
   const t = useTranslations('appointment')
@@ -91,7 +92,7 @@ export default function AppointmentsPage() {
           return handleSubmit(e, true)
         }
       } else {
-        console.error(err)
+        logger.error(err)
       }
     } finally {
       setIsSubmitting(false)

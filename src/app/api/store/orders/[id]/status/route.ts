@@ -1,53 +1,26 @@
-import { NextResponse } from 'next/server';
 import { withAuth } from '@/lib/api/handler';
+import { apiSuccess } from '@/lib/api/response';
 import { StoreService } from '@/services/store.service';
 import { updateOrderStatusSchema } from '@/lib/validations/store.schema';
+import { AppError } from '@/lib/api/errors';
 
-export const PUT = withAuth(async (req, { params, session }) => {
-  try {
+export const PUT = withAuth(
+  async (req, { params, session }) => {
     const orderId = params.id;
     if (!orderId) {
-      return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
+      throw new AppError('معرف الطلب مطلوب', 'Order ID is required', 400, 'BAD_REQUEST');
     }
 
     const body = await req.json();
-    const result = updateOrderStatusSchema.safeParse(body);
-    
-    if (!result.success) {
-      return NextResponse.json(
-        {
-          error: {
-            en: 'Invalid status data',
-            ar: 'بيانات الحالة غير صالحة',
-            code: 'VALIDATION_ERROR',
-            details: result.error.flatten()
-          }
-        },
-        { status: 400 }
-      );
-    }
+    const data = updateOrderStatusSchema.parse(body);
 
     const order = await StoreService.updateOrderStatus(
-      session.user.clinicId!, 
-      orderId, 
-      result.data.status, 
-      session.user.id
+      session,
+      orderId,
+      data.status
     );
 
-    return NextResponse.json({
-      data: { order }
-    });
-  } catch (error: any) {
-    console.error('[ORDERS_STATUS_PUT]', error);
-    return NextResponse.json(
-      {
-        error: {
-          en: error.message || 'Failed to update order status',
-          ar: 'فشل في تحديث حالة الطلب',
-          code: 'INTERNAL_ERROR'
-        }
-      },
-      { status: 500 }
-    );
-  }
-});
+    return apiSuccess({ order });
+  },
+  { roles: ['CLINIC_ADMIN', 'SUPER_ADMIN'] }
+);

@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client'
 import type { Session } from 'next-auth'
 import { apiUnauthorized, apiForbidden, apiValidationError, apiServerError } from './response'
 import { AppError } from './errors'
+import { logger } from '@/lib/logger'
 
 type RouteContext<TParams = Record<string, string>> = {
   session: Session
@@ -42,7 +43,7 @@ export function withAuth<TParams = Record<string, string>>(
         }
       }
 
-      console.error('[API Error]', error)
+      logger.error('[API Error]', error)
       return apiServerError('unhandled')
     }
   }

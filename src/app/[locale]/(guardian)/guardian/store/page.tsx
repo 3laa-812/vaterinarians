@@ -29,7 +29,7 @@ export default function GuardianStorePage() {
   const [activeCategory, setActiveCategory] = useState<(typeof CATEGORY_KEYS)[number]>('all')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const products = data?.products || []
+  const products = data?.data || []
 
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {

@@ -45,6 +45,7 @@ export function TopBar() {
           <button
             id="logout-button"
             onClick={() => signOut({ callbackUrl: '/ar/login' })}
+            aria-label={tAuth('logout')}
             className="text-on-surface-variant hover:text-error transition-colors p-2 rounded-lg hover:bg-error-container/20 flex items-center gap-2"
           >
             <LogOut size={20} />

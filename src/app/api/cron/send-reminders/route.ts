@@ -2,10 +2,12 @@ import { apiSuccess, apiError } from '@/lib/api/response'
 import { prisma } from '@/lib/db'
 import { triggerAppointmentReminder, triggerVaccinationReminder } from '@/lib/novu'
 import { addHours, addDays, startOfDay, endOfDay } from 'date-fns'
+import { env } from '@/lib/env'
+import { logger } from '@/lib/logger';
 
 export async function GET(req: Request) {
   const authHeader = req.headers.get('authorization')
-  if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!env.CRON_SECRET || authHeader !== `Bearer ${env.CRON_SECRET}`) {
     return apiError(
       { ar: 'غير مصرح', en: 'Unauthorized', code: 'UNAUTHORIZED' },
       401,
@@ -178,7 +180,7 @@ export async function GET(req: Request) {
 
     return apiSuccess({ processed: results.length, details: results })
   } catch (error: unknown) {
-    console.error('Cron send-reminders failed:', error)
+    logger.error('Cron send-reminders failed:', error)
     return apiError(
       { ar: 'فشل إرسال التذكيرات', en: 'Failed to send reminders', code: 'INTERNAL_ERROR' },
       500,

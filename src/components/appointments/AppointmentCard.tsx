@@ -10,6 +10,7 @@ import { AppointmentOverflowMenu } from './AppointmentOverflowMenu'
 import { AnimalAvatar } from '@/components/shared/AnimalAvatar'
 import { displayOwnerName } from '@/lib/format'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { logger } from '@/lib/logger';
 
 interface AppointmentCardProps {
   appointment: AppointmentWithDetails
@@ -35,7 +36,7 @@ export function AppointmentCard({ appointment, onStatusChange, className = '' }:
         status,
       })
       onStatusChange?.()
-    } catch (err) { console.error(err) }
+    } catch (err) { logger.error(err) }
   }
 
   const timeStr = new Date(appointment.scheduledAt).toLocaleTimeString(

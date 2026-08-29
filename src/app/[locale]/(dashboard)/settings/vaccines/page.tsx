@@ -16,6 +16,7 @@ export default function VaccinesSettingsPage() {
   // Re-using admin translations for access denied
   const tAdmin = useTranslations('admin')
   const tForm = useTranslations('form')
+  const t = useTranslations('common')
 
   const isSuperAdmin = session?.user.role === 'SUPER_ADMIN'
   const isClinicAdmin = session?.user.role === 'CLINIC_ADMIN'
@@ -75,7 +76,7 @@ export default function VaccinesSettingsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (confirm(locale === 'ar' ? 'هل أنت متأكد من الحذف؟' : 'Are you sure you want to delete this vaccine?')) {
+    if (confirm(t('areYouSureYouWantToDeleteThisVaccine'))) {
       try {
         await deleteMutation.mutateAsync(id)
         refetch()
@@ -120,11 +121,11 @@ export default function VaccinesSettingsPage() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <PageHeader
-        title={locale === 'ar' ? 'إعدادات اللقاحات' : 'Vaccine Settings'}
-        subtitle={locale === 'ar' ? 'إدارة كتالوج اللقاحات' : 'Manage the vaccine catalog'}
+        title={t('vaccineSettings')}
+        subtitle={t('manageTheVaccineCatalog')}
         action={
           <Button onClick={handleOpenNew} className="px-4 py-2 text-sm">
-            + {locale === 'ar' ? 'إضافة لقاح' : 'Add Vaccine'}
+            + {t('addVaccine')}
           </Button>
         }
       />
@@ -137,7 +138,7 @@ export default function VaccinesSettingsPage() {
         </div>
       ) : vaccines.length === 0 ? (
         <div className="text-center py-12 text-on-surface-variant">
-          {locale === 'ar' ? 'لا يوجد لقاحات مضافة.' : 'No vaccines found.'}
+          {t('noVaccinesFound')}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -160,15 +161,15 @@ export default function VaccinesSettingsPage() {
                 </div>
                 <div className="mt-2 space-y-1">
                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${v.isCore ? 'bg-error/10 text-error' : 'bg-secondary/10 text-secondary'}`}>
-                    {v.isCore ? (locale === 'ar' ? 'أساسي' : 'Core') : (locale === 'ar' ? 'اختياري' : 'Non-Core')}
+                    {v.isCore ? (t('core1')) : (t('nonCore'))}
                   </span>
-                  <span className="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-surface-container-high text-on-surface">
+                  <span className="ms-2 px-2 py-0.5 rounded text-[10px] font-bold bg-surface-container-high text-on-surface">
                     {getSpeciesLabel(v.species)}
                   </span>
                 </div>
                 <div className="mt-4 space-y-2 text-sm text-secondary">
                   <p>
-                    <strong>{locale === 'ar' ? 'الفاصل الزمني:' : 'Interval:'}</strong> {v.defaultIntervalDays ? `${v.defaultIntervalDays} ${locale === 'ar' ? 'يوم' : 'days'}` : (locale === 'ar' ? 'غير محدد' : 'None')}
+                    <strong>{t('interval')}</strong> {v.defaultIntervalDays ? `${v.defaultIntervalDays} ${t('days')}` : (t('none'))}
                   </p>
                   {v.description && (
                     <p className="text-xs text-on-surface-variant">{v.description}</p>
@@ -186,8 +187,8 @@ export default function VaccinesSettingsPage() {
           <div className="bg-surface border border-outline/10 rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 className="text-xl font-bold text-primary">
               {editingId 
-                ? (locale === 'ar' ? 'تعديل لقاح' : 'Edit Vaccine')
-                : (locale === 'ar' ? 'إضافة لقاح جديد' : 'Add New Vaccine')}
+                ? (t('editVaccine'))
+                : (t('addNewVaccine'))}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
@@ -198,7 +199,7 @@ export default function VaccinesSettingsPage() {
               )}
 
               <div>
-                <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'اسم اللقاح' : 'Vaccine Name'} *</label>
+                <label className="block text-sm font-semibold text-primary mb-1">{t('vaccineName')} *</label>
                 <input
                   type="text"
                   required
@@ -209,15 +210,15 @@ export default function VaccinesSettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'الفصيلة' : 'Species'} *</label>
+                <label className="block text-sm font-semibold text-primary mb-1">{t('species')} *</label>
                 <Select
                   required
                   value={form.species}
                   onChange={(e) => setForm({ ...form, species: e.target.value })}
                 >
-                  <option value="dog">{locale === 'ar' ? 'كلب' : 'Dog'}</option>
-                  <option value="cat">{locale === 'ar' ? 'قطة' : 'Cat'}</option>
-                  <option value="both">{locale === 'ar' ? 'كلاهما' : 'Both'}</option>
+                  <option value="dog">{t('dog')}</option>
+                  <option value="cat">{t('cat')}</option>
+                  <option value="both">{t('both')}</option>
                 </Select>
               </div>
 
@@ -230,12 +231,12 @@ export default function VaccinesSettingsPage() {
                   className="w-4 h-4 text-primary bg-surface border-outline/20 rounded focus:ring-primary focus:ring-2"
                 />
                 <label htmlFor="isCore" className="text-sm font-semibold text-primary cursor-pointer">
-                  {locale === 'ar' ? 'لقاح أساسي (Core)' : 'Is Core Vaccine'}
+                  {t('isCoreVaccine')}
                 </label>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'الفاصل الزمني الافتراضي (بالأيام)' : 'Default Interval (Days)'}</label>
+                <label className="block text-sm font-semibold text-primary mb-1">{t('defaultIntervalDays')}</label>
                 <input
                   type="number"
                   min="0"
@@ -246,7 +247,7 @@ export default function VaccinesSettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'الوصف' : 'Description'}</label>
+                <label className="block text-sm font-semibold text-primary mb-1">{t('description')}</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}

@@ -7,6 +7,7 @@ import { useRouter } from '@/lib/i18n-navigation'
 import { Calendar, Clock, Plus } from 'lucide-react'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
+import { Button } from '@/components/shared/Button'
 
 type FlatAppointment = {
   id: string
@@ -54,14 +55,14 @@ export default function GuardianAppointmentsPage() {
     <div>
       <div className="mb-[18px] flex items-center justify-between">
         <h2 className="guardian-section-title">{t('appointments')}</h2>
-        <button
-          type="button"
+        <Button
+          variant="guardian-primary"
           onClick={() => router.push('/guardian/appointments/new')}
-          className="inline-flex items-center gap-2 rounded-[11px] bg-gradient-to-br from-[var(--olive-2)] to-[var(--olive)] px-3.5 py-2 text-[12.5px] font-bold text-[var(--cream)]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 text-[12.5px]"
         >
           <Plus className="h-[15px] w-[15px]" />
           {t('bookAppointment')}
-        </button>
+        </Button>
       </div>
 
       {appointments.length === 0 ? (
@@ -86,7 +87,7 @@ export default function GuardianAppointmentsPage() {
                 key={apt.id}
                 type="button"
                 onClick={() => router.push(`/guardian/appointments/${apt.id}`)}
-                className="guardian-card flex w-full items-center justify-between gap-4 p-[18px] text-right transition-shadow hover:shadow-[var(--shadow-lg)]"
+                className="guardian-card flex w-full items-center justify-between gap-4 p-[18px] text-end transition-shadow hover:shadow-[var(--shadow-lg)]"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--sage-soft)] text-[var(--olive)]">

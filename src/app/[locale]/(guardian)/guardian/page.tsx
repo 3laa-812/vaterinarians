@@ -27,7 +27,7 @@ export default function GuardianHomePage() {
   const { data: productsData } = useGuardianStoreProducts()
 
   const animals: GuardianAnimal[] = petsData?.animals || []
-  const activeOrders = (ordersData?.orders || []).filter((o) =>
+  const activeOrders = (ordersData?.data || []).filter((o) =>
     ['PENDING', 'PROCESSING', 'SHIPPED', 'OUT_FOR_DELIVERY'].includes(o.status)
   ).length
 
@@ -45,7 +45,7 @@ export default function GuardianHomePage() {
   const nextAnimalWithAppt = animals.find((a) => a.appointments?.[0])
   const nextAppt = nextAnimalWithAppt?.appointments?.[0]
   const nextApptWhen = nextAppt ? formatAppointment(nextAppt.scheduledAt) : null
-  const suggestedProducts = (productsData?.products || []).slice(0, 4)
+  const suggestedProducts = (productsData?.data || []).slice(0, 4)
 
   return (
     <>

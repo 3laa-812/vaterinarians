@@ -21,8 +21,8 @@ export default function GuardianProductDetailPage() {
   const [qty, setQty] = useState(1)
 
   const product = useMemo(
-    () => data?.products?.find((p) => p.id === productId),
-    [data?.products, productId]
+    () => data?.data?.find((p) => p.id === productId),
+    [data?.data, productId]
   )
 
   const cartItem = items.find((i) => i.productId === productId)

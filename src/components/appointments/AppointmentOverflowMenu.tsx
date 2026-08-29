@@ -37,7 +37,7 @@ export function AppointmentOverflowMenu({ onPostpone, onMarkAbsent }: Appointmen
       </Button>
 
       {isOpen && (
-        <div className="absolute left-0 bottom-full mb-2 w-32 bg-surface-container-high border border-outline-variant rounded-xl shadow-lg overflow-hidden z-50">
+        <div className="absolute start-0 bottom-full mb-2 w-32 bg-surface-container-high border border-outline-variant rounded-xl shadow-lg overflow-hidden z-50">
           <button 
             className="w-full text-start px-4 py-3 text-sm font-semibold text-secondary hover:bg-surface-container active:bg-surface transition-colors border-b border-outline-variant"
             onClick={() => {

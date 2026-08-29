@@ -27,22 +27,22 @@ export const Receipt58 = forwardRef<HTMLDivElement, Props>(
         </div>
 
         <div className="border-t border-dashed border-black py-2 mb-2">
-          <table className="w-full text-left">
+          <table className="w-full text-start">
             <tbody>
               {invoice.payments.map((p) => (
                 <tr key={p.id}>
-                  <td className="pr-1 py-1 align-top">{t("consultation")}</td>
-                  <td className="text-right align-top py-1">{p.totalAmount}</td>
+                  <td className="pe-1 py-1 align-top">{t("consultation")}</td>
+                  <td className="text-end align-top py-1">{p.totalAmount}</td>
                 </tr>
               ))}
               {invoice.orders.map((o) =>
                 o.items.map((item) => (
                   <tr key={item.id}>
-                    <td className="pr-1 py-1 align-top">
+                    <td className="pe-1 py-1 align-top">
                       {item.product.name}
                       {item.quantity > 1 && <div className="text-[8px]">{item.quantity} x {item.unitPrice}</div>}
                     </td>
-                    <td className="text-right align-top py-1">{item.total}</td>
+                    <td className="text-end align-top py-1">{item.total}</td>
                   </tr>
                 ))
               )}

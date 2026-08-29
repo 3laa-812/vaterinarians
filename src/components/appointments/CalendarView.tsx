@@ -63,7 +63,7 @@ export function CalendarView() {
           onClick={handlePrevWeek}
           className="p-2 rounded-xl hover:bg-outline/5 text-primary transition-all duration-200"
         >
-          {locale === 'ar' ? '→' : '←'}
+          {t('str9888')}
         </button>
         <span className="text-sm font-semibold text-primary capitalize">
           {formatMonthLabel()}
@@ -72,7 +72,7 @@ export function CalendarView() {
           onClick={handleNextWeek}
           className="p-2 rounded-xl hover:bg-outline/5 text-primary transition-all duration-200"
         >
-          {locale === 'ar' ? '←' : '→'}
+          {t('str6110')}
         </button>
 
       </div>
@@ -127,7 +127,7 @@ export function CalendarView() {
           <div className="text-center py-12 bg-surface border border-outline/10 rounded-2xl p-6 shadow-sm">
             <span className="text-3xl block mb-2">🗓️</span>
             <p className="text-sm text-secondary italic">
-              {locale === 'ar' ? 'لا توجد مواعيد لهذا اليوم' : 'No appointments scheduled for this day'}
+              {t('noAppointmentsScheduledForThisDay')}
             </p>
           </div>
         ) : (

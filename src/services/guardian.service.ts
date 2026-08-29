@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { paginate } from "@/lib/pagination";
 import { AppError } from "@/lib/api/errors";
 import { GuardianCreateOrderInput, GuardianCreateAnimalInput } from "@/lib/validations/guardian.schema";
 import { StoreService } from "@/services/store.service";
@@ -111,15 +112,19 @@ export class GuardianService {
   /**
    * Retrieves products available in the clinic.
    */
-  async getProducts() {
-    return prisma.product.findMany({
-      where: {
-        clinicId: this.clinicId,
-        isActive: true,
-        stock: { gt: 0 },
-      },
-      orderBy: { name: "asc" },
-    });
+  async getProducts({ page = 1, limit = 24 }: { page?: number; limit?: number } = {}) {
+    return paginate(
+      prisma.product,
+      {
+        where: {
+          clinicId: this.clinicId,
+          isActive: true,
+          stock: { gt: 0 },
+        },
+        orderBy: { name: "asc" },
+      } as any,
+      { page, limit }
+    );
   }
 
   /**
@@ -127,7 +132,8 @@ export class GuardianService {
    */
   async placeOrder(data: GuardianCreateOrderInput) {
     // Re-use the atomic transaction logic from StoreService
-    return StoreService.createOrder(this.clinicId, undefined, {
+    const mockSession = { user: { clinicId: this.clinicId } } as any;
+    return StoreService.createOrder(mockSession, undefined, {
       ...data,
       ownerId: this.ownerId,
       deliveryFee: data.deliveryMethod === 'delivery' ? 50 : 0, // Flat rate of 50 for delivery
@@ -137,21 +143,25 @@ export class GuardianService {
   /**
    * Retrieves the guardian's past orders.
    */
-  async getOrders() {
-    return prisma.order.findMany({
-      where: {
-        ownerId: this.ownerId,
-        clinicId: this.clinicId,
-      },
-      include: {
-        items: {
-          include: {
-            product: true,
+  async getOrders({ page = 1, limit = 24 }: { page?: number; limit?: number } = {}) {
+    return paginate(
+      prisma.order,
+      {
+        where: {
+          ownerId: this.ownerId,
+          clinicId: this.clinicId,
+        },
+        include: {
+          items: {
+            include: {
+              product: true,
+            },
           },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+      } as any,
+      { page, limit }
+    );
   }
 
   /**

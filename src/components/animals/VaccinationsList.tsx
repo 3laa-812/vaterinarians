@@ -30,10 +30,10 @@ export function VaccinationsList({ petId, species }: VaccinationsListProps) {
 
   const getStatusConfig = (status: string) => {
     switch (status) {
-      case 'overdue': return { color: 'bg-error/10 text-error', icon: <AlertCircle size={14} />, label: locale === 'ar' ? 'متأخر' : 'Overdue' }
-      case 'due_soon': return { color: 'bg-amber-100 text-amber-800', icon: <AlertCircle size={14} />, label: locale === 'ar' ? 'قريباً' : 'Due Soon' }
-      case 'upcoming': return { color: 'bg-teal-100 text-teal-800', icon: <Calendar size={14} />, label: locale === 'ar' ? 'قادم' : 'Upcoming' }
-      case 'completed': return { color: 'bg-surface-variant text-on-surface-variant', icon: <Shield size={14} />, label: locale === 'ar' ? 'مكتمل' : 'Completed' }
+      case 'overdue': return { color: 'bg-error/10 text-error', icon: <AlertCircle size={14} />, label: t('overdue') }
+      case 'due_soon': return { color: 'bg-amber-100 text-amber-800', icon: <AlertCircle size={14} />, label: t('dueSoon') }
+      case 'upcoming': return { color: 'bg-teal-100 text-teal-800', icon: <Calendar size={14} />, label: t('upcoming') }
+      case 'completed': return { color: 'bg-surface-variant text-on-surface-variant', icon: <Shield size={14} />, label: t('completed') }
       default: return { color: 'bg-surface-variant text-on-surface-variant', icon: <Shield size={14} />, label: status }
     }
   }
@@ -50,7 +50,7 @@ export function VaccinationsList({ petId, species }: VaccinationsListProps) {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-on-surface flex items-center gap-2">
           <Syringe size={20} className="text-primary" />
-          {locale === 'ar' ? 'سجل التطعيمات' : 'Vaccinations'}
+          {t('vaccinations')}
         </h3>
         <div className="flex gap-2">
           {vaccinations && vaccinations.length > 0 && (
@@ -60,11 +60,11 @@ export function VaccinationsList({ petId, species }: VaccinationsListProps) {
               className="px-3 py-1.5 text-xs flex items-center gap-1"
             >
               <Printer size={14} />
-              {locale === 'ar' ? 'طباعة' : 'Print'}
+              {t('print')}
             </Button>
           )}
           <Button onClick={handleOpenNew} className="px-3 py-1.5 text-xs">
-            + {locale === 'ar' ? 'إضافة' : 'Add'}
+            + {t('add')}
           </Button>
         </div>
       </div>
@@ -77,10 +77,10 @@ export function VaccinationsList({ petId, species }: VaccinationsListProps) {
       ) : !vaccinations || vaccinations.length === 0 ? (
         <div className="text-center py-8 text-on-surface-variant bg-surface-container/50 rounded-xl">
           <Syringe className="mx-auto mb-2 opacity-50" size={32} />
-          <p className="text-sm italic">{locale === 'ar' ? 'لا يوجد تطعيمات مسجلة' : 'No vaccinations recorded'}</p>
+          <p className="text-sm italic">{t('noVaccinationsRecorded')}</p>
         </div>
       ) : (
-        <div className="space-y-3 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
+        <div className="space-y-3 overflow-y-auto max-h-[400px] pe-2 custom-scrollbar">
           {vaccinations.map((v) => {
             const status = getStatusConfig(v.status)
             return (
@@ -100,11 +100,11 @@ export function VaccinationsList({ petId, species }: VaccinationsListProps) {
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs text-secondary mt-2">
                   <div>
-                    <span className="block text-on-surface-variant/70 text-[10px] uppercase tracking-wider mb-0.5">{locale === 'ar' ? 'تاريخ التطعيم' : 'Given On'}</span>
+                    <span className="block text-on-surface-variant/70 text-[10px] uppercase tracking-wider mb-0.5">{t('givenOn')}</span>
                     <span className="font-medium">{formatDate(v.dateAdministered)}</span>
                   </div>
                   <div>
-                    <span className="block text-on-surface-variant/70 text-[10px] uppercase tracking-wider mb-0.5">{locale === 'ar' ? 'الجرعة القادمة' : 'Next Due'}</span>
+                    <span className="block text-on-surface-variant/70 text-[10px] uppercase tracking-wider mb-0.5">{t('nextDue')}</span>
                     <span className="font-medium text-on-surface">{formatDate(v.nextDueDate)}</span>
                   </div>
                 </div>

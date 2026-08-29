@@ -13,6 +13,7 @@ import { Textarea } from "@/components/shared/Textarea";
 import { Select } from "@/components/shared/Select";
 import { FormField } from "@/components/shared/FormField";
 import { UploadCloud, Loader2 } from "lucide-react";
+import { logger } from '@/lib/logger';
 
 type ProductFormValues = z.infer<typeof createProductSchema>;
 
@@ -70,7 +71,7 @@ export default function EditProductPage() {
           setImageUrl(product.imageUrl);
         }
       } catch (err) {
-        console.error(err);
+        logger.error(err);
         alert(t("error") || "Failed to load product");
       } finally {
         setFetching(false);
@@ -129,7 +130,7 @@ export default function EditProductPage() {
         throw new Error(data.error?.message || "Upload failed");
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
+      logger.error("Error uploading file:", error);
       alert("Failed to upload image");
     } finally {
       setUploading(false);
@@ -177,7 +178,7 @@ export default function EditProductPage() {
       }
       router.push(`/${locale}/store`);
     } catch (err: any) {
-      console.error(err);
+      logger.error(err);
       alert(err.message || err);
     } finally {
       setLoading(false);

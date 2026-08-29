@@ -1,7 +1,7 @@
 // LangToggle — AR / EN switcher. Saves preference to DB when signed in.
 'use client'
 
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from '@/lib/i18n-navigation'
 
@@ -11,6 +11,7 @@ interface LangToggleProps {
 
 export function LangToggle({ compact }: LangToggleProps) {
   const locale = useLocale()
+  const t = useTranslations('common')
   const router = useRouter()
   const pathname = usePathname()
   const { data: session } = useSession()
@@ -40,7 +41,7 @@ export function LangToggle({ compact }: LangToggleProps) {
         aria-label="Switch language"
         className="w-[34px] h-[34px] flex items-center justify-center rounded-full bg-surface-container border border-outline-variant text-xs font-bold text-on-surface hover:border-outline transition-all"
       >
-        {locale === 'ar' ? 'AR' : 'EN'}
+        {t('languageCode')}
       </button>
     )
   }
@@ -52,8 +53,8 @@ export function LangToggle({ compact }: LangToggleProps) {
       aria-label="Switch language"
       className="text-sm font-semibold px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline transition-all flex items-center gap-2"
     >
-      <span className="hidden md:inline">{locale === 'ar' ? 'English' : 'العربية'}</span>
-      <span className="md:hidden">{locale === 'ar' ? 'EN' : 'ع'}</span>
+      <span className="hidden md:inline">{t('languageName')}</span>
+      <span className="md:hidden">{t('languageCode')}</span>
     </button>
   )
 }

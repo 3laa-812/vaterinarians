@@ -140,7 +140,7 @@ export default function ClinicsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'العنوان' : 'Address'}</label>
+                  <label className="block text-sm font-semibold text-primary mb-1">{t('address')}</label>
                   <input
                     type="text"
                     value={clinicForm.address}
@@ -150,7 +150,7 @@ export default function ClinicsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-1">{locale === 'ar' ? 'الهاتف' : 'Phone'}</label>
+                  <label className="block text-sm font-semibold text-primary mb-1">{t('phone')}</label>
                   <input
                     type="text"
                     value={clinicForm.phone}
@@ -161,7 +161,7 @@ export default function ClinicsPage() {
 
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant">
                   <Button type="button" variant="secondary" onClick={() => setShowClinicModal(false)}>
-                    {locale === 'ar' ? 'إلغاء' : 'Cancel'}
+                    {t('cancel')}
                   </Button>
                   <Button type="submit" loading={createClinicMutation.isPending} className="px-4 py-2 text-sm">
                     {tForm('save')}

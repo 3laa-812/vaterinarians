@@ -5,6 +5,8 @@ import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/lib/i18n-navigation";
 import { CheckCircle2, Package, Clock, ChevronLeft } from "lucide-react";
 import { motion } from "motion/react";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { Button } from "@/components/shared/Button";
 
 export default function GuardianOrdersPage() {
   const t = useTranslations("guardian");
@@ -12,11 +14,11 @@ export default function GuardianOrdersPage() {
   const router = useRouter();
   const { data, isLoading } = useGuardianOrders();
 
-  const orders = data?.orders || [];
+  const orders = data?.data || [];
 
   return (
     <div className="font-body-md antialiased">
-      <div className="mb-6 text-right">
+      <div className="mb-6 text-end">
         <p className="text-[13px] text-[var(--ink-soft)]">{t("myOrdersDesc")}</p>
       </div>
 
@@ -30,24 +32,14 @@ export default function GuardianOrdersPage() {
           ))}
         </div>
       ) : orders.length === 0 ? (
-        <div className="flex flex-col items-center py-20 text-center">
-          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[var(--sage-soft)] text-[var(--sage)]">
-            <Package className="h-8 w-8" />
-          </div>
-          <h3 className="mb-2 text-lg font-extrabold text-[var(--olive)]">
-            {t("emptyOrders")}
-          </h3>
-          <p className="mb-6 text-[13.5px] text-[var(--ink-soft)]">
-            {t("emptyOrdersDesc")}
-          </p>
-          <button
-            type="button"
-            onClick={() => router.push("/guardian/store")}
-            className="rounded-full bg-gradient-to-br from-[var(--olive-2)] to-[var(--olive)] px-6 py-3 text-sm font-bold text-[var(--cream)]"
-          >
-            {t("browseStore")}
-          </button>
-        </div>
+        <EmptyState
+          variant="guardian"
+          icon={Package}
+          title={t("emptyOrders")}
+          message={t("emptyOrdersDesc")}
+          actionLabel={t("browseStore")}
+          onAction={() => router.push("/guardian/store")}
+        />
       ) : (
         <motion.div
           initial="hidden"
@@ -99,7 +91,7 @@ export default function GuardianOrdersPage() {
               </div>
 
               <div className="mt-auto flex flex-row-reverse items-end justify-between border-t border-[var(--line)] pt-4">
-                <div className="text-right">
+                <div className="text-end">
                   <p className="mb-1 text-xs text-[var(--ink-soft)]">
                     {new Date(order.createdAt).toLocaleDateString(locale, {
                       year: "numeric",

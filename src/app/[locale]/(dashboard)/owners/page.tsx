@@ -12,6 +12,7 @@ import { Card } from '@/components/shared/Card'
 import { Button } from '@/components/shared/Button'
 import { GuardianQRModal } from '@/components/guardian/GuardianQRModal'
 import { Modal } from '@/components/shared/Modal'
+import { logger } from '@/lib/logger';
 
 export default function OwnersPage() {
   const t = useTranslations('owner')
@@ -42,7 +43,7 @@ export default function OwnersPage() {
       }
       refetch()
     } catch (err) {
-      console.error(err)
+      logger.error(err)
     }
   }
 

@@ -66,7 +66,7 @@ export async function OutstandingPaymentsWidget() {
                 </div>
               </div>
 
-              <div className="text-right">
+              <div className="text-end">
                 <div className="text-sm text-error font-medium">{t('owes')}</div>
                 <div className="font-mono font-bold text-error">
                   {formatCurrency(remaining)}

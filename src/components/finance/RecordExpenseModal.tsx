@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import { Button } from '@/components/shared/Button'
 import { Input } from '@/components/shared/Input'
 import { addExpenseAction } from '@/app/actions/finance.actions'
+import { logger } from '@/lib/logger';
 
 export function RecordExpenseModal({ opened, onClose }: { opened: boolean; onClose: () => void }) {
   const t = useTranslations('finance')
@@ -20,7 +21,7 @@ export function RecordExpenseModal({ opened, onClose }: { opened: boolean; onClo
       await addExpenseAction(formData)
       onClose()
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       alert(t('addExpenseError'))
     } finally {
       setLoading(false)
@@ -34,7 +35,7 @@ export function RecordExpenseModal({ opened, onClose }: { opened: boolean; onClo
       <div className="bg-surface-container w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between p-4 border-b border-outline-variant">
           <h3 className="font-bold text-lg text-on-surface">{t('addExpense')}</h3>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors">
+          <button onClick={onClose} aria-label="Close" className="p-1 rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -84,7 +85,7 @@ export function RecordExpenseModal({ opened, onClose }: { opened: boolean; onClo
         <div className="flex justify-end gap-3 pt-4 border-t border-outline-variant/30 mt-6">
           <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>{t('cancel')}</Button>
           <Button type="submit" disabled={loading}>
-            {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+            {loading ? <Loader2 className="w-4 h-4 animate-spin me-2" /> : null}
             {t('save')}
           </Button>
         </div>
